@@ -1,0 +1,13 @@
+Package: mmecor
+Type: Package
+Title: Multivariate Methods in Ecology with R
+Version: 0.1-0
+Date: 2009-02-09
+Author: Peter Solymos, Jari Oksanen and Bela Tothmeresz
+Maintainer: Peter Solymos <solymos@ualberta.ca>
+Description: Description here
+Suggests: vegan
+License: GPL-2
+URL: http://r-forge.r-project.org/projects/mmecor/
+LazyLoad: yes
+LazyData: true
