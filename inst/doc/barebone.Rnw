@@ -1,0 +1,50 @@
+<<echo=false,results=hide>>=
+require(barebone)
+require(vegan)
+options(width=66)
+@ 
+\chapter{Basic Methods: An R Programming Intreface to Multivariate Analysis}
+\label{sec:basicmethods}
+
+Short intro: the scope of this Appendix.
+
+\section{Unconstrained Ordination}
+
+\subsection{Principal Components Analysis}
+
+<<echo=false>>=
+dump("PCA", file = "")
+@ 
+<<echo=false>>=
+dump("PCAeig", file = "")
+@ 
+
+\subsection{Principal Coordinates Analysis}
+
+\subsection{Correspondence Analysis}
+
+<<echo=false>>=
+dump("CA", file = "")
+@ 
+<<echo=false>>=
+dump("CAeig", file="")
+@ 
+
+\section{Constrained Ordination}
+
+\subsection{Redundancy Analysis}
+
+<<echo=false>>=
+dump("RDA", file="")
+@ 
+<<echo=false>>=
+dump("pRDA", file="")
+@ 
+
+\subsection{Constrained Correspondence Analysis}
+
+<<echo=false>>=
+dump("pCCA", file="")
+@ 
+
+\endinput
