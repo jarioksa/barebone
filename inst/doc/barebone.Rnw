@@ -1,27 +1,90 @@
+\renewenvironment{Schunk}{\small}{}
 <<echo=false,results=hide>>=
 require(barebone)
 require(vegan)
 options(width=66)
 @ 
-\chapter{Basic Methods: An R Programming Intreface to Multivariate Analysis}
+\chapter{R Programming Interface to Multivariate Analysis}
 \label{sec:basicmethods}
 
 Short intro: the scope of this Appendix.
+\section{Matrix Algebra in R}
 
-\section{Unconstrained Ordination}
+\subsection{Basic Operations}
 
-\subsection{Principal Components Analysis}
+\subsection{Matrix Decomposition}
 
+\section{R Programming of Ordination Methods}
+
+\subsection{Unconstrained Ordination}
+
+\subsubsection{Principal Components Analysis (PCA)}
+
+The simplest and numerically best method for PCA is equivalent to
+singular value decomposition (SVD) of the data matrix. The SVD is
+defined as
+\begin{eqnarray}
+  \vec{X} &= \vec{U \Sigma V'}\;,
+\end{eqnarray}
+where \vec{X} is the data matrix with centred columns, \vec{U} and
+\vec{V} are orthonormal matrices of row and column scores, and
+\vec{\Sigma} is a diagonal matrix of singular values which are square
+roots of eigen values $\vec{\Sigma = \Lambda}^{1/2}$. The
+implementation is straightforward:
 <<echo=false>>=
 dump("PCA", file = "")
 @ 
+The function returns a result of the R function \texttt{svd}. The only
+optional argument is \texttt{scale} which defines how data is scaled
+before the analysis. In general, the standard R function
+\texttt{scale} transforms data as:
+\begin{equation}
+  x'_{ij} = \frac{x_{ij} - z_j}{s_j}\;,
+\end{equation}
+where $z_j$ is the column centre, and $s_j$ is the column
+scale. Typically $z_j$ is the column average. With \texttt{scale =
+  FALSE}, $s=1$ (or no scaling), and with \texttt{scale = TRUE}, $s_j$
+are the variable (column) standard deviations. If data are scaled by
+column standard deviation, all columns will have equal weight.  The
+\texttt{scale} can also be a vector of given scales. Using a constant
+scale for all columns does not influence scores \vec{U} or \vec{V},
+but it will influence the absolute singular values
+\vec{\varSigma}---the proportions of individual elements $\sigma$ do
+not change.  With the basic analysis, the singular values decompose
+the original observed values, so that the sum of $\vec{\Sigma}^2$
+equals the sum of $\vec{X}^2$ for centred \vec{X}. If we want the
+singular values to decompose the variance of the data, we can call the
+function as
+<<>>=
+data(dune)
+str(PCA(dune, scale = rep(sqrt(nrow(dune)-1), ncol(dune))))
+@ 
+This divides columns with $\sqrt{n-1}$ so that the sum of
+$\vec{\Sigma}^2$ equals the sum of variances of \vec{X}, and the
+singular values are standard deviations of the axes.  Using scale
+$\sqrt{n}$ would give the same results with biased esimate of variance.
+
+SVD is the preferred method of performing PCA, but earlier PCA was
+usually performed as eigen decomposition of symmetric crossproduct
+matrix: 
+\begin{equation}
+  \vec{X'X} = \vec{V \Lambda V'}\;,
+\end{equation}
+where \vec{\Lambda} is a diagonal matrix of eigenvalues. The row
+scores can be found as
+\begin{equation}
+  \vec{U} = \vec{X' V \Lambda}^{-1/2}\;.  
+\end{equation}
+The row and column scores \vec{U} and \vec{V} are identical to those
+found in the previous methods (apart from possible sign reversals),
+and $\vec{\Lambda} = \vec{\Sigma}^2$. 
 <<echo=false>>=
 dump("PCAeig", file = "")
 @ 
 
-\subsection{Principal Coordinates Analysis}
+\subsubsection{Principal Coordinates Analysis}
 
-\subsection{Correspondence Analysis}
+\subsubsection{Correspondence Analysis}
 
 <<echo=false>>=
 dump("CA", file = "")
@@ -30,9 +93,9 @@ dump("CA", file = "")
 dump("CAeig", file="")
 @ 
 
-\section{Constrained Ordination}
+\subsection{Constrained Ordination}
 
-\subsection{Redundancy Analysis}
+\subsubsection{Redundancy Analysis}
 
 <<echo=false>>=
 dump("RDA", file="")
@@ -41,7 +104,7 @@ dump("RDA", file="")
 dump("pRDA", file="")
 @ 
 
-\subsection{Constrained Correspondence Analysis}
+\subsubsection{Constrained Correspondence Analysis}
 
 <<echo=false>>=
 dump("pCCA", file="")
