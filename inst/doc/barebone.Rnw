@@ -24,13 +24,14 @@ The simplest and numerically best method for PCA is equivalent to
 singular value decomposition (SVD) of the data matrix. The SVD is
 defined as
 \begin{eqnarray}
-  \vec{X} &= \vec{U \Sigma V'}\;,
+  \vec{Y} &= \vec{U \varSigma V'}\;,
 \end{eqnarray}
-where \vec{X} is the data matrix with centred columns, \vec{U} and
-\vec{V} are orthonormal matrices of row and column scores, and
-\vec{\Sigma} is a diagonal matrix of singular values which are square
-roots of eigen values $\vec{\Sigma = \Lambda}^{1/2}$. The
-implementation is straightforward:
+where \vec{\varSigma} is a diagonal matrix of singular values which
+are square roots of eigen values $\vec{\varSigma = \varLambda}^{1/2}$
+where \vec{Y} is the data matrix with centred columns, and \vec{U} and
+\vec{V} are orthonormal matrices of row and column scores, so that
+$\vec{U'U} = \vec{I}$ and $\vec{V'V} = \vec{I}$. The implementation is
+straightforward:
 <<echo=false>>=
 dump("PCA", file = "")
 @ 
@@ -39,7 +40,8 @@ optional argument is \texttt{scale} which defines how data is scaled
 before the analysis. In general, the standard R function
 \texttt{scale} transforms data as:
 \begin{equation}
-  x'_{ij} = \frac{x_{ij} - z_j}{s_j}\;,
+  \label{eq:PCAstand}
+  y'_{ij} = \frac{x_{ij} - z_j}{s_j}\;,
 \end{equation}
 where $z_j$ is the column centre, and $s_j$ is the column
 scale. Typically $z_j$ is the column average. With \texttt{scale =
@@ -52,7 +54,7 @@ but it will influence the absolute singular values
 \vec{\varSigma}---the proportions of individual elements $\sigma$ do
 not change.  With the basic analysis, the singular values decompose
 the original observed values, so that the sum of $\vec{\Sigma}^2$
-equals the sum of $\vec{X}^2$ for centred \vec{X}. If we want the
+equals the sum of $\vec{Y}^2$ for centred \vec{Y}. If we want the
 singular values to decompose the variance of the data, we can call the
 function as
 <<>>=
@@ -68,12 +70,13 @@ SVD is the preferred method of performing PCA, but earlier PCA was
 usually performed as eigen decomposition of symmetric crossproduct
 matrix: 
 \begin{equation}
-  \vec{X'X} = \vec{V \Lambda V'}\;,
+  \vec{Y'Y} = \vec{V \varLambda V'}\;,
 \end{equation}
-where \vec{\Lambda} is a diagonal matrix of eigenvalues. The row
+where \vec{\varLambda} is a diagonal matrix of eigenvalues. The row
 scores can be found as
 \begin{equation}
-  \vec{U} = \vec{X' V \Lambda}^{-1/2}\;.  
+  \label{eq:PCAu}
+  \vec{U} = \vec{Y' V \Lambda}^{-1/2}\;.  
 \end{equation}
 The row and column scores \vec{U} and \vec{V} are identical to those
 found in the previous methods (apart from possible sign reversals),
@@ -81,6 +84,61 @@ and $\vec{\Lambda} = \vec{\Sigma}^2$.
 <<echo=false>>=
 dump("PCAeig", file = "")
 @ 
+It is a common practice to omit multiplication with
+$\vec{\Lambda}^{-1/2}$ in (\ref{eq:PCAu}) or, equivalently, division
+by square roots of eigenvalues in \texttt{PCAeig}. In that case the
+row scores \vec{U} are not orthonormal, but the sum of squares of each
+column is proportional to square roots of eigenvalues. The equations
+are:
+\begin{eqnarray}
+  \label{eq:PCAurot}
+  \vec{U} &= \vec{Y' V}\\
+  \vec{U'U} &= \vec{\varLambda}^{1/2 \;.}
+\end{eqnarray}
+With this scaling, \vec{U} are called \emph{scores matrix}, and
+orthonormal \vec{V} are called \emph{loadings} or \emph{rotation
+  matrix}: Multiplication with (\ref{eq:PCAurot}) rotates the centred
+and scaled data matrix \vec{Y} to the principal components.
+
+Function \texttt{PCAeig} used crossproduct \vec{Y'Y} to get the
+symmetric matrix for eigen decomposition. Most PCA software use
+instead covariance matrix. This is equivalent of finding the
+crossproduct of centred \vec{Y} as $\vec{Y'Y} (n-1)^{-1}$. In this way
+the eigenvalues sum up to total variance. Similarly, the scaled
+solution is usually found using correlation matrix instead of explicit
+scaling of response data with (\ref{eq:PCAstand}) like in SVD.
+
+R functions are based on either of these algorithms:
+\begin{itemize}
+\item \texttt{prcomp} uses SVD, but it scales singular values by
+  $\sqrt{n-1}$, and calls them standard deviations
+  (\texttt{sdev}). Function also discards the orthonormal row scores
+  that SVD returned \vec{U}, and instead uses (\ref{eq:PCAurot}) to
+  find row scores scaled by eigenvalues (called \texttt{x}). The
+  orthonormal column scores \vec{V} are called rotation.  The scaled
+  solution is found by scaling the respone matrix with
+  (\ref{eq:PCAstand}).
+\item \texttt{princomp} uses eigen decomposition of covariance or
+  correlation matrices. The function uses biased estimate of variance,
+  so that the denominator is $n$ instead of $n-1$ of
+  \texttt{prcomp}. The function returns square roots of eigenvalues
+  and calls them standard deviations, just like in
+  \texttt{prcomp}. However, the reported eigenvalues differ from
+  \texttt{prcomp} which uses unbiased variance instead of biased
+  variance of \texttt{princomp}.  The function uses (\ref{eq:PCAurot})
+  to find row scores \vec{U}. The row scores are called
+  \texttt{scores} and orthonormal column scores are called
+  \texttt{loadings}.
+\item \texttt{rda} in vegan package uses SVD in its PCA. The function
+  returns singular values divided with $\sqrt{n-1}$ consinstently with
+  \texttt{prcomp}.  Function returns orthonormal \vec{U} and
+  \vec{V}. These are accessed via \texttt{scores} function in
+  functions like \texttt{plot} and \texttt{summary} and then they are
+  scaled. Vegan allows scaling either \vec{U} or \vec{V} by
+  eigenvalues. In addition, there is a general scaling constant that
+  tries to scale \vec{U} and \vec{V} so that they can be displayed in
+  the same plot with equal scaling.
+\end{itemize}
 
 \subsubsection{Principal Coordinates Analysis}
 
