@@ -12,10 +12,16 @@
 \usepackage{multicol}         % used for the two-column index
 \usepackage[bottom]{footmisc}% places footnotes at page bottom
 
+\usepackage{natbib}
+
 \usepackage{Sweave}  % Local copy
 \begin{document}
 
 \appendix
 \include{barebone}
 
+%%
+
+\bibliographystyle{spbasic}
+\bibliography{barebone}
 \end{document}

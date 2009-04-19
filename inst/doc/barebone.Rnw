@@ -92,8 +92,8 @@ column is proportional to square roots of eigenvalues. The equations
 are:
 \begin{eqnarray}
   \label{eq:PCAurot}
-  \vec{U} &= \vec{Y' V}\\
-  \vec{U'U} &= \vec{\varLambda}^{1/2 \;.}
+  \vec{U} &=& \vec{Y' V}\\
+  \vec{U'U} &=& \vec{\varLambda}^{1/2 \;.}
 \end{eqnarray}
 With this scaling, \vec{U} are called \emph{scores matrix}, and
 orthonormal \vec{V} are called \emph{loadings} or \emph{rotation
@@ -144,9 +144,68 @@ R functions are based on either of these algorithms:
 
 \subsubsection{Correspondence Analysis}
 
+Correspondence analysis (CA) is weighted PCA with Chi-square metrics
+\citep{Nishisato80,Greenacre84, GreenacreHastie87}. Just like with
+PCA, we can use SVD or eigen decomposition.
+
+The SVD algorithm is based on \citet{GreenacreHastie87}:
+\begin{enumerate}
+\item Let \vec{Y} be the data matrix standardized to unit sum, \vec{r}
+  row sums and \vec{c} column sums. Perform weighted Chi-square
+  transformation, where a typical element $\{\bar{y}_{ij}\} =
+  \vec{\bar Y}$ is
+  \begin{equation}
+    \bar{y}_{ij} = \frac{y_{ij} - r_i c_j}{\sqrt{r_i c_j}} \;.
+  \end{equation}
+  This is obviously Chi-square transformation because by usual
+  definition $\chi^2 = \sum \bar{y}_{ij}^2$.
+\item Perform SVD  $\vec{\bar Y} = \vec{U \varSigma
+    V'}$.
+\item De-weight the solution by
+  \begin{eqnarray}
+    \vec{U}&=& \vec{D_r}^{-1/2} \vec{U}\\
+    \vec{V}&=& \vec{D_c}^{-1/2} \vec{V} \;,
+  \end{eqnarray}
+  where $\vec{D_r}$ and $\vec{D_c}$ are diagonal matrices of row and
+  column weights.
+\end{enumerate}
+Direct implementation in R is:
 <<echo=false>>=
 dump("CA", file = "")
 @ 
+This returns a result from SVD with row and column scores (\vec{V} and \vec{U}) and the singular values which are square roots of eigen values.
+
+The eigen decomposition of a symmetric matrix is based on
+\citet{Nishisato80}: 
+\begin{enumerate}
+\item Let \vec{Y} be the response matrix standardized to unit sum and
+  \vec{r} and \vec{c} vectors of its row and column sums. Find the
+  weighted crossproduct matrix
+  \begin{equation}
+    \label{eq:CAmattrans}
+    \vec{\bar Y' \bar Y} = \vec{D_c}^{-1/2} \vec{Y'} \vec{D_r}^{-1} \vec{Y} \vec{D_c}^{-1/2} \;,
+  \end{equation}
+  where $\vec{D_c}$ and $\vec{D_r}$ are diagonal matrices of column
+  and row sums.
+\item Perform eigen decomposition:
+  \begin{equation}
+    \label{eq:CAeigen}
+    \vec{\bar Y' \bar Y} = \vec{V \varLambda V'} \;.
+  \end{equation}
+\item De-weight the column scores:
+  \begin{equation}
+    \vec{V} = \vec{D_c}^{-1/2} \vec{U} \;.
+  \end{equation}
+\item Find the row scores:
+  \begin{equation}
+    \vec{U} = \vec{D_r}^{-1} \vec{ Y V} \vec{\varLambda}^{-1/2} \;. 
+  \end{equation}
+\item The original transformation (\ref{eq:CAmattrans}) was not
+  centred, and the first eigen vector of (\ref{eq:CAeigen}) will be a
+  so called trivial solution thad does the centring. We wish to ignore
+  this first axis.
+\end{enumerate}
+Direct implementation in R is:
 <<echo=false>>=
 dump("CAeig", file="")
 @ 
