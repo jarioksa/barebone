@@ -179,7 +179,7 @@ R functions are based on either of these algorithms:
 \subsubsection{Correspondence Analysis}
 
 Correspondence analysis (CA) is weighted PCA with Chi-square metrics
-\citep{Nishisato80,Greenacre84, GreenacreHastie87}. Just like with
+\citep{Nishisato80,Greenacre84, GreenacreHastie87, Greenacre07}. Just like with
 PCA, we can use SVD or eigen decomposition.
 
 The SVD algorithm is based on \citet{GreenacreHastie87}:
@@ -322,12 +322,39 @@ Putting this all together gives the following algorithm:
   diagonal matrix of singular values \bSigma.
 \item Find the' ``WA scores'' \vec{W} with (\ref{eq:RDA.W}).
 \item Find the residual ordination of unconstrained component by
-  peforming SVD of $\vec{Y} - \vec{\hat Y} = \vec{U_u \bSigma_u V'_u}$.
+  peforming SVD of $\vec{Y} - \vec{\hat Y} = \vec{U_r \bSigma_r V'_r}$.
 \end{enumerate}
 Direct implementation is:
 <<echo=false>>=
 dump("RDA", file="")
 @
+
+\subsubsection{Partial Analysis}
+
+\citet{terBraak86} introduced partial RDA (pRDA) where the effects of
+some background variables, called \emph{covariates} are removed before
+analysing the interesting variables. This gives as the following
+sequence of models:
+\begin{eqnarray}
+  \vec{\hat Y_z} &=& \vec{Z} (\vec{Z' Z})^{-1} \vec{Z' Y} \\
+  \vec{\hat Y} &=& \vec{[X,Z]} (\vec{[X,Z]' [X,Z]})^{-1} \vec{[X,Z]' (Y- \hat Y_z)}\\
+  \vec{Y_r} &=& \vec{Y - \hat Y - \hat Y_z} \;,
+\end{eqnarray}
+where \vec{Z} are the centred model matrix of conditions partialled
+out, and \vec{[X,Z]} is combined model matrix formed by adding columns
+of constraints \vec{X} and conditions \vec{Z} together. It is crucial
+to combine conditions and constraints into same model matrix. Although
+the direct effect of conditions was removed in the first step, they
+may interact with with \vec{X}. The rule is that the residual
+component should be the same when \vec{Z} are used as conditions and
+\vec{X} as constrains, and when they both together are used as
+constraints. SVD of \vec{\hat Y} gives the constrained ordination, and
+the analysis of \vec{Y_r} gives the residual ordination.
+
+The following implementation allows omitting either conditions or
+constraints or both so that the function can be used for pRDA, RDA,
+pPCA (= PCA after removing background variables), or usual PCA. Vegan
+fucntion \texttt{rda} has the same general behaviour.
 <<echo=false>>=
 dump("pRDA", file="")
 @
