@@ -189,6 +189,7 @@ The SVD algorithm is based on \citet{GreenacreHastie87}:
   transformation, where a typical element $\{\bar{y}_{ij}\} =
   \vec{\bar Y}$ is
   \begin{equation}
+    \label{eq:CAstand}
     \bar{y}_{ij} = \frac{y_{ij} - r_i c_j}{\sqrt{r_i c_j}} \;.
   \end{equation}
   This is obviously Chi-square transformation because by usual
@@ -354,13 +355,35 @@ the analysis of \vec{Y_r} gives the residual ordination.
 The following implementation allows omitting either conditions or
 constraints or both so that the function can be used for pRDA, RDA,
 pPCA (= PCA after removing background variables), or usual PCA. Vegan
-fucntion \texttt{rda} has the same general behaviour.
+function \texttt{rda} has the same general behaviour. Although the
+model equations use matrix crossproducts and their inverses, the code
+uses QR decomposition.
 <<echo=false>>=
 dump("pRDA", file="")
 @
 
 \subsubsection{Constrained Correspondence Analysis}
 
+Constrained Correspondence Analysis or Canonical Correspondence
+Analysis is a parallel generalization of RDA. CA is weighted PCA with
+Chi-square metric, and we have to deal with weighting and
+deweighting. The following overview of the algorithm only discusses
+the constrained stage of CCA: partial and residual cases work
+similarly and in parallel to RDA.
+
+\begin{enumerate}
+\item Let \vec{Y} be the response data matrix standardized to unit
+  sum, \vec{r} and \vec{c} its row and column sums.
+\item Perform the Chi-square standardization of \vec{Y} matrix with
+  (\ref{eq:CAstand}).
+\item Centre model matrix \vec{X} using row weights \vec{r}, and then weight the centred \vec{X} as $\vec{D_r}^{1/2} \vec{X}$. 
+\item Find the QR decomposition of weight-centred and weighted \vec{X}
+  and with that the fitted values \vec{\hat Y}.
+\item Find SVD of $\vec{\hat Y} = \vec{U \bSigma V'}$.
+\item Find the WA scores for rows as $\vec{W} = \vec{D_r}^{-1/2} \vec{Y V} \bSigma^{-1}$. 
+\item De-weight column and row scores as $\vec{D_r}^{-1/2} \vec{U}$ and
+  $\vec{D_c}^{-1/2} \vec{V}$.
+\end{enumerate}
 <<echo=false>>=
 dump("pCCA", file="")
 @
