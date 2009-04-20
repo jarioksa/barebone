@@ -16,7 +16,7 @@ rspecies(n, spp, b = rep(1, spp), x = rep(1, n))
 \details{
   The linear model is simply \code{log.lambda = x %*% b}, and then the returned vector for one species is \code{rpois(n, exp(log.lambda))}, following a standard Poisson GLM.
 
-  The model matrix should be in the usual format, providing design variables for factors. The formula interface of the \link{\code{model.matrix}} function can be applied (see Examples).
+  The model matrix should be in the usual format, providing design variables for factors. The formula interface of the \code{\link{model.matrix}} function can be applied (see Examples).
 }
 \value{
   A community data matrix with \code{n} rows and \code{spp} columns, containing counts.
@@ -31,7 +31,7 @@ rspecies(10,2, list(c(2,1), c(1,2)), model.matrix(~x))
 ## intercept and 1 fixed factor
 x <- rep(0:1, each = 5)
 rspecies(10,2, list(c(1,-1), c(1,1)), model.matrix(~x))
-if (require(vegan) {
+if (require(vegan)) {
 ## number of sites and species
 n <- 1000
 spp <- 50
