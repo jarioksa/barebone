@@ -246,8 +246,85 @@ dump("CAeig", file="")
 
 \subsection{Constrained Ordination}
 
+In constrained ordination we have constraints or environmental
+variables that restrict the ordination. The two basic methods are
+Redundancy Analysis which is generalized from PCA, and Constrained
+Correspondence Analysis which is generalized from CA.
+
 \subsubsection{Redundancy Analysis}
 
+When \citet{terBraak86} introduced Constrained or Canonical
+Correspondence Analysis, he also suggested an algorithm with
+alternating regression and weighted averaging steps. In regression
+step, the site scores are found as linear combinations of constraints
+(environmental variables), and in weighted averaging step site scores
+are found from species scores. Redundancy analysis is similar but
+weighted averaging is replaced with weighted summation step
+\citep{terBraak86, Jongman87}. \citet{Palmer93} gives a remarkably
+clear survey of this algorithm.
+
+The \citet{terBraak86} algorithm is often taken as the definition of
+the method of constrained ordination. However, we can achieve the same
+results with some other algorithms. \citet{LegLeg98} showed that a
+better way of obtaining all constrained axes simultaneously is to
+analyse fitted values \vec{\hat Y} in:
+\begin{equation}
+  \label{eq:RDA.Yhat}
+  \vec{\hat Y} = \vec{X} (\vec{X'X})^{-1} \vec{X'Y} \;,
+\end{equation}
+where \vec{Y} is the centred response matrix, and \vec{X} is the
+centred model matrix of constraints (environmental variables).  The
+constrained ordination solution is SVD of \vec{\hat Y}.  The model may
+look tricky, but in fact it is a model of multiple linear regression
+\citet[e.g]{Mardia79}. In other words, Redundancy Analysis is a PCA of
+fitted values of a linear regression fitted separately for each column
+using all constraining variables simultaneously as independent
+variables.
+
+Direct implementation of (\ref{eq:RDA.Yhat}) would be simple in R:
+<<eval=false,results=hide>>=
+X <- scale(X, scale = FALSE)
+Y <- scale(Y, scale = FALSE)
+Yhat <- X %*% solve(t(X) %*% X) %*% t(X) %*% Y
+svd(Yhat)
+@ 
+However, this is not an optimal algorithm. The problem is
+(\ref{eq:RDA.Yhat}) involves matrix inversion (\texttt{solve()}), and
+the constraint matrix \vec{X} can be singular or nearly singular. With
+completely singular matrices, we may use generalized inverses such as
+function \texttt{ginv} in MASS \citep{MASS}, there is a real danger of
+loss of numerical precision. Similarly as in linear regression, it is
+better to use QR decomposition \citep{BlueBook}. 
+
+This approach finds the row scores \vec{U} that are linear
+combinations of constraints and the corresponding column scores
+\vec{V}.  The alternating regression and weighted sums algorithm also
+finds row scores \vec{W} that are weighted sums of column scores. In
+CA framework, they are weighted averages, and consequently called
+weighted average or WA scores \citep{Palmer93}. In direct regression
+approach they must be estimated separately as
+\begin{equation}
+  \label{eq:RDA.W}
+  \vec{W} = \vec{Y V \bSigma}^{-1}
+\end{equation}
+
+The analysis of \vec{\hat Y} gives the constrained part analysis. The
+analysis of the residuals $\vec{Y} - \vec{\hat Y}$ gives the residual
+unconstrained analysis.
+
+Putting this all together gives the following algorithm:
+\begin{enumerate}
+\item Let \vec{Y} be centred response matrix, and \vec{X} centred
+  model matrix of constraints, and find QR decomposition of \vec{X}
+  and with this matrix of fitted values \vec{\hat Y}.
+\item Perform SVD of $\vec{\hat Y} = \vec{U \bSigma V'}$ with
+  orthonormal column and row matrices \vec{U} and \vec{V}, and
+  diagonal matrix of singular values \bSigma.
+\item Find the' ``WA scores'' \vec{W} with (\ref{eq:RDA.W}).
+\item Find the residual ordination of unconstrained component by
+  peforming SVD of $\vec{Y} - \vec{\hat Y} = \vec{U_u \bSigma_u V'_u}$.
+\end{enumerate}
+Direct implementation is:
 <<echo=false>>=
 dump("RDA", file="")
 @
