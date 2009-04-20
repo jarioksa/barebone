@@ -16,6 +16,38 @@ Short intro: the scope of this Appendix.
 
 \subsection{Matrix Decomposition}
 
+\section{Simulating Simple Communities}
+
+Simulated communities are useful in studying the properties of the 
+different multivariate methods. It is easier to understand and interpret
+the results if we know the truth, 
+i.e.~assumptions and parameters under which the community was generated.
+
+The simplest thing one can do is to generate abundances for $i = 1,2,\ldots,n$
+sites and for $j = 1,2,\ldots,m$ independent species based on random 
+numbers from Poisson distribution:
+\begin{eqnarray}
+  Y_{ij} \sim Poisson(\lambda_{ij}}\\
+  log(\lambda_{ij}) = X_i \vec{\beta}_j\;,
+\end{eqnarray}
+This is done in
+<<echo=false>>=
+dump("rspecies", file = "")
+@
+This function returns an \texttt{n} by \texttt{spp} matrix of species abundances.
+The mean abundances are determined by \texttt{b} values of the intercept
+<<>>=
+rspecies(n=5, spp=2, b=c(2,4))
+@
+Other parameters can be added to model responses to environmental covariates
+(note that now species responses are described elementvise in \texttt{b})
+<<>>=
+x <- rnorm(10)
+rspecies(n=10, spp=2, b=list(c(2,1), c(1,2)), x=model.matrix(~x))
+@
+Covariates should be provided as model matrix, that can be done easily by the 
+formula interface of the \texttt{model.matrix} function.
+
 \section{R Programming of Ordination Methods}
 
 \subsection{Unconstrained Ordination}
