@@ -27,8 +27,8 @@ The simplest thing one can do is to generate abundances for $i = 1,2,\ldots,n$
 sites and for $j = 1,2,\ldots,m$ independent species based on random 
 numbers from Poisson distribution:
 \begin{eqnarray}
-  Y_{ij} \sim Poisson(\lambda_{ij}}\\
-  log(\lambda_{ij}) = X_i \vec{\beta}_j\;,
+  Y_{ij} &\sim &Poisson(\lambda_{ij})\\
+  \log(\lambda_{ij}) &=& X_i \vec{\beta}_j\;,
 \end{eqnarray}
 This is done in
 <<echo=false>>=
