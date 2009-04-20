@@ -1,9 +1,11 @@
+\newcommand{\bSigma}{\ensuremath{\boldsymbol{\varSigma}}}
+\newcommand{\bLambda}{\ensuremath{\boldsymbol{\varLambda}}}
 \renewenvironment{Schunk}{\small}{}
 <<echo=false,results=hide>>=
 require(barebone)
 require(vegan)
 options(width=66)
-@ 
+@
 \chapter{R Programming Interface to Multivariate Analysis}
 \label{sec:basicmethods}
 
@@ -24,68 +26,68 @@ The simplest and numerically best method for PCA is equivalent to
 singular value decomposition (SVD) of the data matrix. The SVD is
 defined as
 \begin{eqnarray}
-  \vec{Y} &= \vec{U \varSigma V'}\;,
+  \vec{Y} &= \vec{U \bSigma V'}\;,
 \end{eqnarray}
-where \vec{\varSigma} is a diagonal matrix of singular values which
-are square roots of eigen values $\vec{\varSigma = \varLambda}^{1/2}$
-where \vec{Y} is the data matrix with centred columns, and \vec{U} and
-\vec{V} are orthonormal matrices of row and column scores, so that
-$\vec{U'U} = \vec{I}$ and $\vec{V'V} = \vec{I}$. The implementation is
+where \vec{\bSigma} is a diagonal matrix of singular values which are
+square roots of eigen values $\vec{\bSigma = \bLambda}^{1/2}$, \vec{Y}
+is the data matrix with centred columns, and \vec{U} and \vec{V} are
+orthonormal matrices of row and column scores, so that $\vec{U'U} =
+\vec{I}$ and $\vec{V'V} = \vec{I}$. The implementation is
 straightforward:
 <<echo=false>>=
 dump("PCA", file = "")
-@ 
+@
 The function returns a result of the R function \texttt{svd}. The only
 optional argument is \texttt{scale} which defines how data is scaled
 before the analysis. In general, the standard R function
 \texttt{scale} transforms data as:
 \begin{equation}
   \label{eq:PCAstand}
-  y'_{ij} = \frac{x_{ij} - z_j}{s_j}\;,
+  y'_{ij} = \frac{y_{ij} - z_j}{s_j}\;,
 \end{equation}
 where $z_j$ is the column centre, and $s_j$ is the column
 scale. Typically $z_j$ is the column average. With \texttt{scale =
   FALSE}, $s=1$ (or no scaling), and with \texttt{scale = TRUE}, $s_j$
 are the variable (column) standard deviations. If data are scaled by
-column standard deviation, all columns will have equal weight.  The
-\texttt{scale} can also be a vector of given scales. Using a constant
+column standard deviations, all columns will have equal weight.  The
+\texttt{scale} can also be a vector of scales. Using a constant
 scale for all columns does not influence scores \vec{U} or \vec{V},
 but it will influence the absolute singular values
-\vec{\varSigma}---the proportions of individual elements $\sigma$ do
+\vec{\bSigma}---the proportions of individual elements $\sigma$ do
 not change.  With the basic analysis, the singular values decompose
-the original observed values, so that the sum of $\vec{\Sigma}^2$
+the original observed values, so that the sum of $\vec{\bSigma}^2$
 equals the sum of $\vec{Y}^2$ for centred \vec{Y}. If we want the
 singular values to decompose the variance of the data, we can call the
 function as
 <<>>=
 data(dune)
 str(PCA(dune, scale = rep(sqrt(nrow(dune)-1), ncol(dune))))
-@ 
+@
 This divides columns with $\sqrt{n-1}$ so that the sum of
-$\vec{\Sigma}^2$ equals the sum of variances of \vec{X}, and the
+$\vec{\bSigma}^2$ equals the sum of variances of \vec{X}, and the
 singular values are standard deviations of the axes.  Using scale
 $\sqrt{n}$ would give the same results with biased esimate of variance.
 
 SVD is the preferred method of performing PCA, but earlier PCA was
 usually performed as eigen decomposition of symmetric crossproduct
-matrix: 
+matrix:
 \begin{equation}
-  \vec{Y'Y} = \vec{V \varLambda V'}\;,
+  \vec{Y'Y} = \vec{V \bLambda V'}\;,
 \end{equation}
-where \vec{\varLambda} is a diagonal matrix of eigenvalues. The row
+where \vec{\bLambda} is a diagonal matrix of eigenvalues. The row
 scores can be found as
 \begin{equation}
   \label{eq:PCAu}
-  \vec{U} = \vec{Y' V \Lambda}^{-1/2}\;.  
+  \vec{U} = \vec{Y' V \bLambda}^{-1/2}\;.
 \end{equation}
 The row and column scores \vec{U} and \vec{V} are identical to those
 found in the previous methods (apart from possible sign reversals),
-and $\vec{\Lambda} = \vec{\Sigma}^2$. 
+and $\vec{\bLambda} = \vec{\bSigma}^2$.
 <<echo=false>>=
 dump("PCAeig", file = "")
-@ 
+@
 It is a common practice to omit multiplication with
-$\vec{\Lambda}^{-1/2}$ in (\ref{eq:PCAu}) or, equivalently, division
+$\vec{\bLambda}^{-1/2}$ in (\ref{eq:PCAu}) or, equivalently, division
 by square roots of eigenvalues in \texttt{PCAeig}. In that case the
 row scores \vec{U} are not orthonormal, but the sum of squares of each
 column is proportional to square roots of eigenvalues. The equations
@@ -93,7 +95,7 @@ are:
 \begin{eqnarray}
   \label{eq:PCAurot}
   \vec{U} &=& \vec{Y' V}\\
-  \vec{U'U} &=& \vec{\varLambda}^{1/2 \;.}
+  \vec{U'U} &=& \vec{\bLambda}^{1/2 \;.}
 \end{eqnarray}
 With this scaling, \vec{U} are called \emph{scores matrix}, and
 orthonormal \vec{V} are called \emph{loadings} or \emph{rotation
@@ -150,8 +152,8 @@ PCA, we can use SVD or eigen decomposition.
 
 The SVD algorithm is based on \citet{GreenacreHastie87}:
 \begin{enumerate}
-\item Let \vec{Y} be the data matrix standardized to unit sum, \vec{r}
-  row sums and \vec{c} column sums. Perform weighted Chi-square
+\item Let \vec{Y} be the data matrix standardized to unit sum, and \vec{r}
+  row sums and \vec{c} column sums of \vec{Y}. Perform weighted Chi-square
   transformation, where a typical element $\{\bar{y}_{ij}\} =
   \vec{\bar Y}$ is
   \begin{equation}
@@ -159,12 +161,12 @@ The SVD algorithm is based on \citet{GreenacreHastie87}:
   \end{equation}
   This is obviously Chi-square transformation because by usual
   definition $\chi^2 = \sum \bar{y}_{ij}^2$.
-\item Perform SVD  $\vec{\bar Y} = \vec{U \varSigma
-    V'}$.
+\item Perform SVD  $\vec{\bar Y} = \vec{\tilde{U} \bSigma
+    \tilde{V}'}$.
 \item De-weight the solution by
   \begin{eqnarray}
-    \vec{U}&=& \vec{D_r}^{-1/2} \vec{U}\\
-    \vec{V}&=& \vec{D_c}^{-1/2} \vec{V} \;,
+    \vec{U}&=& \vec{D_r}^{-1/2} \vec{\tilde{U}}\\
+    \vec{V}&=& \vec{D_c}^{-1/2} \vec{\tilde{V}} \;,
   \end{eqnarray}
   where $\vec{D_r}$ and $\vec{D_c}$ are diagonal matrices of row and
   column weights.
@@ -172,11 +174,11 @@ The SVD algorithm is based on \citet{GreenacreHastie87}:
 Direct implementation in R is:
 <<echo=false>>=
 dump("CA", file = "")
-@ 
+@
 This returns a result from SVD with row and column scores (\vec{V} and \vec{U}) and the singular values which are square roots of eigen values.
 
 The eigen decomposition of a symmetric matrix is based on
-\citet{Nishisato80}: 
+\citet{Nishisato80}:
 \begin{enumerate}
 \item Let \vec{Y} be the response matrix standardized to unit sum and
   \vec{r} and \vec{c} vectors of its row and column sums. Find the
@@ -190,25 +192,25 @@ The eigen decomposition of a symmetric matrix is based on
 \item Perform eigen decomposition:
   \begin{equation}
     \label{eq:CAeigen}
-    \vec{\bar Y' \bar Y} = \vec{V \varLambda V'} \;.
+    \vec{\bar Y' \bar Y} = \vec{\tilde V \bLambda \tilde V'} \;.
   \end{equation}
 \item De-weight the column scores:
   \begin{equation}
-    \vec{V} = \vec{D_c}^{-1/2} \vec{U} \;.
+    \vec{V} = \vec{D_c}^{-1/2} \vec{\tilde{V}} \;.
   \end{equation}
 \item Find the row scores:
   \begin{equation}
-    \vec{U} = \vec{D_r}^{-1} \vec{ Y V} \vec{\varLambda}^{-1/2} \;. 
+    \vec{U} = \vec{D_r}^{-1} \vec{ Y V} \vec{\bLambda}^{-1/2} \;.
   \end{equation}
 \item The original transformation (\ref{eq:CAmattrans}) was not
-  centred, and the first eigen vector of (\ref{eq:CAeigen}) will be a
-  so called trivial solution thad does the centring. We wish to ignore
-  this first axis.
+  centred, and the first eigen vector of (\ref{eq:CAeigen}) will be
+  so called trivial solution of $\lambda=1$ to do the centring omitted
+  earlier. We wish to discard this first trivial axis.
 \end{enumerate}
 Direct implementation in R is:
 <<echo=false>>=
 dump("CAeig", file="")
-@ 
+@
 
 \subsection{Constrained Ordination}
 
@@ -216,15 +218,15 @@ dump("CAeig", file="")
 
 <<echo=false>>=
 dump("RDA", file="")
-@ 
+@
 <<echo=false>>=
 dump("pRDA", file="")
-@ 
+@
 
 \subsubsection{Constrained Correspondence Analysis}
 
 <<echo=false>>=
 dump("pCCA", file="")
-@ 
+@
 
 \endinput
