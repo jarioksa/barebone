@@ -10,6 +10,7 @@ options(width=66)
 \label{sec:basicmethods}
 
 Short intro: the scope of this Appendix.
+
 \section{Matrix Algebra in R}
 
 \subsection{Basic Operations}
@@ -27,9 +28,12 @@ The simplest thing one can do is to generate abundances for $i = 1,2,\ldots,n$
 sites and for $j = 1,2,\ldots,m$ independent species based on random
 numbers from Poisson distribution:
 \begin{eqnarray}
-  Y_{ij} &\sim &\mathrm{Poisson}(\lambda_{ij})\\
-  \log(\lambda_{ij}) &=& X_i \vec{\beta}_j\;.
+  y_{ij} &\sim &\mathrm{Poisson}(\lambda_{ij})\\
+  \log(\lambda_{ij}) &=& x_i \beta_j\;,
 \end{eqnarray}
+where $x_i$ is the value the independent variable in row $i$, and
+$\beta_j$ is the regression coefficient for column (species) $j$.
+
 This is done in
 <<echo=false>>=
 dump("rspecies", file = "")
