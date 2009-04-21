@@ -1,23 +1,37 @@
 \name{rspecies}
 \alias{rspecies}
 \title{ Community Matrix Generation }
-\description{
-  The function generates a random community matrix, where species' abundances and environmental relationships can be specified. Abundances are modelled by individual linear models with log link and the Poisson distribution.
-}
+
+\description{ The function generates a random community matrix, where
+  species' abundances and environmental relationships can be
+  specified. Abundances are modelled by individual linear models with
+  log link and the Poisson distribution.  }
+
 \usage{
 rspecies(n, spp, b = rep(1, spp), x = rep(1, n))
 }
 \arguments{
   \item{n}{ The number of sites (rows) in the data matrix. }
   \item{spp}{ The number of species (columns) in the data matrix. }
-  \item{b}{ Coefficients to be used ofr determining species' environmental relationships. It can be a vector of length \code{spp} if only intercepts are provided, or a list with \code{spp} elements (one for each species, each element must be of the same length \eqn{p} for the same covariates, including the intercept). }
-  \item{x}{ A vector (if only intercepts are provided) or a model matrix with \code{n} rows and \eqn{p} columns.  }
+  \item{b}{ Coefficients to be used for determining species'
+    environmental relationships. They can be a vector of length \code{spp}
+    if only intercepts are provided, or a list with \code{spp} elements
+    (one for each species, each element must be of the same length \eqn{p}
+    for the same covariates, including the intercept). }
+  \item{x}{ A vector (if only intercepts are provided) or a model matrix
+    with \code{n} rows and \eqn{p} columns.  }
 }
-\details{
-  The linear model is simply \code{log.lambda = x %*% b}, and then the returned vector for one species is \code{rpois(n, exp(log.lambda))}, following a standard Poisson GLM.
 
-  The model matrix should be in the usual format, providing design variables for factors. The formula interface of the \code{\link{model.matrix}} function can be applied (see Examples).
+
+\details{ The linear model is simply \code{log.lambda = x \%*\% b}, and
+  then the returned vector for one species is \code{rpois(n,
+  exp(log.lambda))}, following a standard Poisson GLM.
+
+  The model matrix should be in the usual format, providing design
+  variables for factors. The formula interface of the
+ \code{\link{model.matrix}} function can be applied (see Examples).
 }
+
 \value{
   A community data matrix with \code{n} rows and \code{spp} columns, containing counts.
 }
