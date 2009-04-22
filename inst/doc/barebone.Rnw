@@ -194,7 +194,7 @@ distances, and use PCoA with other distances or dissimilarities that
 we regard as more appropriate for our data.
 
 The algorithm follows \citet{Mardia79}:
-\begin{itemize}
+\begin{enumerate}
   \item Centre squared distances by rows and by columns
     \begin{equation}
       \vec{M} = \vec{H D}^2 \vec{H}\;,
@@ -211,7 +211,7 @@ The algorithm follows \citet{Mardia79}:
     \texttt{dblcen} which is the choice in real applications.
   \item Now matrix $-\vec{M}/2$ presents the crossproducts and sum of
     squares and is submitted to spectral decomposition.
-\end{itemize}
+\end{enumerate}
 <<echo=false>>=
 dump("PCoA", file = "")
 @ 
@@ -231,6 +231,55 @@ This algorithm is used in standard R function \texttt{cmdscale}.
 Functions like \texttt{adonis} and \texttt{betadisper} also use
 basically the same kind of translation of dissimilarities to
 crossproducts.
+
+\subsubsection{Weighted Principal Coordinate Analysis}
+
+Any eigenvector method can be weighted, but here we only demonstrate
+the weigthing for PCoA.  Similar principles also hold for PCA or RDA
+(and CA always is inherently weighted).  Integer weights may only tell
+how many copies of a row we have in our data set: weight 1 means a
+unique row, and weight 2 indicates a duplicated row. However, the
+weights can also be non-integer.
+
+Weighting reduces or increases the influence of a point with respect
+to other points. The influence of the point in unweighted ordination
+is given by its distance from the centroid of the space: far points
+have a higher moment. Reducing a weight means moving a point closer to
+the centroid, and increasing the weight moving point further away, but
+keeping the angles between points unchanged. After weigthing, we
+perform the rotation via SVD or spectral decomposition. After rotation
+we have to recover the original configuration and move the points back
+to their original positions: weighting influences the rotation but not
+the full space.  The stages of weighted ordinations are weigthing,
+rotation, and de-weigthing.
+
+Weighted PCoA has the following stages:
+\begin{enumerate}
+\item Let \vec{D} be a $n \times n$ distance matrix, and \vec{w} a
+  corresponding weight vector of length $n$.  Centre first rows and
+  then columns of this matrix using weighted centres with weights
+  $\vec{w}^{1/2}$ to get a double centred matrix \vec{\bar{D}}.
+\item Weight this matrix 
+  \begin{equation}
+    \vec{M} = \vec{W}^{1/2} \vec{\bar D} \vec{W}^{1/2}\;, 
+  \end{equation}
+  where \vec{W} is a diagonal matrix of \vec{w}.
+\item Perform the spectral decomposition
+  \begin{equation}
+    -\vec{M}/2 = \vec{\tilde U} \bLambda \vec{\tilde U'}\;,
+  \end{equation}
+  where \vec{\tilde U} are the orthonormal row scores, and
+  \vec{\bLambda} is a diagonal matrix of eigenvalues.
+\item De-weight or remove the weights
+  \begin{equation}
+    \vec{U} = \vec{W}^{-1/2} \vec{\tilde U}\;.
+  \end{equation}
+\end{enumerate}
+
+The implementation is straighforward:
+<<echo=false>>=
+dump("wPCoA", file = "")
+@ 
 
 \subsubsection{Correspondence Analysis}
 
