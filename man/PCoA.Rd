@@ -1,0 +1,43 @@
+\name{PCoA}
+\alias{PCoA}
+
+\title{ Principal Coordinates Analysis }
+\description{
+ Principal Coordinates Analysis (PCoA) is also known as metric
+ or classic multidimensional scaling. 
+}
+\usage{
+PCoA(D)
+}
+
+\arguments{
+  \item{D}{Dissimilarity or distance structure. This either should
+   inherit from \code{\link{dist}} or have a similar 
+   \code{\link{as.matrix}} method producing a symmetric matrix.}
+}
+\details{
+  Function does not scale the result the vectors by eigenvalues, and
+  returns both zero and negative eigenvalues and associate axes.
+}
+\value{
+  Function returns an object from \code{\link{eigen}}.
+  \item{values}{Eigenvalues}
+  \item{vectors}{Orthonormal row scores.}
+}
+\references{
+  Gower, J. C. (1966)  
+  Some distance properties of latent root and vector 
+  methods used in multivariate analysis.  
+  \emph{Biometrika} \bold{53}, 325--328.
+
+  Mardia, K. V., Kent, J. T. and Bibby, J. M. (1979).  Chapter 14 of
+  \emph{Multivariate Analysis}, London: Academic Press.
+}
+
+
+\author{Jari Oksanen }
+
+\seealso{\code{\link{cmdscale}}, \code{\link{PCAeig}}. }
+
+\keyword{ multivariate }
+
