@@ -180,7 +180,7 @@ R functions are based on either of these algorithms:
   ``Design decisions'' which explains the scaling alternatives.
 \end{itemize}
 
-\subsubsection{Principal Coordinates Analysis}
+\subsubsection{Principal Coordinate Analysis}
 
 Principal Coordinates Analysis (PCoA) is closely related to PCA, in
 particular to PCA performed through spectral decomposition (function
@@ -204,28 +204,28 @@ The algorithm follows \citet{Mardia79}:
     where $n$ in the number of rows and columns of square \vec{D},
     \vec{I} is an identity matrix, and \vec{1} is a column vector of
     ones.  The centring matrix gives a mathematically nice
-    presentation of centring, but in practice we use lighter
-    procedures. The example code below uses just the standard
-    \texttt{scale} function, and the standard R implementation of the
-    method (function \texttt{cmdscale}) has a fast C routine
-    \texttt{dblcen} which is the choice in real applications.
-  \item Now matrix $-\vec{M}/2$ presents the crossproducts and sum of
+    presentation of centring, but in practice we use numerically more
+    stable procedures. The example code below uses \texttt{scale}
+    function, and the standard R implementation of the method
+    (function \texttt{cmdscale}) has a fast C routine \texttt{dblcen}
+    which is the choice in real applications.
+  \item Matrix $-\vec{M}/2$ presents the crossproducts and sum of
     squares and is submitted to spectral decomposition.
 \end{enumerate}
 <<echo=false>>=
 dump("PCoA", file = "")
-@ 
+@
 
 The function returns all eigenvalues and orthonormal row scores. Due
-to centring, there are at most $n-1$. If \texttt{D} was non-Euclidean,
-semimetric index, there will also be negative eigenvalues, so that the
-number of positive eigenvalues is even lower than $n-1$. Neither zero
-nor negative eigenvalues are removed in the current function, nor are
-any warnings issued. If we wish to scale the row scores by
-eigenvalues, we can only use the negative ones. If we want to
-reconstruct the original distance matrix from its decomposition, we
-must substract the crossproducts of negative eigenvalues from the
-crossproduct of positive ones.
+to centring, there are at most $n-1$ positive eigenvalues. If \vec{D}
+was non-Euclidean, semimetric index, there will also be negative
+eigenvalues, so that the number of positive eigenvalues is even lower
+than $n-1$. Neither zero nor negative eigenvalues are removed in the
+current function, nor are any warnings issued. If we wish to scale the
+row scores by eigenvalues, we can only use the negative ones. If we
+want to reconstruct the original distance matrix from its
+decomposition, we must substract the crossproducts of negative
+eigenvalues from the crossproduct of positive ones.
 
 This algorithm is used in standard R function \texttt{cmdscale}.
 Functions like \texttt{adonis} and \texttt{betadisper} also use
@@ -245,8 +245,8 @@ Weighting reduces or increases the influence of a point with respect
 to other points. The influence of the point in unweighted ordination
 is given by its distance from the centroid of the space: far points
 have a higher moment. Reducing a weight means moving a point closer to
-the centroid, and increasing the weight moving point further away, but
-keeping the angles between points unchanged. After weigthing, we
+the centroid, and increasing the weight moving the point further away.
+After weigthing, we
 perform the rotation via SVD or spectral decomposition. After rotation
 we have to recover the original configuration and move the points back
 to their original positions: weighting influences the rotation but not
@@ -259,18 +259,18 @@ Weighted PCoA has the following stages:
   corresponding weight vector of length $n$.  Centre first rows and
   then columns of this matrix using weighted centres with weights
   $\vec{w}^{1/2}$ to get a double centred matrix \vec{\bar{D}}.
-\item Weight this matrix 
+\item Weight this matrix
   \begin{equation}
-    \vec{M} = \vec{W}^{1/2} \vec{\bar D} \vec{W}^{1/2}\;, 
+    \vec{M} = \vec{W}^{1/2} \vec{\bar D} \vec{W}^{1/2}\;,
   \end{equation}
-  where \vec{W} is a diagonal matrix of \vec{w}.
+  where \vec{W} is a diagonal matrix of weights \vec{w}.
 \item Perform the spectral decomposition
   \begin{equation}
     -\vec{M}/2 = \vec{\tilde U} \bLambda \vec{\tilde U'}\;,
   \end{equation}
   where \vec{\tilde U} are the orthonormal row scores, and
   \vec{\bLambda} is a diagonal matrix of eigenvalues.
-\item De-weight or remove the weights
+\item De-weight or remove the weights by division of row scores
   \begin{equation}
     \vec{U} = \vec{W}^{-1/2} \vec{\tilde U}\;.
   \end{equation}
@@ -279,7 +279,8 @@ Weighted PCoA has the following stages:
 The implementation is straighforward:
 <<echo=false>>=
 dump("wPCoA", file = "")
-@ 
+@
+Function \texttt{wcmdscale} in vegan follows this algorithm.
 
 \subsubsection{Correspondence Analysis}
 
@@ -506,15 +507,15 @@ by the square roots of the eigenvalues so that they correctly reflect
 the importance of each dimension, and the scores correctly estimate
 the variance of the data. Therefore we take only the positive
 eigenvalues. In non-Euclidean, semimetric indices this means that
-there are typically fewer than $n-1$ row vectors for $n$ rows, and the
-eigenvalue scaled vectors do not exactly estimate the original
+there are typically fewer than $n-1$ principal coordinate vectors for
+$n$ rows, and the solution does not exactly estimate the original
 variation in the data.
 
 The implementation calls \texttt{PCoA} and \texttt{dbRDA} so that this
 allows partial analysis:
 <<echo=false>>=
 dump("dbRDA", file = "")
-@ 
+@
 
 The function returns the \texttt{RDA} result object. However, the
 scores do not have quite their usual meaning: columns are not species,
@@ -524,4 +525,6 @@ memory of species that were used in its calculation.  If Euclidean
 distances were used, the results are similar to RDA (apart from
 possible sign reversals) except for scores \vec{V} in constrained and
 residual unconstrained components.
+
+Function \texttt{capscale} in vegan follows this algorithm.
 \endinput
