@@ -40,11 +40,13 @@ dump("rspecies", file = "")
 @
 This function returns an \texttt{n} by \texttt{spp} matrix of species abundances.
 The mean abundances are determined by \texttt{b} values of the intercept
+
 <<>>=
 rspecies(n=5, spp=2, b=c(2,4))
 @
 Other parameters can be added to model responses to environmental covariates
 (note that now species responses are described elementwise in \texttt{b})
+
 <<>>=
 x <- rnorm(10)
 rspecies(n=10, spp=2, b=list(c(2,1), c(1,2)), x=model.matrix(~x))
@@ -70,6 +72,7 @@ is the data matrix with centred columns, and \vec{U} and \vec{V} are
 orthonormal matrices of row and column scores, so that $\vec{U'U} =
 \vec{I}$ and $\vec{V'V} = \vec{I}$. The implementation is
 straightforward:
+
 <<echo=false>>=
 dump("PCA", file = "")
 @
@@ -95,6 +98,7 @@ the original observed values, so that the sum of $\vec{\bSigma}^2$
 equals the sum of $\vec{Y}^2$ for centred \vec{Y}. If we want the
 singular values to decompose the variance of the data, we can call the
 function as
+
 <<>>=
 data(dune)
 str(PCA(dune, scale = rep(sqrt(nrow(dune)-1), ncol(dune))))
@@ -119,6 +123,7 @@ scores can be found as
 The row and column scores \vec{U} and \vec{V} are identical to those
 found in the previous methods (apart from possible sign reversals),
 and $\vec{\bLambda} = \vec{\bSigma}^2$.
+
 <<echo=false>>=
 dump("PCAeig", file = "")
 @
@@ -212,6 +217,7 @@ The algorithm follows \citet{Mardia79}:
   \item Matrix $-\vec{M}/2$ presents the crossproducts and sum of
     squares and is submitted to spectral decomposition.
 \end{enumerate}
+
 <<echo=false>>=
 dump("PCoA", file = "")
 @
@@ -390,6 +396,7 @@ all constraints as predictors, and then performing PCA for the fitted
 values of this regression.
 
 Direct implementation of (\ref{eq:RDA.Yhat}) would be simple in R:
+
 <<eval=false,results=hide>>=
 X <- scale(X, scale = FALSE)
 Y <- scale(Y, scale = FALSE)
@@ -466,6 +473,7 @@ pPCA (= PCA after removing background variables), or usual PCA. Vegan
 function \texttt{rda} has the same general behaviour. Although the
 model equations use matrix crossproducts and their inverses, the code
 uses QR decomposition.
+
 <<echo=false>>=
 dump("pRDA", file="")
 @
@@ -493,6 +501,7 @@ similarly and in parallel to RDA.
 \item De-weight column and row scores as $\vec{D_r}^{-1/2} \vec{U}$ and
   $\vec{D_c}^{-1/2} \vec{V}$.
 \end{enumerate}
+
 <<echo=false>>=
 dump("pCCA", file="")
 @
@@ -513,6 +522,7 @@ variation in the data.
 
 The implementation calls \texttt{PCoA} and \texttt{dbRDA} so that this
 allows partial analysis:
+
 <<echo=false>>=
 dump("dbRDA", file = "")
 @
