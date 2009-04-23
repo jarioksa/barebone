@@ -310,11 +310,11 @@ The SVD algorithm is based on \citet{GreenacreHastie87}:
     \tilde{V}'}$.
 \item De-weight the solution by
   \begin{eqnarray}
-    \vec{U}&=& \vec{D_r}^{-1/2} \vec{\tilde{U}}\\
-    \vec{V}&=& \vec{D_c}^{-1/2} \vec{\tilde{V}} \;,
+    \vec{U}&=& \vec{R}^{-1/2} \vec{\tilde{U}}\\
+    \vec{V}&=& \vec{C}^{-1/2} \vec{\tilde{V}} \;,
   \end{eqnarray}
-  where $\vec{D_r}$ and $\vec{D_c}$ are diagonal matrices of row and
-  column weights.
+  where $\vec{R}$ and $\vec{C}$ are diagonal matrices of row and
+  column weights \vec{r} and \vec{c}.
 \end{enumerate}
 Direct implementation in R is:
 <<echo=false>>=
@@ -331,9 +331,9 @@ The spectral decomposition of a symmetric matrix follows
   weighted crossproduct matrix
   \begin{equation}
     \label{eq:CAmattrans}
-    \vec{\bar Y' \bar Y} = \vec{D_c}^{-1/2} \vec{Y'} \vec{D_r}^{-1} \vec{Y} \vec{D_c}^{-1/2} \;,
+    \vec{\bar Y' \bar Y} = \vec{C}^{-1/2} \vec{Y'} \vec{R}^{-1} \vec{Y} \vec{C}^{-1/2} \;,
   \end{equation}
-  where $\vec{D_c}$ and $\vec{D_r}$ are diagonal matrices of column
+  where $\vec{C}$ and $\vec{R}$ are diagonal matrices of column
   and row sums.
 \item Perform spectral decomposition:
   \begin{equation}
@@ -342,11 +342,11 @@ The spectral decomposition of a symmetric matrix follows
   \end{equation}
 \item De-weight the column scores:
   \begin{equation}
-    \vec{V} = \vec{D_c}^{-1/2} \vec{\tilde{V}} \;.
+    \vec{V} = \vec{C}^{-1/2} \vec{\tilde{V}} \;.
   \end{equation}
 \item Find the row scores:
   \begin{equation}
-    \vec{U} = \vec{D_r}^{-1} \vec{ Y V} \vec{\bLambda}^{-1/2} \;.
+    \vec{U} = \vec{R}^{-1} \vec{ Y V} \vec{\bLambda}^{-1/2} \;.
   \end{equation}
 \item The original transformation (\ref{eq:CAmattrans}) was not
   centred, and the first eigen vector of (\ref{eq:CAeigen}) will be
@@ -493,13 +493,17 @@ similarly and in parallel to RDA.
   sum, \vec{r} and \vec{c} its row and column sums.
 \item Perform the Chi-square standardization of \vec{Y} matrix with
   (\ref{eq:CAstand}).
-\item Centre model matrix \vec{X} using row weights \vec{r}, and then weight the centred \vec{X} as $\vec{D_r}^{1/2} \vec{X}$.
+\item Centre model matrix \vec{X} using row weights \vec{r}, and then
+  weight the centred \vec{X} as $\vec{R}^{1/2} \vec{X}$, where \vec{R}
+  is a diagonal matrix of \vec{r}.
 \item Find the QR decomposition of weight-centred and weighted \vec{X}
   and with that the fitted values \vec{\hat Y}.
 \item Find SVD of $\vec{\hat Y} = \vec{U \bSigma V'}$.
-\item Find the WA scores for rows as $\vec{W} = \vec{D_r}^{-1/2} \vec{Y V} \bSigma^{-1}$.
-\item De-weight column and row scores as $\vec{D_r}^{-1/2} \vec{U}$ and
-  $\vec{D_c}^{-1/2} \vec{V}$.
+\item Find the WA scores for rows as $\vec{W} = \vec{R}^{-1/2}
+  \vec{Y V} \bSigma^{-1}$.
+\item De-weight column and row scores as $\vec{R}^{-1/2} \vec{U}$ and
+  $\vec{C}^{-1/2} \vec{V}$, where \vec{C} is a diagonal matrix of
+  \vec{c}.
 \end{enumerate}
 
 <<echo=false>>=
