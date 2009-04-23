@@ -222,16 +222,16 @@ The algorithm follows \citet{Mardia79}:
 dump("PCoA", file = "")
 @
 
-The function returns all eigenvalues and orthonormal row scores. Due
-to centring, there are at most $n-1$ positive eigenvalues. If \vec{D}
-was non-Euclidean, semimetric index, there will also be negative
-eigenvalues, so that the number of positive eigenvalues is even lower
-than $n-1$. Neither zero nor negative eigenvalues are removed in the
-current function, nor are any warnings issued. If we wish to scale the
-row scores by eigenvalues, we can only use the negative ones. If we
-want to reconstruct the original distance matrix from its
-decomposition, we must substract the crossproducts of negative
-eigenvalues from the crossproduct of positive ones.
+The function returns all non-zero eigenvalues and orthonormal row
+scores. Due to centring, there are at most $n-1$ positive
+eigenvalues. If \vec{D} was non-Euclidean, semimetric index, there
+will also be negative eigenvalues, so that the number of positive
+eigenvalues is even lower than $n-1$. Negative eigenvalues are not
+removed in the current function, nor are any warnings issued. If we
+wish to scale the row scores by eigenvalues, we can only use the
+positive ones. If we want to reconstruct the original distance matrix
+from its decomposition, we must substract the crossproducts of
+negative eigenvectors from the crossproduct of positive ones.
 
 This algorithm is used in standard R function \texttt{cmdscale}.
 Functions like \texttt{adonis} and \texttt{betadisper} also use

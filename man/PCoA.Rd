@@ -17,7 +17,8 @@ PCoA(D)
 }
 \details{
   Function does not scale the result the vectors by eigenvalues, and
-  returns both zero and negative eigenvalues and associate axes.
+  returns all non-zero eigenvalues, including negative eigenvalues,
+  and associated axes.
 }
 \value{
   Function returns an object from \code{\link{eigen}}.
