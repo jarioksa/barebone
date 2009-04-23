@@ -26,30 +26,30 @@ i.e.~assumptions and parameters under which the community was generated.
 
 The simplest thing one can do is to generate abundances for $i = 1,2,\ldots,n$
 sites and for $j = 1,2,\ldots,m$ independent species based on random
-numbers from Poisson distribution:
+numbers from Poisson distribution
 \begin{eqnarray}
   y_{ij} &\sim &\mathrm{Poisson}(\lambda_{ij})\\
   \log(\lambda_{ij}) &=& x_i \beta_j\;,
 \end{eqnarray}
-where $x_i$ is the value the independent variable in row $i$, and
-$\beta_j$ is the regression coefficient for column (species) $j$.
+where $x_i$ is the value of the independent variable in row $i$, and
+$\beta_j$ is the regression coefficient for a column (species) $j$.
 
 This is done in
 <<echo=false>>=
 dump("rspecies", file = "")
 @
-This function returns an \texttt{n} by \texttt{spp} matrix of species abundances.
-The mean abundances are determined by \texttt{b} values of the intercept
+The function returns an \texttt{n} by \texttt{spp} matrix of species abundances.
+The mean abundances are determined by \texttt{b} ($\beta_j$) values of the intercepts
 
 <<>>=
-rspecies(n=5, spp=2, b=c(2,4))
+rspecies(n = 5, spp = 2, b = c(2,4))
 @
 Other parameters can be added to model responses to environmental covariates
 (note that now species responses are described elementwise in \texttt{b})
 
 <<>>=
 x <- rnorm(10)
-rspecies(n=10, spp=2, b=list(c(2,1), c(1,2)), x=model.matrix(~x))
+rspecies(n = 10, spp = 2, b = list(c(2, 1), c(1, 2)), x = model.matrix(~x))
 @
 Covariates should be provided as model matrix, that can be done easily by the
 formula interface of the \texttt{model.matrix} function.
