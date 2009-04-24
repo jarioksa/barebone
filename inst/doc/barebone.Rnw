@@ -358,6 +358,40 @@ Direct implementation in R is:
 dump("CAeig", file="")
 @
 
+Correspondence Analysis is a distance-based method, like all other
+eigenvector methods. There are two differences to PCA: Correspondence
+analysis preserves Chi-square distances while PCA preserves Euclidean
+distance, and CA is weighted while PCA is unweighted.  Chi-square
+distances are Euclidean distances of Chi-square standardized data
+\citep{LegGall01}. The following algorithm combines Chi-square
+distances with weighted Principal Coordinate Analysis
+(\texttt{wPCoA}):
+\begin{enumerate}
+\item Let \vec{Y} be the response matrix standardized to unit sum,
+  \vec{r} and \vec{c} its row and column sums with corresponging
+  diagonal matrices \vec{R} and \vec{C}. Calculate the Chi-square
+  transformed data \vec{\bar Y}:
+  \begin{equation}
+    \vec{\bar Y} = \vec{R}^{-1} \vec{Y} \vec{C}^{-1/2} \;.
+  \end{equation}
+\item Calculate the Euclidean distances of \vec{\bar Y}. They will be
+  the Chi-square distances.
+\item Find the weighted PCoA of these distances using \vec{r} as
+  weights. This will have the eigenvalues \vec{\bLambda} and weighted
+  orthonormal row scores \vec{U}.
+\item The column scores \vec{V} cannot be found directly from the
+  distance matrix, but they can be found with \vec{Y} or \vec{\bar Y}:
+  \begin{eqnarray}
+    \vec{V} &=& \vec{C}^{-1} \vec{Y' U} \bLambda^{-1/2}\\
+    &=& \vec{C}^{-1/2} \vec{\bar{Y}' R U} \bLambda^{-1/2}\;.
+  \end{eqnarray}
+\end{enumerate}
+The code below uses the firs alternative:
+
+<<echo=false>>=
+dump("CAdist", file="")
+@ 
+
 \subsection{Constrained Ordination}
 
 In constrained ordination we have constraints or environmental
