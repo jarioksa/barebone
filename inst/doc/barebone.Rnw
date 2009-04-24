@@ -547,7 +547,8 @@ dump("pCCA", file="")
 \subsubsection{Distance-based Redundancy Analysis}
 
 Distance-based Redundancy Analysis (dbRDA) is related to RDA like PCoA
-is related to PCA. The dependent data will be a matrix of distances or
+is related to PCA \citep{LegAnderson99}. 
+The dependent data will be a matrix of distances or
 dissimilarities, but we find the row scores with PCoA and use them as
 a dependent data in the ordinary RDA.  The row scores must be scaled
 by the square roots of the eigenvalues so that they correctly reflect

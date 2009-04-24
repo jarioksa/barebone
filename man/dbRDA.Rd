@@ -17,9 +17,16 @@ dbRDA(D, X, Z)
   \item{Z}{ Model matrix of conditions (can be missing). }
 }
 
+\references{
+  Legendre, P. & Anderson, M.J. (1999). Canonical analysis of
+  principal coordinates: a useful method of constrained ordination
+  for ecology. \emph{Ecology} 84, 511--525.
+}
+
 \value{
   The function returns the same object as \code{\link{dbRDA}}.
 }
+
 
 \author{ Jari Oksanen }
 
