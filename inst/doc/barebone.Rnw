@@ -17,6 +17,185 @@ Short intro: the scope of this Appendix.
 
 \subsection{Matrix Decomposition}
 
+R provides powerful tools of high level commands to work with matrices
+based on LAPACK and LINPACK libraries \citep{LAPACK, LINPACK}. The
+ordination methods can be very effectively programmed with these
+high-level functions without knowledge of details of implementation
+\citep[but see]{BlueBook}. It is possible to write very compact code
+which also is numerically accurate and fast as it uses reliable and
+optimized libraries for numerical methods.
+
+The basic ordination methods are all based on simple commands of
+matrix decomposition. Matrix decomposition is a powerful tool which
+expresses the matrices in other forms which have some optimal
+properties. The original data can be recovered from decomposition so
+that nothing is destroyed, nothing is introduces, but things only are
+expressed in a new way.  For instance, Principal Component Analysis
+(PCA) is just singular value decomposition (SVD) with another name.
+
+\subsubsection{Singular Value Decomposition}
+
+Singular value decomposition of $n \times m$ matrix\vec{X} is
+\begin{equation}
+  \label{eq:svd}
+  \vec{X} = \vec{U \bSigma V'}\;,
+\end{equation}
+where \vec{U} and \vec{V} are orthonormal matrices and \vec{\bSigma}
+is a diagonal matrix singular values.  Orthonormality means that all
+columns of \vec{U} and \vec{V} are orthogonal, and their sum of
+squares is 1. In matrix terms $\vec{U'U} = \vec{I}$ and $\vec{V'V} =
+\vec{I}$, or in plain English, all columns are independent and they
+are equally important. The importance of axes is conveyed in singular
+values. The singular values are ordered by their magnitude, and of an
+$n \times m$ matrix there may be $r = \min(n, m)$ above zero singular
+values. The number of the above zero singular values is the rank of
+the matrix. The rank of the matrix is the number of independent
+components needed to recover the original data. Basically, the rank is
+equal to the number of observation (rows) $n$, but it the number of
+variables $m < n$ the rank is reduced to $m$. If the data are
+standardized (like usually) the rank may be further reduced. For a
+centred data, the maximum rank is $\min(n-1, m)$ because the mean is
+fixed. If some of the variables can be expressed as linear
+combinations of other varialbes, the rank is reduced still further,
+and we speak of reduced or deficit rank modes.
+
+The original data can be recovered from the data. The matrix equation
+(\ref{eq:svd}) can be expressed in indexed form as:
+\begin{equation}
+  \label{eq:svdopen}
+  x_{ij} = \sum_{k=1}^r u_{ik} \sigma_{k} v_{jk} \;.
+\end{equation}
+The singular values are ordered $\sigma_1 \geq \sigma_2 \geq \dots
+\geq \sigma_r$ so that the first columns of \vec{U} and \vec{V} are
+expressed most heavily in (\ref{eq:svdopen}). The first columns give a
+low-rank estimate of least squares of the original data.
+
+Function \texttt{svd} performs the singular value decomposition. In
+the following example we first centre the data before its
+decomposition:
+
+<<>>=
+data(dune)
+str(svd(scale(dune, scale=FALSE)))
+@ 
+The function returns singular values in vector \texttt{d} and row
+and column scores in matrices \texttt{v} and \texttt{u}.
+
+\subsection{Spectral Decomposition}
+
+Spectral decomposition, also known as eigen decomposition, decomposes a symmetric matrix. Ecological data matrices are nonsymmetric, and spectral decomposition is used to decompose their symmetric crossproducts:
+\begin{equation}
+  \label{eq:eigen}
+  \vec{X'X} = \vec{V \bLambda V'}\;.
+\end{equation}
+Here \vec{V} are orthonormal scores which are identical to \vec{V} in
+(\ref{eq:svd}) (apart from possible sign reversals), and
+\vec{\bLambda} is a diagonal matrix of eigenvalues which are square of
+singular values $\vec{\bLambda} = \vec{\bSigma}^2$. There are no row
+scores, but they can be found indirectly after the analysis.
+
+Eigen decomposition appears like being a more complicated and indirect
+way of singular value decomposition. However, it is computationally
+somewhat lighter and easier to implement, and originally it was the
+standard method of matrix decomposition.  Therefore the ordination
+results usually are called eigenvectors and eigenvalues, although they
+were found with SVD.
+
+If \vec{X} was only centred, the spectral decomposition will analyse a
+matrix of crossproducts and sums of squares. However, often the
+crossproducts are expressed as $(n-1)^{-1} \vec{\bar X' \bar X}$ so
+that the centred data $\vec{\bar X}$ are divided by a factor $n-1$.
+In that case the centred data will be equal to variances, and the
+eigenvalues sum up to total variance. This adjustment was the standard
+in spectral decomposition.
+
+Function \texttt{eigen} performs the spectral decomposition.  The
+analysis can also be applied for nonsymmetric matrices, but in
+ordination we only use centred crossproducts matrix. This also
+guarantees that there are no complex eigenvalues.  We can tell the
+function that data are symmetric so that it will not use time to
+inspect input for symmetry. In the following, we analyse a centred
+crossproduct matrix:
+
+<<>>=
+str(eigen(crossprod(scale(dune, scale=FALSE)), symmetric=TRUE))
+@ 
+The function returns eigenvalues in vector \texttt{values} and
+eigenvectors in \texttt{vectors}.  The \texttt{values} are squares of
+\texttt{d} of \texttt{svd}, and the \texttt{vectors} are similar (up
+to sign) to \texttt{v} of \texttt{svd}.
+
+\subsection{QR Decomposition}
+\label{sec:QR}
+
+QR decomposition of matrix \vec{X} is
+\begin{equation}
+  \vec{X} = \vec{QR} \;,
+\end{equation}
+where \vec{Q} is a an orthonormal matrix and \vec{R} is an upper
+triangular matrix.  The QR decomposition is not directly used in
+ordination, but it has an important position in linear models and
+hence in constrained ordination \citet{BlueBook}. 
+
+The regression coefficient $\beta$ in a simple linear model $\hat y_i
+= \beta x_i$ can be expressed in indexed and equivalent vector form
+as:
+\begin{eqnarray}
+  \beta &=& \frac{\sum_{i=1}^n x_i y_i}{\sum_{i=1}^n x_i^2}\\
+  &=& (\vec{x'x})^{-1} \vec{x'y} \;.
+\end{eqnarray}
+Multivariate generalization is obvious:
+\begin{equation}
+  \label{eq:B}
+  \vec{B} = (\vec{X'X})^{-1} \vec{X'Y}\;.
+\end{equation}
+The model can be generalized to several predictor variables $\vec{X}$
+and even to several dependent variables \vec{Y}.  \vec{X} is called
+model matrix. It can contain a column of ones to estimate the
+intercept, and factors can be expressed as contrast variables.
+However, in ordination models we deal with centred data and no
+intercept is needed. The fitted values $\vec{\hat Y}$ are found with
+\begin{eqnarray}
+ \vec{\hat Y} &=& \vec{XB} \\
+  \label{eq:Yhat}
+&=& \vec{X} (\vec{X'X})^{-1} \vec{X'Y}\;.
+\end{eqnarray}
+Here $\vec{X} (\vec{X'X})^{-1} \vec{X'}$ is called the hat matrix
+because it ``puts hat on \vec{Y}''. Hat matrix is also important in
+further analysis of linear models, such as in influence measures
+\citet{BlueBook}.
+
+It is easy to write (\ref{eq:Yhat}) in R:
+
+<<eval=false>>=
+Yhat <- X %*% solve(t(X) %*% X) %*% t(X) %*% Y
+@ 
+However, this is computationally problematic.  The problem is that
+(\ref{eq:Yhat}) involves matrix inversion (\texttt{solve()}), and the
+constraint matrix \vec{X} can be singular or nearly singular. With
+completely singular matrices, we may use generalized inverses such as
+function \texttt{ginv} in MASS \citep{MASS}, but there is a real
+danger of loss of numerical precision with nearly singular matrices. 
+
+Enter QR decomposition: (\ref{eq:B}) can be estimated from
+\begin{equation}
+  \vec{RB} = \vec{Q'Y}\;,
+\end{equation}
+which is easy to solve because \vec{R} is upper triangular.  There is
+no loss of precision in QR decomposition, and even ill-conditioned and
+rank-deficit models can be estimated.
+
+The usage of QR decomposition is very simple in R. First we make the QR decomposition with function \texttt{qr}, and then we can extract fitted values, residuals, regression coefficients etc:
+
+<<>>=
+data(varechem)
+data(varespec)
+Q <- qr(varechem)
+Yhat <- qr.fitted(Q, as.matrix(varespec))
+Yres <- qr.resid(Q, as.matrix(varespec))
+k <- qr.coef(Q, as.matrix(varespec))
+@ 
+
 \section{Simulating Simple Communities}
 
 Simulated communities are useful in studying the properties of the
@@ -436,15 +615,10 @@ X <- scale(X, scale = FALSE)
 Y <- scale(Y, scale = FALSE)
 Yhat <- X %*% solve(t(X) %*% X) %*% t(X) %*% Y
 svd(Yhat)
-@
-However, this is not an optimal algorithm. The problem is that
-(\ref{eq:RDA.Yhat}) involves matrix inversion (\texttt{solve()}), and
-the constraint matrix \vec{X} can be singular or nearly singular. With
-completely singular matrices, we may use generalized inverses such as
-function \texttt{ginv} in MASS \citep{MASS}, but there is a real
-danger of loss of numerical precision with nearly singular
-matrices. Similarly as in linear regression, it is better to use QR
-decomposition \citep{BlueBook}.
+@ 
+However, this is not an optimal algorithm. Similarly as in linear
+regression (Chapt. \ref{sec:QR}, p. \pageref{sec:QR}), it is better to
+use QR decomposition \citep{BlueBook}.
 
 The QR approach finds the row scores \vec{U} that are linear
 combinations of constraints and the corresponding column scores
