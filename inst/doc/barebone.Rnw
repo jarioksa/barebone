@@ -6,15 +6,52 @@ options(width=66)
 \chapter{R Programming Interface to Multivariate Analysis}
 \label{sec:basicmethods}
 
-Short intro: the scope of this Appendix.
+This appendix presents barebone functions to perform basic ordination
+analysis. The standard R function use the same algorithms, but they
+also have commands to check the input, handle common error situations
+and exception and to process the results. All these features make the
+functions usable, but they hide the plain core of the methods. This
+appendix has nothing of that user friendly interface, but the
+functions expect the input be correct, and the user to handle the
+results. The purpose is only to show the minimal code of translating
+matrix algebra into R code, and help the user to find the core
+operations in real R functions.  
 
 \section{Matrix Algebra in R}
 
-\subsection{Basic Operations}
+R is not really designed primarily for matrix algebra. For instance,
+multplication of two matrices \texttt{A * B} will multiply
+elementwise. However, matrix operations are available, but they need a
+longer notation: Matrix multiplication is given as \texttt{A \%*\% B}.  The most commonly needed matrix operations are given in Table \ref{tab:matrix}. 
+\begin{table}[t]
+  \centering
+   \caption{Examples of basic matrix operations in R. Uppercase letters refer to matrices and lower case to vectors.}
+  \label{tab:matrix}
+ \begin{tabular}{lcl}
+  \hline
+  Operation & Matrix & R \\
+  \svhline
+  Transpose & \vec{A'} & \texttt{t(A)}\\
+  Vector inner product & \vec{x'x} & \texttt{crossprod(x)} \\
+  Vector outer product & \vec{xy'} & \texttt{outer(x, y)} \\
+  && \texttt{x\%o\%y} \\
+  Cross product & \vec{A'B} & \texttt{t(A) \%*\% B} \\
+  && \texttt{crossprod(A, B)}\\
+   Identity matrix $5 \times 5$ & $\vec{I}_n$ & \texttt{diag(5)} \\
+   Multiply with diagonal matrix  & &
+   \texttt{diag(x) \%*\% A} \\
+   && \texttt{sweep(A, 1, x, "*")}\\
+ Inverse & $\vec{A}^{-1}$ & \texttt{solve(A)}\\
+  \hline
+\end{tabular}
+ \end{table}
 
-\subsection{Matrix Decomposition}
+ There are alternative commands for many matrix operations, and some
+ of these are shown in Table \ref{tab:matrix}. This chapter normally
+ uses basic matrix operations to keep the R functions closer to their
+ matrix presentations. 
 
-R provides powerful matrix commands
+R provides powerful high-level matrix commands
 based on LAPACK and LINPACK libraries \citep{LAPACK, LINPACK}. The
 ordination methods can be very effectively programmed with these
 high-level functions without knowledge of details of implementation
@@ -28,7 +65,7 @@ that nothing is destroyed, nothing is introduces, but things only are
 expressed in a new way.  For instance, Principal Component Analysis
 (PCA) is just singular value decomposition (SVD) with another name.
 
-\subsubsection{Singular Value Decomposition}
+\subsection{Singular Value Decomposition}
 
 Singular value decomposition of $n \times m$ matrix \vec{X} is
 \begin{equation}
@@ -231,9 +268,15 @@ formula interface of the \texttt{model.matrix} function.
 
 \section{R Programming of Ordination Methods}
 
+The unconstrained ordination methods are performed either with
+singular value or spectral decomposition. Here we describe only
+eigenvector methods which can be easily solved with R matrix library.
+
 \subsection{Unconstrained Ordination}
 
-\subsubsection{Principal Components Analysis (PCA)}
+Principal component analysis, Principal coordinate analysis and correspondence analysis are the major methods discussed in this chapter.
+
+\subsubsection{Principal Component Analysis (PCA)}
 
 The simplest and numerically best method for PCA is equivalent to
 singular value decomposition (SVD) of the data matrix. The SVD is
