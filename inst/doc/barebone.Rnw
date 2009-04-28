@@ -1,6 +1,3 @@
-\newcommand{\bSigma}{\ensuremath{\boldsymbol{\varSigma}}}
-\newcommand{\bLambda}{\ensuremath{\boldsymbol{\varLambda}}}
-\renewenvironment{Schunk}{\small}{}
 <<echo=false,results=hide>>=
 require(barebone)
 require(vegan)
