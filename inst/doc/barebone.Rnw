@@ -17,13 +17,11 @@ Short intro: the scope of this Appendix.
 
 \subsection{Matrix Decomposition}
 
-R provides powerful tools of high level commands to work with matrices
+R provides powerful matrix commands
 based on LAPACK and LINPACK libraries \citep{LAPACK, LINPACK}. The
 ordination methods can be very effectively programmed with these
 high-level functions without knowledge of details of implementation
-\citep[but see]{BlueBook}. It is possible to write very compact code
-which also is numerically accurate and fast as it uses reliable and
-optimized libraries for numerical methods.
+\citep[but see][]{BlueBook}. 
 
 The basic ordination methods are all based on simple commands of
 matrix decomposition. Matrix decomposition is a powerful tool which
@@ -35,7 +33,7 @@ expressed in a new way.  For instance, Principal Component Analysis
 
 \subsubsection{Singular Value Decomposition}
 
-Singular value decomposition of $n \times m$ matrix\vec{X} is
+Singular value decomposition of $n \times m$ matrix \vec{X} is
 \begin{equation}
   \label{eq:svd}
   \vec{X} = \vec{U \bSigma V'}\;,
@@ -43,20 +41,19 @@ Singular value decomposition of $n \times m$ matrix\vec{X} is
 where \vec{U} and \vec{V} are orthonormal matrices and \vec{\bSigma}
 is a diagonal matrix singular values.  Orthonormality means that all
 columns of \vec{U} and \vec{V} are orthogonal, and their sum of
-squares is 1. In matrix terms $\vec{U'U} = \vec{I}$ and $\vec{V'V} =
-\vec{I}$, or in plain English, all columns are independent and they
-are equally important. The importance of axes is conveyed in singular
-values. The singular values are ordered by their magnitude, and of an
-$n \times m$ matrix there may be $r = \min(n, m)$ above zero singular
-values. The number of the above zero singular values is the rank of
-the matrix. The rank of the matrix is the number of independent
+squares is 1, or $\vec{U'U} = \vec{I}$ and $\vec{V'V} =
+\vec{I}$. The importance of axes is conveyed in singular
+values. The singular values are ordered by their magnitude, and for an
+$n \times m$ matrix there may be $r = \min(n, m)$ above-zero singular
+values. The number of the above zero singular values gives the rank of
+the matrix, or the number of independent
 components needed to recover the original data. Basically, the rank is
 equal to the number of observation (rows) $n$, but it the number of
 variables $m < n$ the rank is reduced to $m$. If the data are
 standardized (like usually) the rank may be further reduced. For a
-centred data, the maximum rank is $\min(n-1, m)$ because the mean is
+centred data, the rank is reduced by one because the mean is
 fixed. If some of the variables can be expressed as linear
-combinations of other varialbes, the rank is reduced still further,
+combinations of other variables, the rank is reduced still further,
 and we speak of reduced or deficit rank modes.
 
 The original data can be recovered from the data. The matrix equation
@@ -83,35 +80,37 @@ and column scores in matrices \texttt{v} and \texttt{u}.
 
 \subsection{Spectral Decomposition}
 
-Spectral decomposition, also known as eigen decomposition, decomposes a symmetric matrix. Ecological data matrices are nonsymmetric, and spectral decomposition is used to decompose their symmetric crossproducts:
+Spectral decomposition, also known as eigenvector decomposition, is
+used for a symmetric matrix. Ecological data matrices are
+nonsymmetric, and spectral decomposition is used for their
+symmetric crossproducts:
 \begin{equation}
   \label{eq:eigen}
   \vec{X'X} = \vec{V \bLambda V'}\;.
 \end{equation}
-Here \vec{V} are orthonormal scores which are identical to \vec{V} in
+Here \vec{V} are orthonormal scores which are identical to \vec{V} of
 (\ref{eq:svd}) (apart from possible sign reversals), and
-\vec{\bLambda} is a diagonal matrix of eigenvalues which are square of
-singular values $\vec{\bLambda} = \vec{\bSigma}^2$. There are no row
-scores, but they can be found indirectly after the analysis.
+\vec{\bLambda} is a diagonal matrix of eigenvalues which are squares
+of singular values $\vec{\bLambda} = \vec{\bSigma}^2$. There are no
+row scores, but they can be found indirectly after the analysis with
+the help of original \vec{X}.
 
-Eigen decomposition appears like being a more complicated and indirect
-way of singular value decomposition. However, it is computationally
-somewhat lighter and easier to implement, and originally it was the
+Eigenvector decomposition looks like a more complicated and indirect
+alternative to singular value decomposition. However, it is computationally
+somewhat lighter and easier to implement, and originally earlier was the
 standard method of matrix decomposition.  Therefore the ordination
 results usually are called eigenvectors and eigenvalues, although they
 were found with SVD.
 
-If \vec{X} was only centred, the spectral decomposition will analyse a
+If \vec{X} was only centred, the spectral decomposition analyses a
 matrix of crossproducts and sums of squares. However, often the
-crossproducts are expressed as $(n-1)^{-1} \vec{\bar X' \bar X}$ so
-that the centred data $\vec{\bar X}$ are divided by a factor $n-1$.
+crossproducts are expressed as $(n-1)^{-1} \vec{\bar X' \bar X}$.
 In that case the centred data will be equal to variances, and the
-eigenvalues sum up to total variance. This adjustment was the standard
-in spectral decomposition.
+eigenvalues sum up to total variance. 
 
 Function \texttt{eigen} performs the spectral decomposition.  The
 analysis can also be applied for nonsymmetric matrices, but in
-ordination we only use centred crossproducts matrix. This also
+ordination we only use centred crossproducts. This also
 guarantees that there are no complex eigenvalues.  We can tell the
 function that data are symmetric so that it will not use time to
 inspect input for symmetry. In the following, we analyse a centred
@@ -135,23 +134,23 @@ QR decomposition of matrix \vec{X} is
 where \vec{Q} is a an orthonormal matrix and \vec{R} is an upper
 triangular matrix.  The QR decomposition is not directly used in
 ordination, but it has an important position in linear models and
-hence in constrained ordination \citet{BlueBook}. 
+hence in constrained ordination \citep{BlueBook}. 
 
 The regression coefficient $\beta$ in a simple linear model $\hat y_i
-= \beta x_i$ can be expressed in indexed and equivalent vector form
+= \beta x_i + \alpha$ can be expressed in two equivalent forms:
 as:
 \begin{eqnarray}
   \beta &=& \frac{\sum_{i=1}^n x_i y_i}{\sum_{i=1}^n x_i^2}\\
   &=& (\vec{x'x})^{-1} \vec{x'y} \;.
 \end{eqnarray}
-Multivariate generalization is obvious:
+Multivariate generalization of the vector form is obvious:
 \begin{equation}
   \label{eq:B}
   \vec{B} = (\vec{X'X})^{-1} \vec{X'Y}\;.
 \end{equation}
 The model can be generalized to several predictor variables $\vec{X}$
-and even to several dependent variables \vec{Y}.  \vec{X} is called
-model matrix. It can contain a column of ones to estimate the
+and even to several dependent variables \vec{Y}.  The \emph{model matrix} 
+\vec{X}  can contain a column of ones to estimate the
 intercept, and factors can be expressed as contrast variables.
 However, in ordination models we deal with centred data and no
 intercept is needed. The fitted values $\vec{\hat Y}$ are found with
@@ -163,7 +162,7 @@ intercept is needed. The fitted values $\vec{\hat Y}$ are found with
 Here $\vec{X} (\vec{X'X})^{-1} \vec{X'}$ is called the hat matrix
 because it ``puts hat on \vec{Y}''. Hat matrix is also important in
 further analysis of linear models, such as in influence measures
-\citet{BlueBook}.
+\citep{BlueBook}.
 
 It is easy to write (\ref{eq:Yhat}) in R:
 
@@ -172,7 +171,7 @@ Yhat <- X %*% solve(t(X) %*% X) %*% t(X) %*% Y
 @ 
 However, this is computationally problematic.  The problem is that
 (\ref{eq:Yhat}) involves matrix inversion (\texttt{solve()}), and the
-constraint matrix \vec{X} can be singular or nearly singular. With
+model matrix \vec{X} can be singular or nearly singular. With
 completely singular matrices, we may use generalized inverses such as
 function \texttt{ginv} in MASS \citep{MASS}, but there is a real
 danger of loss of numerical precision with nearly singular matrices. 
