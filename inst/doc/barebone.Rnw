@@ -848,24 +848,24 @@ rda(residuals(mod))
 To recover the original data, we must add constrained and residual
 components:
 \begin{equation}
-  \vec{Y} = \vec{U} \bLambda^{1/2} \vec{V'} + \vec{U_r} \vec{\bLambda_r}^{1/2} \vec{V'_r}\;,
+  \vec{Y} = \vec{U} \bLambda^{1/2} \vec{V'} + \vec{U}_r \vec{\bLambda}_r^{1/2} \vec{V'}_r\;,
 \end{equation}
-where the terms indexed with \vec{r} refer to unconstrained residual
+where the terms indexed with $r$ refer to unconstrained residual
 terms, and unindexed to the constrained terms. This means that we must
 use LC scores \vec{U} of constrained component for the recovery of
 observed data. Package analogue uses WA scores \vec{W} for estimating
-``residual lengths'', but these do not estimate precisely the original
-data.
+``residual lengths'' \citep[following][]{CANOCO}, but these do not
+estimate precisely the original data.
 
 \subsection{Reconstitution of Scores}
 
 Species scores \vec{V} and site scores \vec{U} are directly related to
 each other in unconstrained ordination. In PCA the mutual translation
 functions are:
-\begin{align}
- \vec{V} &= \vec{\bar Y'} \vec{U} \vec{\bLambda}^{-1/2}\\
- \vec{U} &=  \vec{\bar Y} \vec{V} \vec{\bLambda}^{-1/2}
-\end{align}
+\begin{eqnarray}
+ \vec{V} &=& \vec{\bar Y'} \vec{U} \bLambda^{-1/2}\\
+ \vec{U} &= & \vec{\bar Y} \vec{V} \bLambda^{-1/2}
+\end{eqnarray}
 The division by the squareroots of eigenvalue takes care of retaining
 the original scaling of orthonormal scores. The equations include
 centred data matrix \vec{\bar Y}, and supplying new data allows
@@ -873,30 +873,25 @@ finding scores for new observations.
 
 Unconstrained CA has similar dual relationship, but in CA we must take
 care of row totals \vec{r} and column totals \vec{c}. These are given in
-diagonal matrices $\vec{R} = \mathrm{diag}(\vec{r})$ and $\vec{C} =
-\mathrm{diag}(\vec{c})$:
-\begin{align}
-\vec{V} &= \vec{C^{-1/2}} \vec{\bar Y'} \vec{R^{1/2}}
-\vec{U} \vec{\bLambda^{-1/2}}\\
-\vec{U} &= \vec{R^{-1/2}} \vec{\bar Y} \vec{C^{1/2}}
-\vec{V} \vec{\bLambda^{-1/2}}
-\end{align}
+diagonal matrices $\vec{R}$ and $\vec{C}$:
+\begin{eqnarray}
+\vec{V} &= \vec{C}^{-1/2} \vec{\bar Y'} \vec{R}^{1/2} \vec{U} \bLambda^{-1/2}\\
+\vec{U} &= \vec{R}^{-1/2} \vec{\bar Y} \vec{C}^{1/2}\vec{V} \bLambda^{-1/2}
+\end{eqnarray}
 Supplying new \vec{Y} allows finding scores for new rows or
-columns. The needed weights are also found from the supplied \bm{X}.
+columns. The needed weights are also found from the supplied \vec{Y}.
 
 In constrained ordination the situation is more complicated, and the
 duality of scores does not hold. Matrix \vec{U} is found from
-(weighted) centred constraints \vec{\bar X} and regression
+(weighted) centred constraints \vec{\bar Y} and regression
 coefficients \vec{B}. The species scores \vec{V} are found from
 \vec{U} similarly as above, but using symmetric formula for sites does
 not give scores \vec{U}, but instead gives different scores \vec{W}:
-\begin{align}
- \vec{U} &= \vec{\bar X B}\\
- \vec{V} &= \vec{C^{-1/2} \vec{\bar Y'} \vec{R^{1/2}}
- \vec{U} \vec{b\Lambda^{-1/2}\\
- \vec{W} &= \vec{R^{-1/2}} \vec{\bar Y} \vec{C^{1/2}}
- \vec{V} \vec{\bLambda^{-1/2}}
-\end{align}
+\begin{eqnarray}
+ \vec{U} &=& \vec{\bar X B}\\
+ \vec{V} &=& \vec{C}^{-1/2} \vec{\bar Y'} \vec{R}^{1/2} \vec{U} \bLambda^{-1/2}\\
+ \vec{W} &=& \vec{R}^{-1/2} \vec{\bar Y} \vec{C}^{1/2} \vec{V} \bLambda^{-1/2}
+\end{eqnarray}
 The equations for RDA are similar, but without weight terms \vec{R}
 and \vec{C}.
 
@@ -908,7 +903,7 @@ solution, you must submit new environmental data \vec{X} for LC scores
 
 In unconstrained analysis (PCA and CA), scores \vec{U} and \vec{V} are
 symmetric so that you can derive \vec{U} from \vec{V} or \vec{V} from
-\bm{U}, and you can repeat this cyclically. However, the scores of
+vec{U}, and you can repeat this cyclically. However, the scores of
 constrained ordination (RDA and CCA) are nonsymmetric: you can only
 derive \vec{V} from \vec{U}, but not vice versa. If you use the
 symmetric formulae of unconstrained ordination for \vec{V}, you will
