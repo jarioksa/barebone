@@ -7,7 +7,7 @@
   the eigenvalue-scaled result of Principal Coordinates Analysis.
 }
 \usage{
-dbRDA(D, X, Z)
+dbRDA(D, X = NULL, Z = NULL)
 }
 
 \arguments{

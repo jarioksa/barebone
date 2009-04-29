@@ -7,23 +7,20 @@ options(width=66)
 \label{sec:basicmethods}
 
 This appendix presents barebone functions to perform basic ordination
-analysis. The standard R function use the same algorithms, but they
+analysis. The standard R functions use the same algorithms, but they
 also have commands to check the input, handle common error situations
-and exception and to process the results. All these features make the
-functions usable, but they hide the plain core of the methods. This
-appendix has nothing of that user friendly interface, but the
-functions expect the input be correct, and the user to handle the
-results. The purpose is only to show the minimal code of translating
-matrix algebra into R code, and help the user to find the core
-operations in real R functions.
+and exceptional cases and to process the results. All these features
+make the functions usable, but they hide the plain core of the
+methods. This appendix has nothing user friendliness.  The purpose is
+only to show the minimal code of writing matrix algebra into R code.
 
 \section{Matrix Algebra in R}
 
-R is not really designed primarily for matrix algebra. For instance,
+R is not designed primarily for matrix algebra. For instance,
 multplication of two matrices \texttt{A * B} will multiply
 elementwise. However, matrix operations are available, but they need a
 longer notation: Matrix multiplication is given as \texttt{A \%*\% B}.  The most commonly needed matrix operations are given in Table \ref{tab:matrix}.
-\begin{table}[t]
+\begin{table}[b]
   \centering
    \caption{Examples of basic matrix operations in R. Uppercase letters refer to matrices and lower case to vectors.}
   \label{tab:matrix}
@@ -54,14 +51,13 @@ longer notation: Matrix multiplication is given as \texttt{A \%*\% B}.  The most
 R provides powerful high-level matrix commands
 based on LAPACK and LINPACK libraries \citep{LAPACK, LINPACK}. The
 ordination methods can be very effectively programmed with these
-high-level functions without knowledge of details of implementation
-\citep[but see][]{BlueBook}.
+high-level functions.
 
-The basic ordination methods are all based on simple commands of
+The basic ordination methods are all based on 
 matrix decomposition. Matrix decomposition is a powerful tool which
 expresses the matrices in other forms which have some optimal
 properties. The original data can be recovered from decomposition so
-that nothing is destroyed, nothing is introduces, but things only are
+that nothing is destroyed, nothing is introduced, but things only are
 expressed in a new way.  For instance, Principal Component Analysis
 (PCA) is just singular value decomposition (SVD) with another name.
 
@@ -73,22 +69,21 @@ Singular value decomposition of $n \times m$ matrix \vec{X} is
   \vec{X} = \vec{U \bSigma V'}\;,
 \end{equation}
 where \vec{U} and \vec{V} are orthonormal matrices and \vec{\bSigma}
-is a diagonal matrix singular values.  Orthonormality means that all
-columns of \vec{U} and \vec{V} are orthogonal, and their sum of
-squares is 1, or $\vec{U'U} = \vec{I}$ and $\vec{V'V} =
-\vec{I}$. The importance of axes is conveyed in singular
-values. The singular values are ordered by their magnitude, and for an
-$n \times m$ matrix there may be $r = \min(n, m)$ above-zero singular
-values. The number of the above zero singular values gives the rank of
-the matrix, or the number of independent
-components needed to recover the original data. Basically, the rank is
-equal to the number of observation (rows) $n$, but it the number of
-variables $m < n$ the rank is reduced to $m$. If the data are
-standardized (like usually) the rank may be further reduced. For a
-centred data, the rank is reduced by one because the mean is
-fixed. If some of the variables can be expressed as linear
-combinations of other variables, the rank is reduced still further,
-and we speak of reduced or deficit rank modes.
+is a diagonal matrix of \emph{singular values} \citep{Mardia79}.
+Orthonormality means that all columns of \vec{U} and \vec{V} are
+orthogonal, and their sum of squares is 1, or $\vec{U'U} = \vec{I}$
+and $\vec{V'V} = \vec{I}$. The importance of axes is conveyed in
+singular values. The singular values are ordered by their magnitude,
+and for an $n \times m$ matrix there may be $r = \min(n, m)$ positive
+singular values. The number of the positive singular values gives the
+rank of the matrix, or the number of independent components needed to
+recover the original data. Basically, the rank is equal to the number
+of observation (rows) $n$, but if the number of variables $m < n$ the
+rank is reduced to $m$. If the data are standardized (like usually)
+the rank may be further reduced. For a centred data, the rank is
+reduced by one because the mean is fixed. If some of the variables can
+be expressed as linear combinations of other variables, the rank is
+reduced still further, and we speak of reduced or deficit rank modes.
 
 The original data can be recovered from the data. The matrix equation
 (\ref{eq:svd}) can be expressed in indexed form as:
@@ -98,12 +93,11 @@ The original data can be recovered from the data. The matrix equation
 \end{equation}
 The singular values are ordered $\sigma_1 \geq \sigma_2 \geq \dots
 \geq \sigma_r$ so that the first columns of \vec{U} and \vec{V} are
-expressed most heavily in (\ref{eq:svdopen}). The first columns give a
-low-rank estimate of least squares of the original data.
+most important in (\ref{eq:svdopen}). The first columns give a 
+least squares of the original data.
 
 Function \texttt{svd} performs the singular value decomposition. In
-the following example we first centre the data before its
-decomposition:
+the following example we centre the data before the decomposition:
 
 <<>>=
 data(dune)
@@ -114,9 +108,11 @@ and column scores in matrices \texttt{v} and \texttt{u}.
 
 \subsection{Spectral Decomposition}
 
-Spectral decomposition, also known as eigenvector decomposition, is
-used for a symmetric matrix. Ecological data matrices are
-nonsymmetric, and spectral decomposition is used for their
+Spectral decomposition \citep{Mardia79}, also known as eigenvector
+decomposition, is used for a symmetric matrix (in prinicple, spectral
+decomposition also applies for nonsymmetric matrices, but it is not
+used for those in ordination). Ecological data matrices are
+nonsymmetric, and spectral decomposition is performed for their
 symmetric crossproducts:
 \begin{equation}
   \label{eq:eigen}
@@ -131,7 +127,7 @@ the help of original \vec{X}.
 
 Eigenvector decomposition looks like a more complicated and indirect
 alternative to singular value decomposition. However, it is computationally
-somewhat lighter and easier to implement, and originally earlier was the
+somewhat lighter and easier to implement, and earlier was the
 standard method of matrix decomposition.  Therefore the ordination
 results usually are called eigenvectors and eigenvalues, although they
 were found with SVD.
@@ -142,12 +138,9 @@ crossproducts are expressed as $(n-1)^{-1} \vec{\bar X' \bar X}$.
 In that case the centred data will be equal to variances, and the
 eigenvalues sum up to total variance.
 
-Function \texttt{eigen} performs the spectral decomposition.  The
-analysis can also be applied for nonsymmetric matrices, but in
-ordination we only use centred crossproducts. This also
-guarantees that there are no complex eigenvalues.  We can tell the
-function that data are symmetric so that it will not use time to
-inspect input for symmetry. In the following, we analyse a centred
+Function \texttt{eigen} performs the spectral decomposition.  We can
+tell the function that data are symmetric so that it will not use time
+to inspect input for symmetry. In the following, we analyse a centred
 crossproduct matrix:
 
 <<>>=
@@ -172,7 +165,6 @@ hence in constrained ordination \citep{BlueBook}.
 
 The regression coefficient $\beta$ in a simple linear model $\hat y_i
 = \beta x_i + \alpha$ can be expressed in two equivalent forms:
-as:
 \begin{eqnarray}
   \beta &=& \frac{\sum_{i=1}^n x_i y_i}{\sum_{i=1}^n x_i^2}\\
   &=& (\vec{x'x})^{-1} \vec{x'y} \;.
@@ -226,7 +218,7 @@ data(varespec)
 Q <- qr(varechem)
 Yhat <- qr.fitted(Q, as.matrix(varespec))
 Yres <- qr.resid(Q, as.matrix(varespec))
-k <- qr.coef(Q, as.matrix(varespec))
+beta <- qr.coef(Q, as.matrix(varespec))
 @
 
 \section{Simulating Simple Communities}
@@ -279,16 +271,11 @@ Principal component analysis, Principal coordinate analysis and correspondence a
 \subsubsection{Principal Component Analysis (PCA)}
 
 The simplest and numerically best method for PCA is equivalent to
-singular value decomposition (SVD) of the data matrix. The SVD is
-defined as
-\begin{eqnarray}
-  \vec{Y} &= \vec{U \bSigma V'}\;,
-\end{eqnarray}
-where \vec{\bSigma} is a diagonal matrix of singular values which are
-square roots of eigen values $\vec{\bSigma = \bLambda}^{1/2}$, \vec{Y}
-is the data matrix with centred columns, and \vec{U} and \vec{V} are
-orthonormal matrices of row and column scores, so that $\vec{U'U} =
-\vec{I}$ and $\vec{V'V} = \vec{I}$. The implementation is
+singular value decomposition (SVD).  We perform SVD for centred data
+matrix $\vec{\bar Y} = \vec{U \bSigma V'}$ (see \ref{eq:svd}).  This
+gives us singular values which are square roots of eigenvalues
+$\vec{\bSigma = \bLambda}^{1/2}$, and \vec{U} and \vec{V} are
+orthonormal matrices of row and column scores.  The implementation is
 straightforward:
 
 <<echo=false>>=
@@ -300,7 +287,7 @@ before the analysis. In general, the standard R function
 \texttt{scale} transforms data as:
 \begin{equation}
   \label{eq:PCAstand}
-  y'_{ij} = \frac{y_{ij} - z_j}{s_j}\;,
+  \bar y_{ij} = \frac{y_{ij} - z_j}{s_j}\;,
 \end{equation}
 where $z_j$ is the column centre, and $s_j$ is the column
 scale. Typically $z_j$ is the column average. With \texttt{scale =
@@ -313,7 +300,7 @@ but it will influence the absolute singular values
 \vec{\bSigma}---the proportions of individual elements $\sigma$ do
 not change.  With the basic analysis, the singular values decompose
 the original observed values, so that the sum of $\vec{\bSigma}^2$
-equals the sum of $\vec{Y}^2$ for centred \vec{Y}. If we want the
+equals the sum of $\vec{\bar Y}^2$. If we want the
 singular values to decompose the variance of the data, we can call the
 function as
 
@@ -322,21 +309,21 @@ data(dune)
 str(PCA(dune, scale = rep(sqrt(nrow(dune)-1), ncol(dune))))
 @
 This divides columns with $\sqrt{n-1}$ so that the sum of
-$\vec{\bSigma}^2$ equals the sum of variances of \vec{X}, and the
+$\vec{\bSigma}^2$ equals the sum of variances of \vec{Y}, and the
 singular values are standard deviations of the axes.  Using scale
 $\sqrt{n}$ would give the same results with biased esimate of variance.
 
 SVD is the preferred method of performing PCA, but earlier PCA was
-usually performed as eigen decomposition of symmetric crossproduct
+usually performed as spectral decomposition of symmetric crossproduct
 matrix:
 \begin{equation}
-  \vec{Y'Y} = \vec{V \bLambda V'}\;,
+  \vec{\bar Y' \bar Y} = \vec{V \bLambda V'}\;,
 \end{equation}
 where \vec{\bLambda} is a diagonal matrix of eigenvalues. The row
 scores can be found as
 \begin{equation}
   \label{eq:PCAu}
-  \vec{U} = \vec{Y' V \bLambda}^{-1/2}\;.
+  \vec{U} = \vec{\bar Y' V \bLambda}^{-1/2}\;.
 \end{equation}
 The row and column scores \vec{U} and \vec{V} are identical to those
 found in the previous methods (apart from possible sign reversals),
@@ -353,21 +340,22 @@ column is proportional to square roots of eigenvalues. The equations
 are:
 \begin{eqnarray}
   \label{eq:PCAurot}
-  \vec{U} &=& \vec{Y' V}\\
+  \vec{U} &=& \vec{\bar Y' V}\\
   \vec{U'U} &=& \vec{\bLambda}^{1/2} \;.
 \end{eqnarray}
 With this scaling, \vec{U} are called \emph{scores matrix}, and
 orthonormal \vec{V} are called \emph{loadings} or \emph{rotation
-  matrix}: Multiplication with (\ref{eq:PCAurot}) rotates the centred
-and scaled data matrix \vec{Y} to the principal components.
+  matrix}: Multiplication with (\ref{eq:PCAurot}) rotates
+\vec{\bar Y} to the principal components.
 
-Function \texttt{PCAeig} used crossproduct \vec{Y'Y} to get the
-symmetric matrix for eigen decomposition. Most PCA software use
+Function \texttt{PCAeig} used crossproduct \vec{\bar Y' \bar Y} to get
+the symmetric matrix for eigen decomposition. Most PCA software use
 instead covariance matrix. This is equivalent of finding the
-crossproduct of centred \vec{Y} as $ (n-1)^{-1} \vec{Y'Y}$. In this way
-the eigenvalues sum up to total variance. Similarly, the scaled
-solution is usually found using correlation matrix instead of explicit
-scaling of response data with (\ref{eq:PCAstand}) like in SVD.
+crossproduct of centred \vec{\bar Y} as $ (n-1)^{-1} \vec{\bar Y' \bar Y}$.
+In this way the eigenvalues sum up to total
+variance. Similarly, the scaled solution is usually found using
+correlation matrix instead of explicit scaling of response data with
+(\ref{eq:PCAstand}) like in SVD.
 
 R functions are based on either of these algorithms:
 \begin{itemize}
@@ -403,13 +391,13 @@ R functions are based on either of these algorithms:
   ``Design decisions'' which explains the scaling alternatives.
 \end{itemize}
 
-\subsubsection{Principal Coordinate Analysis}
+\subsubsection{Principal Coordinate Analysis (PCoA)}
 
 Principal Coordinates Analysis (PCoA) is closely related to PCA, in
 particular to PCA performed through spectral decomposition (function
 \texttt{PCAeig}).  The PCA with spectral decomposition analyses matrix
 of crossproducts and sums of squares, but PCoA analyses distances.
-Actually, the only task is to convert distances into crossproducts,
+The only task is to convert distances into crossproducts,
 and then analyse these like in \texttt{PCAeig} \citep{Mardia79}. If
 the distances are Euclidean, then PCoA gives the same results as PCA,
 but is less efficient.  Normally we ignore the assumption of Euclidean
@@ -446,10 +434,8 @@ eigenvalues. If \vec{D} was non-Euclidean, semimetric index, there
 will also be negative eigenvalues, so that the number of positive
 eigenvalues is even lower than $n-1$. Negative eigenvalues are not
 removed in the current function, nor are any warnings issued. If we
-wish to scale the row scores by eigenvalues, we can only use the
-positive ones. If we want to reconstruct the original distance matrix
-from its decomposition, we must substract the crossproducts of
-negative eigenvectors from the crossproduct of positive ones.
+wish to scale the row scores by eigenvalues, we must use only the
+positive ones. 
 
 This algorithm is used in standard R function \texttt{cmdscale}.
 Functions like \texttt{adonis} and \texttt{betadisper} also use
@@ -467,15 +453,13 @@ weights can also be non-integer.
 
 Weighting reduces or increases the influence of a point with respect
 to other points. The influence of the point in unweighted ordination
-is given by its distance from the centroid of the space: far points
-have a higher moment. Reducing a weight means moving a point closer to
-the centroid, and increasing the weight moving the point further away.
-After weigthing, we
-perform the rotation via SVD or spectral decomposition. After rotation
-we have to recover the original configuration and move the points back
-to their original positions: weighting influences the rotation but not
-the full space.  The stages of weighted ordinations are weigthing,
-rotation, and de-weigthing.
+is given by its distance from the centroid: far points have a higher
+moment. Weighting is moving points further from or closer to the
+centroid.  After weigthing, we perform the rotation via SVD or
+spectral decomposition. After rotation we have to recover the original
+configuration and move the points back to their original positions:
+weighting influences the rotation but not the full space.  The stages
+of weighted ordinations are weigthing, rotation, and de-weigthing.
 
 Weighted PCoA has the following stages:
 \begin{enumerate}
@@ -506,25 +490,25 @@ dump("wPCoA", file = "")
 @
 Function \texttt{wcmdscale} in vegan follows this algorithm.
 
-\subsubsection{Correspondence Analysis}
+\subsubsection{Correspondence Analysis (CA)}
 
-Correspondence analysis (CA) is weighted PCA with Chi-square metrics
+Correspondence analysis (CA) is weighted PCA with Chi-square metric
 \citep{Nishisato80,Greenacre84, GreenacreHastie87, Greenacre07}. Just like with
 PCA, we can use SVD or spectral decomposition.
 
 The SVD algorithm is based on \citet{GreenacreHastie87}:
 \begin{enumerate}
-\item Let \vec{Y} be the data matrix standardized to unit sum, with
-  row sums \vec{r} and column sums \vec{c}. Perform weighted Chi-square
-  transformation, where a typical element $\{\bar{y}_{ij}\} =
-  \vec{\bar Y}$ is
+\item Let \vec{Y} be the response matrix standardized to unit sum and
+  \vec{r} and \vec{c} vectors of its row and column sums.  Perform
+  weighted Chi-square transformation, where a typical element
+  $\{\bar{y}_{ij}\} = \vec{\bar Y}$ is
   \begin{equation}
     \label{eq:CAstand}
     \bar{y}_{ij} = \frac{y_{ij} - r_i c_j}{\sqrt{r_i c_j}} \;.
   \end{equation}
   This is obviously Chi-square transformation because by usual
   definition $\chi^2 = \sum \bar{y}_{ij}^2$.
-\item Perform SVD  $\vec{\bar Y} = \vec{\tilde{U} \bSigma
+\item Perform SVD  of $\vec{\bar Y} = \vec{\tilde{U} \bSigma
     \tilde{V}'}$.
 \item De-weight the solution by
   \begin{eqnarray}
@@ -595,7 +579,7 @@ distances with weighted Principal Coordinate Analysis
 \item Calculate the Euclidean distances of \vec{\bar Y}. They will be
   the Chi-square distances.
 \item Find the weighted PCoA of these distances using \vec{r} as
-  weights. This will have the eigenvalues \vec{\bLambda} and weighted
+  weights. This will have eigenvalues \vec{\bLambda} and weighted
   orthonormal row scores \vec{U}.
 \item The column scores \vec{V} cannot be found directly from the
   distance matrix, but they can be found with \vec{Y} or \vec{\bar Y}:
@@ -640,26 +624,13 @@ analyse fitted values \vec{\hat Y} of
 \end{equation}
 where \vec{Y} is the centred response matrix, and \vec{X} is the
 centred model matrix of constraints (environmental variables).  The
-constrained ordination solution is SVD of \vec{\hat Y}.  The model may
-look tricky, but in fact it is a model of multiple linear regression
-\citep{Mardia79}. In other words, Redundancy Analysis can be performed
-by first fitting linear regression for each column separately using
-all constraints as predictors, and then performing PCA for the fitted
-values of this regression.
+constrained ordination solution is SVD of \vec{\hat Y}.  Obviously,
+(\ref{eq:RDA.Yhat}) is identical to the model of multiple linear
+regression (\ref{eq:Yhat}). We can use QR decomposition
+(p. \pageref{sec:QR}) to estimate the fitted values and residual
+values to avoid the possible loss of precision in matrix inversion.
 
-Direct implementation of (\ref{eq:RDA.Yhat}) would be simple in R:
-
-<<eval=false,results=hide>>=
-X <- scale(X, scale = FALSE)
-Y <- scale(Y, scale = FALSE)
-Yhat <- X %*% solve(t(X) %*% X) %*% t(X) %*% Y
-svd(Yhat)
-@
-However, this is not an optimal algorithm. Similarly as in linear
-regression (Chapt. \ref{sec:QR}, p. \pageref{sec:QR}), it is better to
-use QR decomposition \citep{BlueBook}.
-
-The QR approach finds the row scores \vec{U} that are linear
+The SVD of (\ref{eq:RDA.Yhat})  finds the row scores \vec{U} that are linear
 combinations of constraints and the corresponding column scores
 \vec{V}.  The alternating regression and weighted sums algorithm also
 finds row scores \vec{W} that are weighted sums of column scores. In
@@ -685,7 +656,7 @@ Putting this all together gives the following algorithm:
   diagonal matrix of singular values \bSigma.
 \item Find the ``WA scores'' \vec{W} with (\ref{eq:RDA.W}).
 \item Find the residual ordination of unconstrained component by
-  peforming SVD of $\vec{Y} - \vec{\hat Y} = \vec{U_r \bSigma_r V'_r}$.
+  peforming SVD of $\vec{Y} - \vec{\hat Y} = \vec{U}_r \bSigma_r \vec{V'}_r$.
 \end{enumerate}
 Direct implementation is:
 <<echo=false>>=
@@ -717,20 +688,18 @@ the analysis of \vec{Y_r} gives the residual ordination.
 The following implementation allows omitting either conditions or
 constraints or both so that the function can be used for pRDA, RDA,
 pPCA (= PCA after removing background variables), or usual PCA. Vegan
-function \texttt{rda} has the same general behaviour. Although the
-model equations use matrix crossproducts and their inverses, the code
-uses QR decomposition.
+function \texttt{rda} has the same general behaviour. 
 
 <<echo=false>>=
 dump("pRDA", file="")
 @
 
-\subsubsection{Constrained Correspondence Analysis}
+\subsubsection{Constrained Correspondence Analysis (CCA)}
 
 Constrained Correspondence Analysis or Canonical Correspondence
 Analysis is a parallel generalization of RDA in the CA framwork.  The
 difference to RDA is that we need to perform Chi-square transformation
-(\ref{eq:CAstand}) and juggle with weights in estimating.
+(\ref{eq:CAstand}) and juggle with weights.
 The following overview of the algorithm only discusses
 the constrained stage of CCA: partial and residual cases work
 similarly and in parallel to RDA.
@@ -769,8 +738,7 @@ the importance of each dimension, and the scores correctly estimate
 the variance of the data. Therefore we take only the positive
 eigenvalues. In non-Euclidean, semimetric indices this means that
 there are typically fewer than $n-1$ principal coordinate vectors for
-$n$ rows, and the solution does not exactly estimate the original
-variation in the data.
+$n$ rows.
 
 The implementation calls \texttt{PCoA} and \texttt{dbRDA} so that this
 allows partial analysis:
@@ -788,7 +756,9 @@ distances were used, the results are similar to RDA (apart from
 possible sign reversals) except for scores \vec{V} in constrained and
 residual unconstrained components.
 
-Function \texttt{capscale} in vegan follows this algorithm.
+Function \texttt{capscale} in vegan follows this algorithm. It also
+adds species scores similarly as in PCA (\ref{eq:PCAu}) if original
+data matrix \vec{Y} is available.
 
 %%% The following chapter may be removed later, but for time being I
 %%% put these things here.
@@ -805,7 +775,7 @@ observartions (rows) or columns (variables, species).
 Uncostrained PCA and CA are both based on singular value decomposition
 possibly with some preceding standardizations. The internal,
 standardized form of the data \vec{\bar Y} can be recovered in the
-same in both:
+same way in both:
 \begin{equation}
   \label{eq:databack}
   \vec{\bar Y} = \vec{U} \bLambda^{1/2} \vec{V'}\;,
@@ -828,9 +798,9 @@ centred dissimilarities.
 
 In constrained ordination we can recover the fitted values of the
 constrained part and separately the residuals from the unconstrained
-ordination. We can use (\ref{eq:databack}) to get values in the
-original scale. Package vegan implement such procedures in
-\texttt{fitted} and \texttt{residuals} functions. In the following model
+ordination. We can use (\ref{eq:databack}) to estimate the data.
+Package vegan implement such procedures in \texttt{fitted} and
+\texttt{residuals} functions. In the following model
 
 <<>>=
 data(varespec)
@@ -855,7 +825,7 @@ terms, and unindexed to the constrained terms. This means that we must
 use LC scores \vec{U} of constrained component for the recovery of
 observed data. Package analogue uses WA scores \vec{W} for estimating
 ``residual lengths'' \citep[following][]{CANOCO}, but these do not
-estimate precisely the original data.
+estimate precisely the original data. 
 
 \subsection{Reconstitution of Scores}
 
@@ -883,7 +853,7 @@ columns. The needed weights are also found from the supplied \vec{Y}.
 
 In constrained ordination the situation is more complicated, and the
 duality of scores does not hold. Matrix \vec{U} is found from
-(weighted) centred constraints \vec{\bar Y} and regression
+(weighted) centred constraints \vec{\bar X} and regression
 coefficients \vec{B}. The species scores \vec{V} are found from
 \vec{U} similarly as above, but using symmetric formula for sites does
 not give scores \vec{U}, but instead gives different scores \vec{W}:
@@ -898,12 +868,12 @@ and \vec{C}.
 Scores \vec{U} are called linear combination or LC scores, and scores
 \vec{W} are called weighted average or WA scores. To add points to the
 solution, you must submit new environmental data \vec{X} for LC scores
-\vec{U}, and new dependent data for WA scores \vec{W} or species scores
-\vec{V}.
+\vec{U}, and new dependent data \vec{Y} for WA scores \vec{W} or
+species scores \vec{V}.
 
 In unconstrained analysis (PCA and CA), scores \vec{U} and \vec{V} are
 symmetric so that you can derive \vec{U} from \vec{V} or \vec{V} from
-vec{U}, and you can repeat this cyclically. However, the scores of
+\vec{U}, and you can repeat this cyclically. However, the scores of
 constrained ordination (RDA and CCA) are nonsymmetric: you can only
 derive \vec{V} from \vec{U}, but not vice versa. If you use the
 symmetric formulae of unconstrained ordination for \vec{V}, you will

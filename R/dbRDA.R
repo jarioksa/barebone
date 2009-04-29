@@ -1,5 +1,5 @@
 `dbRDA` <-
-    function(D, X, Z)
+    function(D, X = NULL, Z = NULL)
 {
     SOL <- PCoA(D)
     pos <- SOL$values > sqrt(.Machine$double.eps)
