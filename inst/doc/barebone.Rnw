@@ -15,14 +15,14 @@ appendix has nothing of that user friendly interface, but the
 functions expect the input be correct, and the user to handle the
 results. The purpose is only to show the minimal code of translating
 matrix algebra into R code, and help the user to find the core
-operations in real R functions.  
+operations in real R functions.
 
 \section{Matrix Algebra in R}
 
 R is not really designed primarily for matrix algebra. For instance,
 multplication of two matrices \texttt{A * B} will multiply
 elementwise. However, matrix operations are available, but they need a
-longer notation: Matrix multiplication is given as \texttt{A \%*\% B}.  The most commonly needed matrix operations are given in Table \ref{tab:matrix}. 
+longer notation: Matrix multiplication is given as \texttt{A \%*\% B}.  The most commonly needed matrix operations are given in Table \ref{tab:matrix}.
 \begin{table}[t]
   \centering
    \caption{Examples of basic matrix operations in R. Uppercase letters refer to matrices and lower case to vectors.}
@@ -49,13 +49,13 @@ longer notation: Matrix multiplication is given as \texttt{A \%*\% B}.  The most
  There are alternative commands for many matrix operations, and some
  of these are shown in Table \ref{tab:matrix}. This chapter normally
  uses basic matrix operations to keep the R functions closer to their
- matrix presentations. 
+ matrix presentations.
 
 R provides powerful high-level matrix commands
 based on LAPACK and LINPACK libraries \citep{LAPACK, LINPACK}. The
 ordination methods can be very effectively programmed with these
 high-level functions without knowledge of details of implementation
-\citep[but see][]{BlueBook}. 
+\citep[but see][]{BlueBook}.
 
 The basic ordination methods are all based on simple commands of
 matrix decomposition. Matrix decomposition is a powerful tool which
@@ -108,7 +108,7 @@ decomposition:
 <<>>=
 data(dune)
 str(svd(scale(dune, scale=FALSE)))
-@ 
+@
 The function returns singular values in vector \texttt{d} and row
 and column scores in matrices \texttt{v} and \texttt{u}.
 
@@ -140,7 +140,7 @@ If \vec{X} was only centred, the spectral decomposition analyses a
 matrix of crossproducts and sums of squares. However, often the
 crossproducts are expressed as $(n-1)^{-1} \vec{\bar X' \bar X}$.
 In that case the centred data will be equal to variances, and the
-eigenvalues sum up to total variance. 
+eigenvalues sum up to total variance.
 
 Function \texttt{eigen} performs the spectral decomposition.  The
 analysis can also be applied for nonsymmetric matrices, but in
@@ -152,7 +152,7 @@ crossproduct matrix:
 
 <<>>=
 str(eigen(crossprod(scale(dune, scale=FALSE)), symmetric=TRUE))
-@ 
+@
 The function returns eigenvalues in vector \texttt{values} and
 eigenvectors in \texttt{vectors}.  The \texttt{values} are squares of
 \texttt{d} of \texttt{svd}, and the \texttt{vectors} are similar (up
@@ -168,7 +168,7 @@ QR decomposition of matrix \vec{X} is
 where \vec{Q} is a an orthonormal matrix and \vec{R} is an upper
 triangular matrix.  The QR decomposition is not directly used in
 ordination, but it has an important position in linear models and
-hence in constrained ordination \citep{BlueBook}. 
+hence in constrained ordination \citep{BlueBook}.
 
 The regression coefficient $\beta$ in a simple linear model $\hat y_i
 = \beta x_i + \alpha$ can be expressed in two equivalent forms:
@@ -183,7 +183,7 @@ Multivariate generalization of the vector form is obvious:
   \vec{B} = (\vec{X'X})^{-1} \vec{X'Y}\;.
 \end{equation}
 The model can be generalized to several predictor variables $\vec{X}$
-and even to several dependent variables \vec{Y}.  The \emph{model matrix} 
+and even to several dependent variables \vec{Y}.  The \emph{model matrix}
 \vec{X}  can contain a column of ones to estimate the
 intercept, and factors can be expressed as contrast variables.
 However, in ordination models we deal with centred data and no
@@ -202,13 +202,13 @@ It is easy to write (\ref{eq:Yhat}) in R:
 
 <<eval=false>>=
 Yhat <- X %*% solve(t(X) %*% X) %*% t(X) %*% Y
-@ 
+@
 However, this is computationally problematic.  The problem is that
 (\ref{eq:Yhat}) involves matrix inversion (\texttt{solve()}), and the
 model matrix \vec{X} can be singular or nearly singular. With
 completely singular matrices, we may use generalized inverses such as
 function \texttt{ginv} in MASS \citep{MASS}, but there is a real
-danger of loss of numerical precision with nearly singular matrices. 
+danger of loss of numerical precision with nearly singular matrices.
 
 Enter QR decomposition: (\ref{eq:B}) can be estimated from
 \begin{equation}
@@ -227,7 +227,7 @@ Q <- qr(varechem)
 Yhat <- qr.fitted(Q, as.matrix(varespec))
 Yres <- qr.resid(Q, as.matrix(varespec))
 k <- qr.coef(Q, as.matrix(varespec))
-@ 
+@
 
 \section{Simulating Simple Communities}
 
@@ -608,7 +608,7 @@ The code below uses the firs alternative:
 
 <<echo=false>>=
 dump("CAdist", file="")
-@ 
+@
 
 \subsection{Constrained Ordination}
 
@@ -654,7 +654,7 @@ X <- scale(X, scale = FALSE)
 Y <- scale(Y, scale = FALSE)
 Yhat <- X %*% solve(t(X) %*% X) %*% t(X) %*% Y
 svd(Yhat)
-@ 
+@
 However, this is not an optimal algorithm. Similarly as in linear
 regression (Chapt. \ref{sec:QR}, p. \pageref{sec:QR}), it is better to
 use QR decomposition \citep{BlueBook}.
@@ -760,7 +760,7 @@ dump("pCCA", file="")
 \subsubsection{Distance-based Redundancy Analysis}
 
 Distance-based Redundancy Analysis (dbRDA) is related to RDA like PCoA
-is related to PCA \citep{LegAnderson99}. 
+is related to PCA \citep{LegAnderson99}.
 The dependent data will be a matrix of distances or
 dissimilarities, but we find the row scores with PCoA and use them as
 a dependent data in the ordinary RDA.  The row scores must be scaled
@@ -789,4 +789,133 @@ possible sign reversals) except for scores \vec{V} in constrained and
 residual unconstrained components.
 
 Function \texttt{capscale} in vegan follows this algorithm.
+
+%%% The following chapter may be removed later, but for time being I
+%%% put these things here.
+
+\section{Prediction Methods for Data and Scores}
+
+Ordination methods were based on matrix decomposition which means that
+data can be recovered from the results. We also saw that scores can be
+recovered from each other so that we can predict scores for new
+observartions (rows) or columns (variables, species).
+
+\subsection{Data Recovery}
+
+Uncostrained PCA and CA are both based on singular value decomposition
+possibly with some preceding standardizations. The internal,
+standardized form of the data \vec{\bar Y} can be recovered in the
+same in both:
+\begin{equation}
+  \label{eq:databack}
+  \vec{\bar Y} = \vec{U} \bLambda^{1/2} \vec{V'}\;,
+\end{equation}
+which uses eigenvalues \vec{\bLambda} and orthonormal row and column
+scores.  The methods differ only in the way they undo the
+standardizations to find the original data. In PCA we must undo the
+standardization of (\ref{eq:PCAstand}):
+\begin{equation}
+  y_{ij} = s_j \bar{y}_{ij} + z_j\;,
+\end{equation}
+and in CA we must undo (\ref{eq:CAstand}):
+\begin{equation}
+  y_{ij} = (\bar{y}_{ij} + 1) r_i c_j G\;,
+\end{equation}
+where $G$ is the grand total of $\vec{Y}$. There is no way of
+estimating original observations \vec{Y} in PCoA using arbitrary
+dissimilarities, but we can only recover the dissimilarities or
+centred dissimilarities.
+
+In constrained ordination we can recover the fitted values of the
+constrained part and separately the residuals from the unconstrained
+ordination. We can use (\ref{eq:databack}) to get values in the
+original scale. Package vegan implement such procedures in
+\texttt{fitted} and \texttt{residuals} functions. In the following model
+
+<<>>=
+data(varespec)
+data(varechem)
+mod <- rda(varespec ~ ., varechem)
+@
+the solutions of constrained and unconstrained components can be
+recovered from
+
+<<results=hide>>=
+rda(fitted(mod))
+rda(residuals(mod))
+@
+
+To recover the original data, we must add constrained and residual
+components:
+\begin{equation}
+  \vec{Y} = \vec{U} \bLambda^{1/2} \vec{V'} + \vec{U_r} \vec{\bLambda_r}^{1/2} \vec{V'_r}\;,
+\end{equation}
+where the terms indexed with \vec{r} refer to unconstrained residual
+terms, and unindexed to the constrained terms. This means that we must
+use LC scores \vec{U} of constrained component for the recovery of
+observed data. Package analogue uses WA scores \vec{W} for estimating
+``residual lengths'', but these do not estimate precisely the original
+data.
+
+\subsection{Reconstitution of Scores}
+
+Species scores \vec{V} and site scores \vec{U} are directly related to
+each other in unconstrained ordination. In PCA the mutual translation
+functions are:
+\begin{align}
+ \vec{V} &= \vec{\bar Y'} \vec{U} \vec{\bLambda}^{-1/2}\\
+ \vec{U} &=  \vec{\bar Y} \vec{V} \vec{\bLambda}^{-1/2}
+\end{align}
+The division by the squareroots of eigenvalue takes care of retaining
+the original scaling of orthonormal scores. The equations include
+centred data matrix \vec{\bar Y}, and supplying new data allows
+finding scores for new observations.
+
+Unconstrained CA has similar dual relationship, but in CA we must take
+care of row totals \vec{r} and column totals \vec{c}. These are given in
+diagonal matrices $\vec{R} = \mathrm{diag}(\vec{r})$ and $\vec{C} =
+\mathrm{diag}(\vec{c})$:
+\begin{align}
+\vec{V} &= \vec{C^{-1/2}} \vec{\bar Y'} \vec{R^{1/2}}
+\vec{U} \vec{\bLambda^{-1/2}}\\
+\vec{U} &= \vec{R^{-1/2}} \vec{\bar Y} \vec{C^{1/2}}
+\vec{V} \vec{\bLambda^{-1/2}}
+\end{align}
+Supplying new \vec{Y} allows finding scores for new rows or
+columns. The needed weights are also found from the supplied \bm{X}.
+
+In constrained ordination the situation is more complicated, and the
+duality of scores does not hold. Matrix \vec{U} is found from
+(weighted) centred constraints \vec{\bar X} and regression
+coefficients \vec{B}. The species scores \vec{V} are found from
+\vec{U} similarly as above, but using symmetric formula for sites does
+not give scores \vec{U}, but instead gives different scores \vec{W}:
+\begin{align}
+ \vec{U} &= \vec{\bar X B}\\
+ \vec{V} &= \vec{C^{-1/2} \vec{\bar Y'} \vec{R^{1/2}}
+ \vec{U} \vec{b\Lambda^{-1/2}\\
+ \vec{W} &= \vec{R^{-1/2}} \vec{\bar Y} \vec{C^{1/2}}
+ \vec{V} \vec{\bLambda^{-1/2}}
+\end{align}
+The equations for RDA are similar, but without weight terms \vec{R}
+and \vec{C}.
+
+Scores \vec{U} are called linear combination or LC scores, and scores
+\vec{W} are called weighted average or WA scores. To add points to the
+solution, you must submit new environmental data \vec{X} for LC scores
+\vec{U}, and new dependent data for WA scores \vec{W} or species scores
+\vec{V}.
+
+In unconstrained analysis (PCA and CA), scores \vec{U} and \vec{V} are
+symmetric so that you can derive \vec{U} from \vec{V} or \vec{V} from
+\bm{U}, and you can repeat this cyclically. However, the scores of
+constrained ordination (RDA and CCA) are nonsymmetric: you can only
+derive \vec{V} from \vec{U}, but not vice versa. If you use the
+symmetric formulae of unconstrained ordination for \vec{V}, you will
+get WA scores \vec{W} which are not identical (or even similar) to LC
+scores \vec{U}. Further, you cannot derive species scores \vec{V} from
+WA scores \vec{W}, and there is no similar dual relationship as in
+unconstrained ordination. The derivation of scores is from \vec{U} to
+\vec{V} to \vec{W} but this route cannot be reversed.
+
 \endinput
