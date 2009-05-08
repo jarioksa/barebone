@@ -1,8 +1,3 @@
-<<echo=false,results=hide>>=
-require(barebone)
-require(vegan)
-options(width=66)
-@
 \chapter{R Programming Interface to Multivariate Analysis}
 \label{sec:basicmethods}
 
@@ -99,10 +94,18 @@ least squares of the original data.
 Function \texttt{svd} performs the singular value decomposition. In
 the following example we centre the data before the decomposition:
 
-<<>>=
-data(dune)
-str(svd(scale(dune, scale=FALSE)))
-@
+\begin{Schunk}
+\begin{Sinput}
+> data(dune)
+> str(svd(scale(dune, scale = FALSE)))
+\end{Sinput}
+\begin{Soutput}
+List of 3
+ $ d: num [1:20] 21.7 18.6 12 11.7 10.4 ...
+ $ u: num [1:20, 1:20] -0.26013 0.11061 0.00758 0.4505 -0.31224 ...
+ $ v: num [1:30, 1:20] -0.09717 0.00409 0.0191 0.19792 0.00682 ...
+\end{Soutput}
+\end{Schunk}
 The function returns singular values in vector \texttt{d} and row
 and column scores in matrices \texttt{v} and \texttt{u}.
 
@@ -143,9 +146,16 @@ tell the function that data are symmetric so that it will not use time
 to inspect input for symmetry. In the following, we analyse a centred
 crossproduct matrix:
 
-<<>>=
-str(eigen(crossprod(scale(dune, scale=FALSE)), symmetric=TRUE))
-@
+\begin{Schunk}
+\begin{Sinput}
+> str(eigen(crossprod(scale(dune, scale = FALSE)), symmetric = TRUE))
+\end{Sinput}
+\begin{Soutput}
+List of 2
+ $ values : num [1:30] 471 345 145 136 108 ...
+ $ vectors: num [1:30, 1:30] 0.09717 -0.00409 -0.0191 -0.19792 -0.00682 ...
+\end{Soutput}
+\end{Schunk}
 The function returns eigenvalues in vector \texttt{values} and
 eigenvectors in \texttt{vectors}.  The \texttt{values} are squares of
 \texttt{d} of \texttt{svd}, and the \texttt{vectors} are similar (up
@@ -192,9 +202,11 @@ further analysis of linear models, such as in influence measures
 
 It is easy to write (\ref{eq:Yhat}) in R:
 
-<<eval=false>>=
-Yhat <- X %*% solve(t(X) %*% X) %*% t(X) %*% Y
-@
+\begin{Schunk}
+\begin{Sinput}
+> Yhat <- X %*% solve(t(X) %*% X) %*% t(X) %*% Y
+\end{Sinput}
+\end{Schunk}
 However, this is computationally problematic.  The problem is that
 (\ref{eq:Yhat}) involves matrix inversion (\texttt{solve()}), and the
 model matrix \vec{X} can be singular or nearly singular. With
@@ -212,14 +224,16 @@ rank-deficit models can be estimated.
 
 The usage of QR decomposition is very simple in R. First we make the QR decomposition with function \texttt{qr}, and then we can extract fitted values, residuals, regression coefficients etc:
 
-<<>>=
-data(varechem)
-data(varespec)
-Q <- qr(varechem)
-Yhat <- qr.fitted(Q, as.matrix(varespec))
-Yres <- qr.resid(Q, as.matrix(varespec))
-beta <- qr.coef(Q, as.matrix(varespec))
-@
+\begin{Schunk}
+\begin{Sinput}
+> data(varechem)
+> data(varespec)
+> Q <- qr(varechem)
+> Yhat <- qr.fitted(Q, as.matrix(varespec))
+> Yres <- qr.resid(Q, as.matrix(varespec))
+> beta <- qr.coef(Q, as.matrix(varespec))
+\end{Sinput}
+\end{Schunk}
 
 \section{Simulating Simple Communities}
 
@@ -239,22 +253,57 @@ where $x_i$ is the value of the independent variable in row $i$, and
 $\beta_j$ is the regression coefficient for a column (species) $j$.
 
 This is done in
-<<echo=false>>=
-dump("rspecies", file = "")
-@
+\begin{Schunk}
+\begin{Soutput}
+rspecies <-
+function (n, spp, b = rep(1, spp), x = rep(1, n)) 
+{
+    log.lambda <- lapply(1:spp, function(z) data.matrix(x) %*% 
+        b[[z]])
+    y <- sapply(log.lambda, function(z) rpois(n, exp(z)))
+    y
+}
+\end{Soutput}
+\end{Schunk}
 The function returns an \texttt{n} by \texttt{spp} matrix of species abundances.
 The mean abundances are determined by \texttt{b} ($\beta_j$) values of the intercepts
 
-<<>>=
-rspecies(n = 5, spp = 2, b = c(2,4))
-@
+\begin{Schunk}
+\begin{Sinput}
+> rspecies(n = 5, spp = 2, b = c(2, 4))
+\end{Sinput}
+\begin{Soutput}
+     [,1] [,2]
+[1,]   12   48
+[2,]    5   47
+[3,]   13   42
+[4,]   12   53
+[5,]    8   55
+\end{Soutput}
+\end{Schunk}
 Other parameters can be added to model responses to environmental covariates
 (note that now species responses are described elementwise in \texttt{b})
 
-<<>>=
-x <- rnorm(10)
-rspecies(n = 10, spp = 2, b = list(c(2, 1), c(1, 2)), x = model.matrix(~x))
-@
+\begin{Schunk}
+\begin{Sinput}
+> x <- rnorm(10)
+> rspecies(n = 10, spp = 2, b = list(c(2, 1), c(1, 2)), 
++     x = model.matrix(~x))
+\end{Sinput}
+\begin{Soutput}
+      [,1] [,2]
+ [1,]    7    6
+ [2,]    9    6
+ [3,]   19   22
+ [4,]   13    2
+ [5,]   14   23
+ [6,]   11    4
+ [7,]    7    5
+ [8,]   19   16
+ [9,]   19   23
+[10,]    6    3
+\end{Soutput}
+\end{Schunk}
 Covariates should be provided as model matrix, that can be done easily by the
 formula interface of the \texttt{model.matrix} function.
 
@@ -278,9 +327,16 @@ $\vec{\bSigma = \bLambda}^{1/2}$, and \vec{U} and \vec{V} are
 orthonormal matrices of row and column scores.  The implementation is
 straightforward:
 
-<<echo=false>>=
-dump("PCA", file = "")
-@
+\begin{Schunk}
+\begin{Soutput}
+PCA <-
+function (Y, scale = FALSE) 
+{
+    Ybar <- scale(Y, center = TRUE, scale = scale)
+    svd(Ybar)
+}
+\end{Soutput}
+\end{Schunk}
 The function returns a result of the R function \texttt{svd}. The only
 optional argument is \texttt{scale} which defines how data is scaled
 before the analysis. In general, the standard R function
@@ -304,10 +360,18 @@ equals the sum of $\vec{\bar Y}^2$. If we want the
 singular values to decompose the variance of the data, we can call the
 function as
 
-<<>>=
-data(dune)
-str(PCA(dune, scale = rep(sqrt(nrow(dune)-1), ncol(dune))))
-@
+\begin{Schunk}
+\begin{Sinput}
+> data(dune)
+> str(PCA(dune, scale = rep(sqrt(nrow(dune) - 1), ncol(dune))))
+\end{Sinput}
+\begin{Soutput}
+List of 3
+ $ d: num [1:20] 4.98 4.26 2.76 2.67 2.39 ...
+ $ u: num [1:20, 1:20] -0.26013 0.11061 0.00758 0.4505 -0.31224 ...
+ $ v: num [1:30, 1:20] -0.09717 0.00409 0.0191 0.19792 0.00682 ...
+\end{Soutput}
+\end{Schunk}
 This divides columns with $\sqrt{n-1}$ so that the sum of
 $\vec{\bSigma}^2$ equals the sum of variances of \vec{Y}, and the
 singular values are standard deviations of the axes.  Using scale
@@ -329,9 +393,19 @@ The row and column scores \vec{U} and \vec{V} are identical to those
 found in the previous methods (apart from possible sign reversals),
 and $\vec{\bLambda} = \vec{\bSigma}^2$.
 
-<<echo=false>>=
-dump("PCAeig", file = "")
-@
+\begin{Schunk}
+\begin{Soutput}
+PCAeig <-
+function (Y, scale = FALSE) 
+{
+    Y <- scale(as.matrix(Y), center = TRUE, scale = scale)
+    YY <- crossprod(Y)
+    SOL <- eigen(YY, symmetric = TRUE)
+    SOL$u <- Y %*% SOL$vectors %*% diag(1/sqrt(SOL$values))
+    SOL
+}
+\end{Soutput}
+\end{Schunk}
 It is a common practice to omit multiplication with
 $\vec{\bLambda}^{-1/2}$ in (\ref{eq:PCAu}) or, equivalently, division
 by square roots of eigenvalues in \texttt{PCAeig}. In that case the
@@ -424,9 +498,22 @@ The algorithm follows \citet{Mard79}:
     squares and is submitted to spectral decomposition.
 \end{enumerate}
 
-<<echo=false>>=
-dump("PCoA", file = "")
-@
+\begin{Schunk}
+\begin{Soutput}
+PCoA <-
+function (D) 
+{
+    M <- as.matrix(D^2)
+    M <- scale(M, center = TRUE, scale = FALSE)
+    M <- t(scale(t(M), center = TRUE, scale = FALSE))
+    SOL <- eigen(-M/2, symmetric = TRUE)
+    nonzero <- abs(SOL$values) > sqrt(.Machine$double.eps)
+    SOL$values <- SOL$values[nonzero]
+    SOL$vectors <- SOL$vectors[, nonzero]
+    SOL
+}
+\end{Soutput}
+\end{Schunk}
 
 The function returns all non-zero eigenvalues and orthonormal row
 scores. Due to centring, there are at most $n-1$ positive
@@ -485,9 +572,23 @@ Weighted PCoA has the following stages:
 \end{enumerate}
 
 The implementation is straighforward:
-<<echo=false>>=
-dump("wPCoA", file = "")
-@
+\begin{Schunk}
+\begin{Soutput}
+wPCoA <-
+function (D, w) 
+{
+    M <- as.matrix(D^2)
+    cnt <- apply(M, 2, weighted.mean, w = w)
+    M <- scale(M, center = cnt, scale = FALSE)
+    cnt <- apply(M, 1, weighted.mean, w = w)
+    M <- t(scale(t(M), center = cnt, scale = FALSE))
+    M <- diag(sqrt(w)) %*% M %*% diag(sqrt(w))
+    SOL <- eigen(-M/2, symmetric = TRUE)
+    SOL$vectors <- diag(1/sqrt(w)) %*% SOL$vectors
+    SOL
+}
+\end{Soutput}
+\end{Schunk}
 Function \texttt{wcmdscale} in vegan follows this algorithm.
 
 \subsubsection{Correspondence Analysis (CA)}
@@ -519,9 +620,22 @@ The SVD algorithm is based on \citet{GreeHast87}:
   column weights \vec{r} and \vec{c}.
 \end{enumerate}
 Direct implementation in R is:
-<<echo=false>>=
-dump("CA", file = "")
-@
+\begin{Schunk}
+\begin{Soutput}
+CA <-
+function (Y) 
+{
+    Y <- Y/sum(Y)
+    r <- rowSums(Y)
+    c <- colSums(Y)
+    Ybar <- (Y - r %o% c)/sqrt(r %o% c)
+    SOL <- svd(Ybar)
+    SOL$u <- diag(1/sqrt(r)) %*% SOL$u
+    SOL$v <- diag(1/sqrt(c)) %*% SOL$v
+    SOL
+}
+\end{Soutput}
+\end{Schunk}
 This returns a result from SVD with row and column scores (\vec{V} and
 \vec{U}) and singular values which are square roots of eigenvalues.
 
@@ -556,9 +670,26 @@ The spectral decomposition of a symmetric matrix follows
   earlier. We wish to discard this first trivial axis.
 \end{enumerate}
 Direct implementation in R is:
-<<echo=false>>=
-dump("CAeig", file="")
-@
+\begin{Schunk}
+\begin{Soutput}
+CAeig <-
+function (Y) 
+{
+    Y <- as.matrix(Y)/sum(Y)
+    r <- rowSums(Y)
+    c <- colSums(Y)
+    YY <- diag(1/sqrt(c)) %*% t(Y) %*% diag(1/r) %*% Y %*% diag(1/sqrt(c))
+    SOL <- eigen(YY, symmetric = TRUE)
+    SOL$vectors <- diag(1/sqrt(c)) %*% SOL$vectors
+    SOL$u <- Y %*% SOL$vectors
+    SOL$u <- diag(1/r) %*% SOL$u %*% diag(1/sqrt(SOL$values))
+    SOL$u <- SOL$u[, -1]
+    SOL$vectors <- SOL$vectors[, -1]
+    SOL$values <- SOL$values[-1]
+    SOL
+}
+\end{Soutput}
+\end{Schunk}
 
 Correspondence Analysis is a distance-based method, like all other
 eigenvector methods. There are two differences to PCA: Correspondence
@@ -590,9 +721,22 @@ distances with weighted Principal Coordinate Analysis
 \end{enumerate}
 The code below uses the firs alternative:
 
-<<echo=false>>=
-dump("CAdist", file="")
-@
+\begin{Schunk}
+\begin{Soutput}
+CAdist <-
+function (Y) 
+{
+    Y <- as.matrix(Y)/sum(Y)
+    r <- rowSums(Y)
+    c <- colSums(Y)
+    Ybar <- diag(1/r) %*% Y %*% diag(1/sqrt(c))
+    D <- dist(Ybar)
+    SOL <- wPCoA(D, r)
+    SOL$v <- diag(1/c) %*% t(Y) %*% SOL$vectors %*% diag(1/sqrt(SOL$values))
+    SOL
+}
+\end{Soutput}
+\end{Schunk}
 
 \subsection{Constrained Ordination}
 
@@ -659,9 +803,21 @@ Putting this all together gives the following algorithm:
   peforming SVD of $\vec{Y} - \vec{\hat Y} = \vec{U}_r \bSigma_r \vec{V'}_r$.
 \end{enumerate}
 Direct implementation is:
-<<echo=false>>=
-dump("RDA", file="")
-@
+\begin{Schunk}
+\begin{Soutput}
+RDA <-
+function (Y, X, scale = FALSE) 
+{
+    Y <- scale(as.matrix(Y), center = TRUE, scale = scale)
+    X <- scale(as.matrix(X), center = TRUE, scale = FALSE)
+    Q <- qr(X)
+    RDA <- svd(qr.fitted(Q, Y))
+    RDA$w <- Y %*% RDA$v %*% diag(1/RDA$d)
+    RES <- svd(qr.resid(Q, Y))
+    list(RDA = RDA, Resid = RES)
+}
+\end{Soutput}
+\end{Schunk}
 
 \subsubsection{Partial Analysis}
 
@@ -690,9 +846,32 @@ constraints or both so that the function can be used for pRDA, RDA,
 pPCA (= PCA after removing background variables), or usual PCA. Vegan
 function \texttt{rda} has the same general behaviour.
 
-<<echo=false>>=
-dump("pRDA", file="")
-@
+\begin{Schunk}
+\begin{Soutput}
+pRDA <-
+function (Y, X = NULL, Z = NULL, scale = FALSE) 
+{
+    Y <- scale(as.matrix(Y), center = TRUE, scale = scale)
+    if (!is.null(Z)) {
+        Z <- scale(as.matrix(Z), center = TRUE, scale = FALSE)
+        Y <- qr.resid(qr(Z), Y)
+    }
+    if (!is.null(X)) {
+        X <- scale(as.matrix(X), center = TRUE, scale = FALSE)
+        X <- cbind(X, Z)
+        Q <- qr(X)
+        RDA <- svd(qr.fitted(Q, Y))
+        RDA$w <- Y %*% RDA$v %*% diag(1/RDA$d)
+        Y <- qr.resid(Q, Y)
+    }
+    else {
+        RDA <- NULL
+    }
+    RES <- svd(Y)
+    list(RDA = RDA, RES = RES)
+}
+\end{Soutput}
+\end{Schunk}
 
 \subsubsection{Constrained Correspondence Analysis (CCA)}
 
@@ -722,9 +901,46 @@ similarly and in parallel to RDA.
   \vec{c}.
 \end{enumerate}
 
-<<echo=false>>=
-dump("pCCA", file="")
-@
+\begin{Schunk}
+\begin{Soutput}
+pCCA <-
+function (Y, X = NULL, Z = NULL) 
+{
+    Y <- as.matrix(Y)/sum(Y)
+    r <- rowSums(Y)
+    c <- colSums(Y)
+    Y <- (Y - r %o% c)/sqrt(r %o% c)
+    if (!is.null(Z)) {
+        Z <- as.matrix(Z)
+        rmean <- apply(Z, 2, weighted.mean, w = r)
+        Z <- scale(Z, center = rmean, scale = FALSE)
+        Z <- diag(sqrt(r)) %*% Z
+        Y <- qr.resid(qr(Z), Y)
+    }
+    if (!is.null(X)) {
+        X <- as.matrix(X)
+        rmean <- apply(X, 2, weighted.mean, w = r)
+        X <- scale(X, center = rmean, scale = FALSE)
+        X <- diag(sqrt(r)) %*% X
+        X <- cbind(X, Z)
+        Q <- qr(X)
+        CCA <- svd(qr.fitted(Q, Y))
+        CCA$w <- Y %*% CCA$v
+        CCA$w <- diag(1/sqrt(r)) %*% CCA$w %*% diag(1/CCA$d)
+        CCA$u <- diag(1/sqrt(r)) %*% CCA$u
+        CCA$v <- diag(1/sqrt(c)) %*% CCA$v
+        Y <- qr.resid(Q, Y)
+    }
+    else {
+        CCA <- NULL
+    }
+    RES <- svd(Y)
+    RES$u <- diag(1/sqrt(r)) %*% RES$u
+    RES$v <- diag(1/sqrt(c)) %*% RES$v
+    list(CCA = CCA, RES = RES)
+}
+\end{Soutput}
+\end{Schunk}
 
 \subsubsection{Distance-based Redundancy Analysis}
 
@@ -743,9 +959,19 @@ $n$ rows.
 The implementation calls \texttt{PCoA} and \texttt{dbRDA} so that this
 allows partial analysis:
 
-<<echo=false>>=
-dump("dbRDA", file = "")
-@
+\begin{Schunk}
+\begin{Soutput}
+dbRDA <-
+function (D, X = NULL, Z = NULL) 
+{
+    SOL <- PCoA(D)
+    pos <- SOL$values > sqrt(.Machine$double.eps)
+    Lambda <- SOL$values[pos]
+    Y <- SOL$vectors[, pos] %*% diag(sqrt(Lambda))
+    pRDA(Y, X, Z)
+}
+\end{Soutput}
+\end{Schunk}
 
 The function returns the \texttt{RDA} result object. However, the
 scores do not have quite their usual meaning: columns are not species,
@@ -802,18 +1028,22 @@ ordination. We can use (\ref{eq:databack}) to estimate the data.
 Package vegan implement such procedures in \texttt{fitted} and
 \texttt{residuals} functions. In the following model
 
-<<>>=
-data(varespec)
-data(varechem)
-mod <- rda(varespec ~ ., varechem)
-@
+\begin{Schunk}
+\begin{Sinput}
+> data(varespec)
+> data(varechem)
+> mod <- rda(varespec ~ ., varechem)
+\end{Sinput}
+\end{Schunk}
 the solutions of constrained and unconstrained components can be
 recovered from
 
-<<results=hide>>=
-rda(fitted(mod))
-rda(residuals(mod))
-@
+\begin{Schunk}
+\begin{Sinput}
+> rda(fitted(mod))
+> rda(residuals(mod))
+\end{Sinput}
+\end{Schunk}
 
 To recover the original data, we must add constrained and residual
 components:
