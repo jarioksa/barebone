@@ -40,8 +40,8 @@ longer notation: Matrix multiplication is given as \texttt{A \%*\% B}.  The most
    && \texttt{sweep(A, 1, x, "*")}\\
  Inverse & $\vec{A}^{-1}$ & \texttt{solve(A)}\\
   \hline
-\end{tabular}
- \end{table}
+ \end{tabular}
+\end{table}
 
  There are alternative commands for many matrix operations, and some
  of these are shown in Table \ref{tab:matrix}. This chapter normally
@@ -210,7 +210,9 @@ which is easy to solve because \vec{R} is upper triangular.  There is
 no loss of precision in QR decomposition, and even ill-conditioned and
 rank-deficit models can be estimated.
 
-The usage of QR decomposition is very simple in R. First we make the QR decomposition with function \texttt{qr}, and then we can extract fitted values, residuals, regression coefficients etc:
+The usage of QR decomposition is very simple in R. First we make the QR 
+decomposition with function \texttt{qr}, and then we can extract fitted 
+values, residuals, regression coefficients etc:
 
 <<>>=
 data(varechem)
@@ -222,28 +224,38 @@ beta <- qr.coef(Q, as.matrix(varespec))
 @
 
 \section{Simulating Simple Communities}
+\label{sec:rspecies}
 
 Simulated communities are useful in studying the properties of the
 different multivariate methods. It is easier to understand and interpret
 the results if we know the truth,
 i.e.~assumptions and parameters under which the community was generated.
 
-The simplest thing one can do is to generate abundances for $i = 1,2,\ldots,n$
-sites and for $j = 1,2,\ldots,m$ independent species based on random
-numbers from Poisson distribution
+\subsection{Linear responses}
+\label{sec:rspecies.linear}
+
+The simplest thing one can do is to generate abundances for 
+$i = 1,2,\ldots,n$ sites and for $j = 1,2,\ldots,m$ independent species 
+based on Poisson distribution
+%% in the GLM literature Y denotes the random variable, y is for observations
+%% this is in conflict with the yector matrix notation
 \begin{eqnarray}
+  \label{eq:app:rspeclinear}
   y_{ij} &\sim &\mathrm{Poisson}(\lambda_{ij})\\
-  \log(\lambda_{ij}) &=& x_i \beta_j\;,
+  \log(\lambda_{ij}) &=& \vec{X}_i'\boldsymbol{\beta_j}\;,
 \end{eqnarray}
-where $x_i$ is the value of the independent variable in row $i$, and
-$\beta_j$ is the regression coefficient for a column (species) $j$.
+where $\vec{X}$ is the model matrix and $\vec{X}_i$'s are the values of the 
+independent variables (for factors, these are for the design variables) 
+in row (site) $i$, and $\boldsymbol{\beta_j}$'s denote the regression coefficients
+for column (species) $j$.
 
 This is done in
 <<echo=false>>=
 dump("rspecies", file = "")
 @
 The function returns an \texttt{n} by \texttt{spp} matrix of species abundances.
-The mean abundances are determined by \texttt{b} ($\beta_j$) values of the intercepts
+The mean abundances on the log scale are determined by \texttt{b} 
+($\boldsymbol{\beta_j}$) values of the intercepts
 
 <<>>=
 rspecies(n = 5, spp = 2, b = c(2,4))
@@ -257,6 +269,126 @@ rspecies(n = 10, spp = 2, b = list(c(2, 1), c(1, 2)), x = model.matrix(~x))
 @
 Covariates should be provided as model matrix, that can be done easily by the
 formula interface of the \texttt{model.matrix} function.
+
+\subsection{Unimodal responses}
+\label{sec:rspecies.gauss}
+
+If responses are assumed to be unimodel, instead of linear, the Gaussian response 
+curve can be modelled as
+\begin{eqnarray}
+  \label{eq:app:rspecgaussian1}
+  \lambda_{ij} &=& h_j \exp \left( - \frac{(x_i - u_j)^2}{2t_j^2} \right)\;,
+\end{eqnarray}
+where for species $j$, $u_j$ is the location of the optimum (sometimes called
+indicator value), $t_j$ ($>0$) is the tolerance or width of the response, 
+and $h_j$ is the expected height of the response curve at the optimum.
+
+On the log scale it takes a form that can be 
+conveniently modelled as polinomials of the linear predictor
+\begin{eqnarray}
+  \label{eq:app:rspecgaussian2}
+  \log(\lambda_{ij}) &=& \alpha_j - \frac{1}{2} \left( \frac{x_i - u_j}{t_j} \right)\\
+  &=& \beta_{0j} + \beta_{1j} x_i + \beta_{2j} x_i^2\;.
+\end{eqnarray}
+If $\beta_{2j} = 0$, the response reduces to the linear form,
+if $\beta_{2j} < 0$ the response is unimodal, while $\beta_{2j} > 0$
+means, that curve has a minimum instead of a maximum.
+
+
+The original $(u, h, t)$ coefficients can be found as
+(\citep{terBLoom86,OksaMinc02,OksaEtAl88})
+\begin{eqnarray}
+  \label{eq:app:rspecgaussian3}
+  u_j &=& -\beta_{1j} / (2 \beta_{2j})\\
+  h_j &=& \exp{\left[\beta_{0j} - \beta_{1j}^2 / (4 \beta_{2j})\right]}\\
+  t_j &=& \sqrt{ -1 / (2 \beta_{2j})}\;,
+\end{eqnarray}
+and the function \texttt{uht2beta} finds the $\beta$ coefficients
+from $(u, h, t)$
+
+<<echo=false>>=
+dump("uht2beta", file = "")
+@
+
+Now we can simulate Gaussian response curve for two species easily by
+polinomials of a linear predictor (see Fig.~\ref{fig:gaurspec})
+
+<<echo=false,results=hide>>=
+set.seed(1234)
+@
+<<>>=
+n <- 100
+x<-runif(n, 0, 100)
+x <- x[order(x)]
+X <- model.matrix(~x + I(x^2))
+b <- list(uht2beta(25, 20, 10), uht2beta(55, 10, 50))
+Y <- rspecies(n, 2, b = b, x = X)
+@
+<<gaurspec,fig=true,include=false,echo=false>>=
+plot(Y[, 1] ~ x, ylim = range(Y), pch = 19,
+    xlab = "Linear predictor", ylab = "Abundances")
+lines(exp(X %*% b[[1]]) ~ x)
+points(Y[, 2] ~ x, pch = 21)
+lines(exp(X %*% b[[2]]) ~ x, lty = 2)
+legend("topleft", pch = c(19, 21), lty = c(1:2),
+    legend = c("species 1", "species 2"))
+@
+\begin{figure}[t]
+  \sidecaption[t]
+  \includegraphics[width=75mm]{barebone-gaurspec.pdf}
+  \caption{Gaussian response curves for two simulated species
+    along a simple gradient.
+    Optima are 25 and 55, heights are 20 and 10, and tolerances
+    are 10 and 50, respectively. Points are simulated values,
+    lines are expected mean responses.
+    }
+  \label{fig:gaurspec}
+\end{figure}
+
+\subsection{Simulated data sets}
+\label{sec:rspecies.data}
+
+We now simulate simple data sets to be used in demonstrating 
+assumptions and limitations of basic multivariate methods.
+The characteristics of these data sets are summarized in
+%% Table~\ref{tab:rdat}.
+
+We assume that mean abundances follow a lognormal distribution,
+for this, we use normal distribution (with defined \texttt{mean}
+and standard deviation \texttt{sd}) to generate the intercepts
+(note, this is lognormal on the response scale). 
+In the first data set, one continuous predictor \texttt{x}, 
+species' responses are linear on the predictor scale 
+and uniformly distributed
+
+<<>>=
+n <- 100
+spp <- 50
+b0 <- rnorm(spp, mean = 0.5, sd = 0.5)
+x <- runif(n, 0, 100)
+X <- model.matrix(~x)
+b1 <- rnorm(spp, mean = 0, sd = 0.01)
+b <- lapply(1:spp, function(z) c(b0[z], b1[z]))
+rdat1 <- rspecies(n, spp, b = b, x = X)
+rdat2 <- rdat3 <- rdat1 
+@
+
+Here comes some more simulated data sets.
+
+%% \begin{table}[b]
+%%   \centering
+%%    \caption{Summary of simulated data sets.}
+%%   \label{tab:rdat}
+%%  \begin{tabular}{lrrl}
+%%   \hline
+%%   Name              $ \texttt{n} $ \texttt{spp} $ Response type \\
+%%   \svhline
+%%   \texttt{rdat1} $ \Sexpr{nrow(rdat1)} $ \Sexpr{ncol(rdat1)} $ linear \\
+%%   \texttt{rdat2} $ \Sexpr{nrow(rdat2)} $ \Sexpr{ncol(rdat2)} $ Gaussian \\
+%%   \texttt{rdat3} $ \Sexpr{nrow(rdat3)} $ \Sexpr{ncol(rdat3)} $ mixed \\
+%%   \hline
+%%  \end{tabular}
+%% \end{table}
 
 \section{R Programming of Ordination Methods}
 
@@ -665,7 +797,7 @@ dump("RDA", file="")
 
 \subsubsection{Partial Analysis}
 
-\Citet{terBraak86} introduced partial RDA (pRDA) where the effects of
+\Citet{terB86} introduced partial RDA (pRDA) where the effects of
 some background variables, called \emph{covariates} are removed before
 analysis with the interesting variables. This gives as the following
 sequence of models:
