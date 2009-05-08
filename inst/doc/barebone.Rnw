@@ -53,7 +53,7 @@ based on LAPACK and LINPACK libraries \citep{LAPACK, LINPACK}. The
 ordination methods can be very effectively programmed with these
 high-level functions.
 
-The basic ordination methods are all based on 
+The basic ordination methods are all based on
 matrix decomposition. Matrix decomposition is a powerful tool which
 expresses the matrices in other forms which have some optimal
 properties. The original data can be recovered from decomposition so
@@ -69,7 +69,7 @@ Singular value decomposition of $n \times m$ matrix \vec{X} is
   \vec{X} = \vec{U \bSigma V'}\;,
 \end{equation}
 where \vec{U} and \vec{V} are orthonormal matrices and \vec{\bSigma}
-is a diagonal matrix of \emph{singular values} \citep{Mardia79}.
+is a diagonal matrix of \emph{singular values} \citep{Mard79}.
 Orthonormality means that all columns of \vec{U} and \vec{V} are
 orthogonal, and their sum of squares is 1, or $\vec{U'U} = \vec{I}$
 and $\vec{V'V} = \vec{I}$. The importance of axes is conveyed in
@@ -93,7 +93,7 @@ The original data can be recovered from the data. The matrix equation
 \end{equation}
 The singular values are ordered $\sigma_1 \geq \sigma_2 \geq \dots
 \geq \sigma_r$ so that the first columns of \vec{U} and \vec{V} are
-most important in (\ref{eq:svdopen}). The first columns give a 
+most important in (\ref{eq:svdopen}). The first columns give a
 least squares of the original data.
 
 Function \texttt{svd} performs the singular value decomposition. In
@@ -108,7 +108,7 @@ and column scores in matrices \texttt{v} and \texttt{u}.
 
 \subsection{Spectral Decomposition}
 
-Spectral decomposition \citep{Mardia79}, also known as eigenvector
+Spectral decomposition \citep{Mard79}, also known as eigenvector
 decomposition, is used for a symmetric matrix (in prinicple, spectral
 decomposition also applies for nonsymmetric matrices, but it is not
 used for those in ordination). Ecological data matrices are
@@ -398,13 +398,13 @@ particular to PCA performed through spectral decomposition (function
 \texttt{PCAeig}).  The PCA with spectral decomposition analyses matrix
 of crossproducts and sums of squares, but PCoA analyses distances.
 The only task is to convert distances into crossproducts,
-and then analyse these like in \texttt{PCAeig} \citep{Mardia79}. If
+and then analyse these like in \texttt{PCAeig} \citep{Mard79}. If
 the distances are Euclidean, then PCoA gives the same results as PCA,
 but is less efficient.  Normally we ignore the assumption of Euclidean
 distances, and use PCoA with other distances or dissimilarities that
 we regard as more appropriate for our data.
 
-The algorithm follows \citet{Mardia79}:
+The algorithm follows \citet{Mard79}:
 \begin{enumerate}
   \item Centre squared distances by rows and by columns
     \begin{equation}
@@ -435,7 +435,7 @@ will also be negative eigenvalues, so that the number of positive
 eigenvalues is even lower than $n-1$. Negative eigenvalues are not
 removed in the current function, nor are any warnings issued. If we
 wish to scale the row scores by eigenvalues, we must use only the
-positive ones. 
+positive ones.
 
 This algorithm is used in standard R function \texttt{cmdscale}.
 Functions like \texttt{adonis} and \texttt{betadisper} also use
@@ -493,10 +493,10 @@ Function \texttt{wcmdscale} in vegan follows this algorithm.
 \subsubsection{Correspondence Analysis (CA)}
 
 Correspondence analysis (CA) is weighted PCA with Chi-square metric
-\citep{Nishisato80,Greenacre84, GreenacreHastie87, Greenacre07}. Just like with
+\citep{Nish80,Gree84, GreeHast87, Gree07}. Just like with
 PCA, we can use SVD or spectral decomposition.
 
-The SVD algorithm is based on \citet{GreenacreHastie87}:
+The SVD algorithm is based on \citet{GreeHast87}:
 \begin{enumerate}
 \item Let \vec{Y} be the response matrix standardized to unit sum and
   \vec{r} and \vec{c} vectors of its row and column sums.  Perform
@@ -526,7 +526,7 @@ This returns a result from SVD with row and column scores (\vec{V} and
 \vec{U}) and singular values which are square roots of eigenvalues.
 
 The spectral decomposition of a symmetric matrix follows
-\citet{Nishisato80}:
+\citet{Nish80}:
 \begin{enumerate}
 \item Let \vec{Y} be the response matrix standardized to unit sum and
   \vec{r} and \vec{c} vectors of its row and column sums. Find the
@@ -565,7 +565,7 @@ eigenvector methods. There are two differences to PCA: Correspondence
 analysis preserves Chi-square distances while PCA preserves Euclidean
 distance, and CA is weighted while PCA is unweighted.  Chi-square
 distances are Euclidean distances of Chi-square standardized data
-\citep{LegGall01}. The following algorithm combines Chi-square
+\citep{LegeGall01}. The following algorithm combines Chi-square
 distances with weighted Principal Coordinate Analysis
 (\texttt{wPCoA}):
 \begin{enumerate}
@@ -603,19 +603,19 @@ Correspondence Analysis which is generalized from CA.
 
 \subsubsection{Redundancy Analysis}
 
-When \citet{terBraak86} introduced Constrained or Canonical
+When \citet{terB86} introduced Constrained or Canonical
 Correspondence Analysis, he also suggested an algorithm with
 alternating regression and weighted averaging steps. In regression
 step, the site scores are found as linear combinations of constraints
 (environmental variables), and in weighted averaging step site scores
 are found from species scores. Redundancy analysis is similar but
 weighted averaging is replaced with weighted summation step
-\citep{terBraak86, Jongman87}. \citet{Palmer93} gives a remarkably
+\citep{terB86, Jong87}. \citet{Palm93} gives a remarkably
 lucid overview of this algorithm.
 
-The algorithm of \citet{terBraak86} is often taken as the definition of
+The algorithm of \citet{terB86} is often taken as the definition of
 the method of constrained ordination. However, we can achieve the same
-results with some other algorithms. \citet{LegLeg98} showed that a
+results with some other algorithms. \citet{LegeLege98} showed that a
 better way of obtaining all constrained axes simultaneously is to
 analyse fitted values \vec{\hat Y} of
 \begin{equation}
@@ -635,7 +635,7 @@ combinations of constraints and the corresponding column scores
 \vec{V}.  The alternating regression and weighted sums algorithm also
 finds row scores \vec{W} that are weighted sums of column scores. In
 CA framework, they are weighted averages, and consequently called
-weighted average or WA scores \citep{Palmer93}. In direct regression
+weighted average or WA scores \citep{Palm93}. In direct regression
 approach they must be estimated separately as
 \begin{equation}
   \label{eq:RDA.W}
@@ -688,7 +688,7 @@ the analysis of \vec{Y_r} gives the residual ordination.
 The following implementation allows omitting either conditions or
 constraints or both so that the function can be used for pRDA, RDA,
 pPCA (= PCA after removing background variables), or usual PCA. Vegan
-function \texttt{rda} has the same general behaviour. 
+function \texttt{rda} has the same general behaviour.
 
 <<echo=false>>=
 dump("pRDA", file="")
@@ -729,7 +729,7 @@ dump("pCCA", file="")
 \subsubsection{Distance-based Redundancy Analysis}
 
 Distance-based Redundancy Analysis (dbRDA) is related to RDA like PCoA
-is related to PCA \citep{LegAnderson99}.
+is related to PCA \citep{LegeAnde99}.
 The dependent data will be a matrix of distances or
 dissimilarities, but we find the row scores with PCoA and use them as
 a dependent data in the ordinary RDA.  The row scores must be scaled
@@ -825,7 +825,7 @@ terms, and unindexed to the constrained terms. This means that we must
 use LC scores \vec{U} of constrained component for the recovery of
 observed data. Package analogue uses WA scores \vec{W} for estimating
 ``residual lengths'' \citep[following][]{CANOCO}, but these do not
-estimate precisely the original data. 
+estimate precisely the original data.
 
 \subsection{Reconstitution of Scores}
 
@@ -883,4 +883,6 @@ WA scores \vec{W}, and there is no similar dual relationship as in
 unconstrained ordination. The derivation of scores is from \vec{U} to
 \vec{V} to \vec{W} but this route cannot be reversed.
 
+\bibliographystyle{spbasic}
+\bibliography{barebone}
 \endinput
