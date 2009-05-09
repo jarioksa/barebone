@@ -1,0 +1,27 @@
+\let\code=\texttt
+\let\proglang=\textsf
+\newcommand{\pkg}[1]{{\fontseries{b}\selectfont #1}}
+%% \newcommand{\E}{\mathsf{E}} %% -- already define in svmono.cls
+\newcommand{\VAR}{\mathsf{VAR}}
+\newcommand{\COV}{\mathsf{COV}}
+\newcommand{\Prob}{\mathsf{P}}
+\newcommand{\R}{\proglang{R}}
+\newcommand{\bvec}[1]{\boldsymbol{#1}}
+
+\newcommand{\bSigma}{\ensuremath{\boldsymbol{\varSigma}}}
+\newcommand{\bLambda}{\ensuremath{\boldsymbol{\varLambda}}}
+\renewenvironment{Schunk}{\small}{}
+
+%% Indexing macros
+%% print and index
+\newcommand{\idxtext}[1]{#1\index{#1}}
+%% likewise, but with \code
+\newcommand{\icode}[1]{\code{#1}\index{#1@\code{#1}}}
+%% print and nested index, words reversed
+\newcommand{\indexrev}[2]{#1 #2\index{#2!#1}}
+%% print and nested index
+\newcommand{\indexsub}[2]{#1 #2\index{#1!#2}}
+%\newcommand{\pkg}[1]{#1~package}{\index{package!#1}}
+
+%%\newcommand\code{\bgroup\@makeother\_\@makeother\~\@makeother\$\@codex}
+%%\def\@codex#1{{\normalfont\ttfamily\hyphenchar\font=-1 #1}\egroup}
