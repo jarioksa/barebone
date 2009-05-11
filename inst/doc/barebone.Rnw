@@ -26,9 +26,9 @@ longer notation: Matrix multiplication is given as \texttt{A \%*\% B}.  The most
    \caption{Examples of basic matrix operations in R. Uppercase letters refer to matrices and lower case to vectors.}
   \label{tab:matrix}
  \begin{tabular}{lcl}
-  \hline
+\hline\noalign{\smallskip}
   Operation & Matrix & R \\
-  \svhline
+\noalign{\smallskip}\svhline\noalign{\smallskip}
   Transpose & \vec{A'} & \texttt{t(A)}\\
   Vector inner product & \vec{x'x} & \texttt{crossprod(x)} \\
   Vector outer product & \vec{xy'} & \texttt{outer(x, y)} \\
@@ -40,7 +40,7 @@ longer notation: Matrix multiplication is given as \texttt{A \%*\% B}.  The most
    \texttt{diag(x) \%*\% A} \\
    && \texttt{sweep(A, 1, x, "*")}\\
  Inverse & $\vec{A}^{-1}$ & \texttt{solve(A)}\\
-  \hline
+\noalign{\smallskip}\hline\noalign{\smallskip}
  \end{tabular}
 \end{table}
 
@@ -225,8 +225,8 @@ no loss of precision in QR decomposition, and even ill-conditioned and
 rank-deficit models can be estimated.
 
 \index{QR decomposition}
-The usage of QR decomposition is very simple in R. First we make the QR 
-decomposition with function \texttt{qr}, and then we can extract fitted 
+The usage of QR decomposition is very simple in R. First we make the QR
+decomposition with function \texttt{qr}, and then we can extract fitted
 values, residuals, regression coefficients etc:
 
 <<>>=
@@ -249,6 +249,7 @@ eigenvector methods which can be easily solved with R matrix library.
 Principal component analysis, Principal coordinate analysis and correspondence analysis are the major methods discussed in this chapter.
 
 \subsubsection{Principal Component Analysis (PCA)}
+\label{sec:alg:PCA}
 
 \index{principal component analysis}
 The simplest and numerically best method for PCA is equivalent to
@@ -484,7 +485,7 @@ The implementation is straighforward:
 <<echo=false>>=
 dump("wPCoA", file = "")
 @
-Function \texttt{wcmdscale} in vegan follows this algorithm.
+Function \icode{wcmdscale} in vegan follows this algorithm.
 
 \subsubsection{Correspondence Analysis (CA)}
 \label{sec:alg:CA}
@@ -706,7 +707,7 @@ the analysis of \vec{Y_r} gives the residual ordination.
 The following implementation allows omitting either conditions or
 constraints or both so that the function can be used for pRDA, RDA,
 pPCA (= PCA after removing background variables), or usual PCA. Vegan
-function \texttt{rda} has the same general behaviour.
+function \icode{rda} has the same general behaviour.
 
 <<echo=false>>=
 dump("pRDA", file="")
@@ -896,7 +897,7 @@ The equations for RDA are similar, but without weight terms \vec{R}
 and \vec{C}.
 
 \index{linear combination scores}
-\index{weighted averages scoes}
+\index{weighted averages scores}
 Scores \vec{U} are called linear combination or LC scores, and scores
 \vec{W} are called weighted average or WA scores. To add points to the
 solution, you must submit new environmental data \vec{X} for LC scores
