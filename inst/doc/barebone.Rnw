@@ -295,6 +295,7 @@ $\vec{\bSigma}^2$ equals the sum of variances of \vec{Y}, and the
 singular values are standard deviations of the axes.  Using scale
 $\sqrt{n}$ would give the same results with biased esimate of variance.
 
+\paragraph{Spectral Decomposition}
 \index{principal component analysis}
 \index{singular value decomposition}
 SVD is the preferred method of performing PCA, but earlier PCA was
@@ -343,8 +344,44 @@ variance. Similarly, the scaled solution is usually found using
 correlation matrix instead of explicit scaling of response data with
 (\ref{eq:PCAstand}) like in SVD.
 
+\paragraph{Power Method}
+\label{sec:alg:PCA:power}
+\index{principal component analysis!power method} Finally, we describe power
+algorithm to find the first principal component and its 
+eigenvalue. Power algorithm is not recommended, but it is explained
+here because it is so simple. The power algorithm is based on theorem
+that any matrix multiplied with a high power of a matrix will converge
+to the first eigenvector of that matrix. The high power of matrix is
+achieved by multiplying a vector several time with a matrix. We take a
+random vector \vec{u^*} and perform cycles $\vec{v^*} = \vec{\bar Y
+  u^*}$, $\vec{u^*} = \vec{\bar Y' v^*}$ so long that $\vec{u^*}$
+stabilizes and converges to an eigenvector. The matrix and vector
+multiplication is equivalent of finding weighted sums, and therefore
+this algorithm is also called weighted sums method \citep{Jong87}. At
+every multiplication, the scale (sum of squares) of the result vector
+will change. The first eigenvalue of the matrix gives the magnitude of
+this change of scale \citep[cf.][]{Stev09}. Conversely, we can use the
+change of sum of squares to estimate the eigenvalue, and stop the
+iteratios when the eigenvalue stabilized in iteration. The following
+function implements this method:
+
+<<echo=false>>=
+dump("PCApot1", file="")
+@ 
+The function returns normalized column scores $\vec{v}_1$ and row
+scores $\vec{u}_1$ scaled by the eigenvalue, or $\sum_i v_{i1}^2 = 1$
+and $\sum_i u_{i1}^2 = \lambda_1$.
+
+It is possible to find more than one axis by orthogonalizing against
+previous axes \citep{Jong87}. However, this is not worthwhile since
+previous methods are better when more axes are needed. The method is
+prone to accumulation of numerical errors, in particular for later,
+orthogonalized axes. The method is only shown here because of its
+simplicity.
+
+\paragraph{R functions for PCA}
 \index{principal component analysis}
-R functions are based on either of these algorithms:
+R functions are based either on SVD or on spectral decomposition:
 \begin{itemize}
 \item \icode{prcomp} uses SVD, but it scales singular values by
   $\sqrt{n-1}$, and calls them standard deviations
@@ -496,7 +533,9 @@ Correspondence analysis (CA) is weighted PCA with Chi-square metric
 \citep{Nish80,Gree84, GreeHast87, Gree07}. Just like with
 PCA, we can use SVD or spectral decomposition.
 
-\index{principal coordinate analysis}
+\paragraph{Singular Value Decomposition}
+\label{sec:alg:CA:svd}
+\index{correspondence analysis}
 \index{singular value decomposition}
 The SVD algorithm is based on \citet{GreeHast87}:
 \begin{enumerate}
@@ -527,7 +566,9 @@ dump("CA", file = "")
 This returns a result from SVD with row and column scores (\vec{V} and
 \vec{U}) and singular values which are square roots of eigenvalues.
 
-\index{principal coordinate analysis}
+\paragraph{Spectral Decomposition}
+\label{sec:alg:CA:eig}
+\index{correspondence analysis}
 \index{spectral decomposition}
 The spectral decomposition of a symmetric matrix follows
 \citet{Nish80}:
@@ -564,8 +605,9 @@ Direct implementation in R is:
 dump("CAeig", file="")
 @
 
-\index{principal coordinate analysis}
-\index{principal coordinate analysis}
+\paragraph{Weighted Principal Coordinates}
+\label{sec:alg:CA:wPCoA}
+\index{correspondence analysis}
 Correspondence Analysis is a distance-based method, like all other
 eigenvector methods. There are two differences to PCA: Correspondence
 analysis preserves Chi-square distances while PCA preserves Euclidean
@@ -599,6 +641,39 @@ The code below uses the firs alternative:
 <<echo=false>>=
 dump("CAdist", file="")
 @
+
+\paragraph{Reciprocal Averaging}
+\label{sec:alg:CA:RA}
+\index{reciprocal averaging} \index{correspondence analysis!reciprocal
+  averaging} \index{weighted averages} The power method
+(\pageref{sec:alg:PCA:power}) can be also used to find the first axis
+of CA. The only difference is that instead of weighted sums we use
+weighted averages. The power method is historically interesting
+because CA was introduced to ecologists as a method of cyclic weighted
+averages under the name of Reciprocal Averaging \citep{Hill73}.
+Because of the simplicity of the algorithm, CA (as reciprocal
+averaging) was regarded as simpler method than mathematically more
+complicated PCA. Similar simple power algorithm can be used for the
+first axis of PCA (\pageref{sec:alg:PCA:power}), but even in that
+time, computer programs used more effective but mathematically more
+complicated algorithms. Similary as with PCA, the eigenvalue can be
+expressed the ratio of change of scales between successive iterations,
+and the iterations can be stopped when the ratio stabilized. In CA,
+eigenvalue is always $\lambda_1 < 1$ so that the vectors shrink during
+iterations.
+
+\index{reciprocal averaging} \index{correspondence analysis!reciprocal
+  averaging} \index{weighted averages} Instead of explicit matrix
+equations, the following implementation uses function \icode{wascores}
+of vegan for weighted averages. With argument \code{expand = TRUE}
+this function retains the original scaling of vectors and expands the
+scores. Moreover, it returns the rate of shrinkage as argument
+\code{shinkage} which actually is the current estimate of
+eigenvalue. With this function the implementation is very simple:
+
+<<echo=false>>=
+dump("CAwa1", file="")
+@ 
 
 \subsection{Constrained Ordination}
 \label{sec:alg:constrained}
