@@ -1,8 +1,8 @@
 Package: barebone
 Type: Package
 Title: Multivariate Methods in Ecology with R: Basic Algorithms
-Version: 1.0-2
-Date: 2009-05-15
+Version: 1.0-3
+Date: 2009-05-18
 Author: Peter Solymos, Jari Oksanen and Bela Tothmeresz
 Maintainer: Peter Solymos <solymos@ualberta.ca>
 Description: An educational package to explain the basic algorithms
