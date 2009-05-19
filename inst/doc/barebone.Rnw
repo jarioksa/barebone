@@ -347,7 +347,7 @@ correlation matrix instead of explicit scaling of response data with
 \paragraph{Power Method}
 \label{sec:alg:PCA:power}
 \index{principal component analysis!power method} Finally, we describe power
-algorithm to find the first principal component and its 
+algorithm to find the first principal component and its
 eigenvalue. Power algorithm is not recommended, but it is explained
 here because it is so simple. The power algorithm is based on theorem
 that any matrix multiplied with a high power of a matrix will converge
@@ -367,7 +367,7 @@ function implements this method:
 
 <<echo=false>>=
 dump("PCApot1", file="")
-@ 
+@
 The function returns normalized column scores $\vec{v}_1$ and row
 scores $\vec{u}_1$ scaled by the eigenvalue, or $\sum_i v_{i1}^2 = 1$
 and $\sum_i u_{i1}^2 = \lambda_1$.
@@ -673,58 +673,68 @@ eigenvalue. With this function the implementation is very simple:
 
 <<echo=false>>=
 dump("CAwa1", file="")
-@ 
+@
 
 \subsubsection{Nonmetric Multidimensional Scaling}
 \label{sec:alg:NMDS}
 
-Nonmetric multidimensional scaling (NMDS) is only defined by monotone
+Nonmetric multidimensional scaling (NMDS) is defined by monotone
 regression and goodness of fit measure \citep{Krus64, Krus64num}. The
 goodness of fit measure is called stress $S$ and it is defined as
 \begin{equation}
   S = \sqrt{\frac{S^*}{T^*}} = \sqrt{\frac{\sum (d_{ij} - \hat{d}_{ij})^2}{\sum d_{ij}^2}}\;,
 \end{equation}
 where $d$ are distances between points in the final solution, and
-$\hat d$ are the fitted distances. The monotone regression states that
-$\hat d$ have the same rank order as observed dissimilarities
-\citep{Krus64, Krus64num}.
+$\hat d$ are the fitted distances. Observed dissimilarities do not
+appear in the equation for stress.  They influence the monotone
+regression that states that $\hat d$ have the same rank order as
+observed dissimilarities \citep{Krus64, Krus64num}. The monotone
+regression is implemented in R function \icode{isoreg}.
 
 Only monotone regression and stress were defined, but not the way how
-to minimize the function which makes NMDS strikingly different from
-eigenvector methods. NMDS is a nonlinear optimization problem. For $n$
-points and $k$ dimensions we must estimate $nk$ parameters which makes
-NMDS a hard problem. We need information on the gradient of stress
-with respect tot he location of the points, and we need an effective
-optimization routine.
-
-The derivative of the stress, or its gradient, is defined as
-\citep{Krus64num}:
+to minimize the function.  NMDS is a nonlinear optimization problem
+where coordinates of points in ordination space are the
+parameters. There are $nk$ parameters for $n$ points and $k$
+dimensions which makes NMDS a hard problem. For effective optimization
+we need information on the directions where points should be moved to
+minimize stress. This information is provided by the derivative of
+stress with respect to coordinate $x_{il}$ for point $i$ on dimension
+$l$ \citep{Krus64num}:
 \begin{equation}
-  \frac{\D S}{\D x_{il}} = S \sum_{j=1}^n \left[ \left( \frac{d_{ij} - \hat{d}_{ij}}{S^*} - \frac{d_{ij}}{T^*}\right) \frac{x_{il} - x_{jl}}{d_{ij}} \right]\;,
+  \frac{\D S}{\D x_{il}} = S \sum_{j=1}^n \left[ \left( \frac{d_{ij} - \hat{d}_{ij}}{S^*} - \frac{d_{ij}}{T^*}\right) \frac{x_{il} - x_{jl}}{d_{ij}} \right]\;.
 \end{equation}
-where $x$ is the coordinate of point $i$ on dimension $l$. In
-addition, we want to have a robust and effective optimization
-routine. \citet{Krus64num} described the method of steepest descent,
-or always moving along the gradient, but this is usually ineffective
-for difficult tasks like NMDS \citep{Pres92}.  R function
-\icode{optim} has several good alternatives, and \citet{MASS} use
+\citet{Krus64num} described the method of steepest descent, or always
+moving along the gradient, but this is usually ineffective for
+difficult tasks like NMDS \citep{Pres92}.  R function \icode{optim}
+has several good alternatives, and \citet{MASS} use
 Broyden-Fletcher-Goldfarb-Shanno algorithm in their \icode{isoMDS}
 function in the MASS package.
 
-The following implementation only has function for \code{stress} and
-its derivative \code{dstress}.  The only other steps are that the
-function sets random initial configuration if none was provided
-(argument \code{x}) and calls \icode{optim} to find the configuration
-that minimizes the stress in \code{k} dimension using the given
-\code{method}.
+The following implementation has only two major steps and two internal
+functions:
+\begin{enumerate}
+\item Set starting values for iteration. The function uses random
+  uniform coordinates if initial configuration (\code{x}) was not
+  provided.  Most software use PCoA as default starting values, like
+  does the \icode{isoMDS} which uses \icode{cmdscale}. This usually
+  gives fast convergence to a solution, but may lead to a local
+  minimum close to a metric solution.
+\item Minimize the stress with \icode{optim}. Function allows
+  selection of optimization method, and passes all extra arguments to
+  \icode{optim}. Stress is defined in internal function \code{stress}
+  and its gradient in \code{dstress}. The internal notation is taken
+  from \icode{isoreg}, and \code{y} refers to $d$ and \code{yf} to
+  $\hat d$.
+\end{enumerate}
+
 
 <<echo=false>>=
 dump("NMDS", file = "")
-@ 
+@
 The function returns the result of \icode{optim} where \code{par}
-contain the final configuration and \code{value} the final
-stress. Function \icode{isoMDS} in the MASS package \citep{MASS} uses
-the same method, but implemented in C.
+contain the final configuration in matrix form and \code{value} the
+final stress. Function \icode{isoMDS} in the MASS package \citep{MASS}
+uses the same method, but implemented in C.
 
 \subsection{Constrained Ordination}
 \label{sec:alg:constrained}
