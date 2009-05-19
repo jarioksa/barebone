@@ -3,15 +3,18 @@ function(D, k = 2, x, method = "BFGS", ...)
 {
     stress <- function(x, D, k) {
         x <- matrix(x, ncol=k)
-        s <- isoreg(D, dist(x))
-        sqrt(sum((s$y[s$ord] - s$yf)^2)/sum(s$y^2))
+        y <- dist(x)
+        ord <- order(D, y)
+        s <- isoreg(y[ord])
+        sqrt(sum((s$y - s$yf)^2)/sum(s$y^2))
     }
     dstress <- function(x, D, k) {
         x <- matrix(x, ncol=k)
         dx <- x
         y <- dist(x)
-        s <- isoreg(D, y)
-        yf <- s$yf[order(s$ord)]
+        ord <- order(D, y)
+        s <- isoreg(y[ord])
+        yf <- s$yf[order(ord)]
         Sstar <- sum((y-yf)^2)
         Tstar <- sum(y^2)
         S <- sqrt(Sstar/Tstar)
