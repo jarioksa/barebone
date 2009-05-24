@@ -1,17 +1,17 @@
 NMDS <-
-function(D, k = 2, x, method = "BFGS", ...)
+function(D, k = 2, u, method = "BFGS", ...)
 {
-    stress <- function(x, D, k) {
-        x <- matrix(x, ncol=k)
-        y <- dist(x)
+    stress <- function(u, D, k) {
+        u <- matrix(u, ncol=k)
+        y <- dist(u)
         ord <- order(D, y)
         s <- isoreg(y[ord])
         sqrt(sum((s$y - s$yf)^2)/sum(s$y^2))
     }
-    dstress <- function(x, D, k) {
-        x <- matrix(x, ncol=k)
-        dx <- x
-        y <- dist(x)
+    dstress <- function(u, D, k) {
+        u <- matrix(u, ncol=k)
+        dx <- u
+        y <- dist(u)
         ord <- order(D, y)
         s <- isoreg(y[ord])
         yf <- s$yf[order(ord)]
@@ -21,12 +21,13 @@ function(D, k = 2, x, method = "BFGS", ...)
         dmat <- (S/Sstar*(y-yf) - S/Tstar*y)/y
         dmat <-  as.matrix(dmat) 
         for (l in 1:k)
-            dx[,l] <- rowSums(dmat * outer(x[,l], x[,l], "-"))
+            dx[,l] <- rowSums(dmat * outer(u[,l], u[,l], "-"))
         as.vector(dx)
     }
-    if (missing(x))
-        x <- runif(k * attr(D, "Size"))
-    out <- optim(x, stress, dstress, D = D, k = k, method = method, ...)
+    D <- round(D, 12)
+    if (missing(u))
+        u <- runif(k * attr(D, "Size"))
+    out <- optim(u, stress, dstress, D = D, k = k, method = method, ...)
     out$par <- matrix(out$par, ncol = k)
     out
 }

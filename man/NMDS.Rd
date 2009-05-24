@@ -7,13 +7,13 @@
   to a nonmetric hypothesis (Kruskal 1964)
 }
 \usage{
-NMDS(D, k = 2, x, method = "BFGS", ...)
+NMDS(D, k = 2, u, method = "BFGS", ...)
 }
 
 \arguments{
   \item{D}{ Dissimilarity structure. }
   \item{k}{ Number of dimensions. }
-  \item{x}{ Optional starting configuration. A random start is used
+  \item{u}{ Optional starting configuration. A random start is used
    if missing.}
   \item{method}{Minimization method for \code{\link{optim}}. }
   \item{\dots}{ Other arguments passed to \code{\link{optim}}. }
@@ -37,7 +37,8 @@ NMDS(D, k = 2, x, method = "BFGS", ...)
 
 \seealso{ \code{\link[MASS]{isoMDS}} function (\pkg{MASS} package) 
   implements the same algorithm but written in C. See \code{\link{optim}}
-  for the optimization routine. }
+  for the optimization routine and \code{\link{isoreg}} for isotonic 
+  regression. }
 
 \keyword{ multivariate }
 

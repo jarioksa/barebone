@@ -701,12 +701,14 @@ minimize stress. This information is provided by the derivative of
 stress with respect to coordinate $x_{il}$ for point $i$ on dimension
 $l$ \citep{Krus64num}:
 \begin{equation}
-  \frac{\D S}{\D x_{il}} = S \sum_{j=1}^n \left[ \left( \frac{d_{ij} - \hat{d}_{ij}}{S^*} - \frac{d_{ij}}{T^*}\right) \frac{x_{il} - x_{jl}}{d_{ij}} \right]\;.
+ \frac{\D S}{\D x_{il}} = S \sum_{j=1}^n \left[ \left( \frac{d_{ij} - \hat{d}_{ij}}{S^*} - \frac{d_{ij}}{T^*}\right) \frac{u_{ik} - u_{jk}}{d_{ij}} \right]\;,
 \end{equation}
-\citet{Krus64num} described the method of steepest descent, or always
-moving along the gradient, but this is usually ineffective for
-difficult tasks like NMDS \citep{Pres92}.  R function \icode{optim}
-has several good alternatives, and \citet{MASS} use
+where $u$ is the coordinate of point $i$ on dimension $k$. In
+addition, we want to have a robust and effective optimization
+routine. \citet{Krus64num} described the method of steepest descent,
+or always moving along the gradient, but this is usually ineffective
+for difficult tasks like NMDS \citep{Pres92}.  R function
+\icode{optim} has several good alternatives, and \citet{MASS} use
 Broyden-Fletcher-Goldfarb-Shanno algorithm in their \icode{isoMDS}
 function in the MASS package.
 
@@ -727,14 +729,13 @@ functions:
   $\hat d$.
 \end{enumerate}
 
-
 <<echo=false>>=
 dump("NMDS", file = "")
 @
 The function returns the result of \icode{optim} where \code{par}
-contain the final configuration in matrix form and \code{value} the
-final stress. Function \icode{isoMDS} in the MASS package \citep{MASS}
-uses the same method, but implemented in C.
+contain the final configuration and \code{value} the final
+stress. Function \icode{isoMDS} in the MASS package \citep{MASS} uses
+the same method (except for handling ties), but implemented in C.
 
 \subsection{Constrained Ordination}
 \label{sec:alg:constrained}
