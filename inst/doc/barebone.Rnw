@@ -678,18 +678,38 @@ dump("CAwa1", file="")
 \subsubsection{Nonmetric Multidimensional Scaling}
 \label{sec:alg:NMDS}
 
-Nonmetric multidimensional scaling (NMDS) is defined by monotone
-regression and goodness of fit measure \citep{Krus64, Krus64num}. The
-goodness of fit measure is called stress $S$ and it is defined as
+Nonmetric multidimensional scaling (NMDS) is defined by
+isotonic\footnote{\citet{Krus64,Krus64num} used the name monotonic
+  regression, but isotonic regression is now the standard name
+  \citep{BarlEtal72}.}  regression and goodness of fit measure
+\citep{Krus64, Krus64num}. The goodness of fit measure is called
+stress $S$ and it is defined as
 \begin{equation}
   S = \sqrt{\frac{S^*}{T^*}} = \sqrt{\frac{\sum (d_{ij} - \hat{d}_{ij})^2}{\sum d_{ij}^2}}\;,
 \end{equation}
 where $d$ are distances between points in the final solution, and
 $\hat d$ are the fitted distances. Observed dissimilarities do not
-appear in the equation for stress.  They influence the monotone
+appear in the equation for stress.  They influence the isotonic
 regression that states that $\hat d$ have the same rank order as
-observed dissimilarities \citep{Krus64, Krus64num}. The monotone
-regression is implemented in R function \icode{isoreg}.
+observed dissimilarities \citep{Krus64, Krus64num, BarlEtal72}. 
+
+\citet{Krus64num} presented and algorithm for isotonic regression, but
+standard R function \icode{isoreg} implements another algorithm of the
+same method \citep{BarlEtal72}. The isotonic regression uses only rank
+order information of observed dissimilarities.  Treatment of ties is
+crucial for effective ordination \citep{Krus64,Krus64num}.  In
+particular presence-absence or cover class data have several tied
+values. In addition, there may be some falsely broken ties, because of
+floating point precision issues in binary computers.  A particularly
+serious case of ties are dissimilarities of ones between sampling
+units that share no species. If we keep the fitted values tied, the
+ordination tries to put all these extreme sites at the same distance
+from each other, resulting in spherical or ring like
+configuration. \citet{Krus64, Krus64num} recommends allowing breaking
+ties.  He calls this primary tie treatment.  Function \code{NMDS}
+below follows this recommendation.  Function \icode{isoMDS} of the
+MASS package \citep{MASS} does not treat ties properly, but breaks
+them in order dependent way.
 
 Only monotone regression and stress were defined, but not the way how
 to minimize the function.  NMDS is a nonlinear optimization problem
@@ -707,10 +727,11 @@ where $u$ is the coordinate of point $i$ on dimension $k$. In
 addition, we want to have a robust and effective optimization
 routine. \citet{Krus64num} described the method of steepest descent,
 or always moving along the gradient, but this is usually ineffective
-for difficult tasks like NMDS \citep{Pres92}.  R function
-\icode{optim} has several good alternatives, and \citet{MASS} use
-Broyden-Fletcher-Goldfarb-Shanno algorithm in their \icode{isoMDS}
-function in the MASS package.
+for difficult tasks like NMDS and better methods should be used
+\citep{Pres92, NoceWrig99}.  R function \icode{optim} has several good
+alternatives, and \code{NMDS} below defaults to
+Broyden-Fletcher-Goldfarb-Shanno algorithm as does \icode{isoMDS}
+function in the MASS package \citep{MASS}.
 
 The following implementation has only two major steps and two internal
 functions:
