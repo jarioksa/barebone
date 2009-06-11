@@ -424,7 +424,7 @@ particular to PCA performed through spectral decomposition (function
 \texttt{PCAeig}).  The PCA with spectral decomposition analyses matrix
 of crossproducts and sums of squares, but PCoA analyses distances.
 The only task is to convert distances into crossproducts,
-and then analyse these like in \texttt{PCAeig} \citep{Mard79}. If
+and then analyse these like in \texttt{PCAeig} \citep{Gower66,Mard79}. If
 the distances are Euclidean, then PCoA gives the same results as PCA,
 but is less efficient.  Normally we ignore the assumption of Euclidean
 distances, and use PCoA with other distances or dissimilarities that
@@ -460,10 +460,10 @@ The function returns all non-zero eigenvalues and orthonormal row
 scores. Due to centring, there are at most $n-1$ positive
 eigenvalues. If \vec{D} was non-Euclidean, semimetric index, there
 will also be negative eigenvalues, so that the number of positive
-eigenvalues is even lower than $n-1$. Negative eigenvalues are not
-removed in the current function, nor are any warnings issued. If we
-wish to scale the row scores by eigenvalues, we must use only the
-positive ones.
+eigenvalues is even lower than $n-1$ \citep{Gower85}. Negative
+eigenvalues are not removed in the current function, nor are any
+warnings issued. If we wish to scale the row scores by eigenvalues, we
+must use only the positive ones.
 
 \index{principal coordinate analysis}
 This algorithm is used in standard R function \icode{cmdscale}.
@@ -691,7 +691,7 @@ where $d$ are distances between points in the final solution, and
 $\hat d$ are the fitted distances. Observed dissimilarities do not
 appear in the equation for stress.  They influence the isotonic
 regression that states that $\hat d$ have the same rank order as
-observed dissimilarities \citep{Krus64, Krus64num, BarlEtal72}. 
+observed dissimilarities \citep{Krus64, Krus64num, BarlEtal72}.
 
 \citet{Krus64num} presented and algorithm for isotonic regression, but
 standard R function \icode{isoreg} implements another algorithm of the
@@ -974,10 +974,26 @@ and in CA we must undo (\ref{eq:CAstand}):
 \begin{equation}
   y_{ij} = (\bar{y}_{ij} + 1) r_i c_j G\;,
 \end{equation}
-where $G$ is the grand total of $\vec{Y}$. There is no way of
-estimating original observations \vec{Y} in PCoA using arbitrary
-dissimilarities, but we can only recover the dissimilarities or
-centred dissimilarities.
+where $G$ is the grand total of $\vec{Y}$.
+
+There is no way of estimating original observations \vec{Y} in PCoA
+using arbitrary dissimilarities, but we can only recover the
+\citet{Gower66} matrix $\vec{M}$ derived from the original
+dissimilarities $\vec{D}$. If $\vec{D}$ was based on non-Euclidean
+dissimilarities, some of the eigenvalues are negative and the
+corresponding scaled eigenvectors are imaginary \citep{Gower85}. To
+estimate the transformed data $\vec{M}$ the distances estimated from
+imaginary axes must be subtracted from the distances estimated from
+the real axes. For $r$ positive eigenvalues and real axes, and $s$
+negative eigenvalues and imaginary eigenvalues (with $r+s = n-1$) this
+gives us \citep{Gower85}:
+\begin{equation}
+  \bar{d}_{ii} + \bar{d}_{jj} - 2 \bar{d}_{ij} = m_{ij}^2 = \\
+  \sum_{k=1}^r \lambda_k (u_{ik} - u_{jk})^2 - \sum_{k=r+1}^{r+s} |
+  \lambda_k |  (u_{ik} - u_{jk})^2 \;,
+\end{equation}
+where $\bar{d}$ are double-centred dissimilarities
+\citep{Gower66,Mard79}.
 
 In constrained ordination we can recover the fitted values of the
 constrained part and separately the residuals from the unconstrained
