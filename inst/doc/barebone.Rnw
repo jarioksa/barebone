@@ -1,3 +1,6 @@
+%\VignetteIndexEntry{barebone}
+%\VignettePackage{barebone}
+%\VignetteDepends{vegan}
 <<echo=false,results=hide>>=
 require(barebone)
 require(vegan)
