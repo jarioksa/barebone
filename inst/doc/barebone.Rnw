@@ -712,7 +712,7 @@ configuration. \citet{Krus64, Krus64num} recommends allowing breaking
 ties.  He calls this primary tie treatment.  Function \code{NMDS}
 below follows this recommendation.  Function \icode{isoMDS} of the
 MASS package \citep{MASS} does not treat ties properly, but breaks
-them in order dependent way.
+ties in an order dependent way.
 
 Only monotone regression and stress were defined, but not the way how
 to minimize the function.  NMDS is a nonlinear optimization problem
@@ -721,13 +721,12 @@ parameters. There are $nk$ parameters for $n$ points and $k$
 dimensions which makes NMDS a hard problem. For effective optimization
 we need information on the directions where points should be moved to
 minimize stress. This information is provided by the derivative of
-stress with respect to coordinate $x_{il}$ for point $i$ on dimension
-$l$ \citep{Krus64num}:
+stress with respect to coordinate $u_{ik}$ for point $i$ on dimension
+$k$ \citep{Krus64num}:
 \begin{equation}
- \frac{\D S}{\D x_{il}} = S \sum_{j=1}^n \left[ \left( \frac{d_{ij} - \hat{d}_{ij}}{S^*} - \frac{d_{ij}}{T^*}\right) \frac{u_{ik} - u_{jk}}{d_{ij}} \right]\;,
+ \frac{\D S}{\D u_{ik}} = S \sum_{j=1}^n \left[ \left( \frac{d_{ij} - \hat{d}_{ij}}{S^*} - \frac{d_{ij}}{T^*}\right) \frac{u_{ik} - u_{jk}}{d_{ij}} \right]\;.
 \end{equation}
-where $u$ is the coordinate of point $i$ on dimension $k$. In
-addition, we want to have a robust and effective optimization
+In addition, we want to have a robust and effective optimization
 routine. \citet{Krus64num} described the method of steepest descent,
 or always moving along the gradient, but this is usually ineffective
 for difficult tasks like NMDS and better methods should be used
@@ -740,7 +739,7 @@ The following implementation has only two major steps and two internal
 functions:
 \begin{enumerate}
 \item Set starting values for iteration. The function uses random
-  uniform coordinates if initial configuration (\code{x}) was not
+  uniform coordinates if initial configuration (\code{u}) was not
   provided.  Most software use PCoA as default starting values, like
   does the \icode{isoMDS} which uses \icode{cmdscale}. This usually
   gives fast convergence to a solution, but may lead to a local
