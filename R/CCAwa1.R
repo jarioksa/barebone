@@ -4,12 +4,13 @@
     require(vegan) || stop("requires wascores function in vegan")
     EPS <- sqrt(.Machine$double.eps)
     X <- as.matrix(X)
+    wts <- rowSums(Y)
     u <- rnorm(nrow(Y))
     eig <- 0
     repeat {
         v <- wascores(u, Y, expand = TRUE)
         w <- wascores(v, t(Y), expand = TRUE)
-        u <- fitted(lm(w ~  X))
+        u <- fitted(lm(w ~  X, w = wts))
         if (abs(attr(v, "shrinkage") - eig) < EPS)
             break
         eig <- attr(v, "shrinkage")
