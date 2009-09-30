@@ -906,6 +906,40 @@ similarly and in parallel to RDA.
 dump("pCCA", file="")
 @
 
+\paragraph{Alternating Weighted Averages and Linear Regression}
+\label{sec:alg:WALC}
+
+\Citet{terB86} originally presented CCA with an algorithm of
+alternating weighted averages and linear regression, and
+\citet{Palm93} explains this approach in a very educational way. The
+mere weighted averages would give the usual CA with the Reciprocal
+Averaging algoritm (p. \pageref{sec:alg:CA:RA}). This is not a
+recommended algorithm, and it is not used in R functions for CCA. The
+algorithm is presented only for educational purposes.
+
+The following implementation is a minor variant of \code{CAwa1} code
+of Reciprocal Averaging (p. \pageref{sec:alg:CA:RA}): the site scores
+found as weighted averages of species scores are renamed to \code{w},
+and the site scores \code{u} are found as fitted values of weighted
+linear regression predicting scores \code{w} with model matrix of
+constraining variables as independent variables and row sums of
+dependent data as weights:
+
+<<echo=false>>=
+dump("CCAwa1", file="")
+@ 
+
+Row scores \code{w} are called WA scores, and row scores \code{u} are
+called LC scores \citep{Palm93}. The current function deshrinks
+species scores \code{v} and WA scores \code{w}, but not the fitted
+values of linear regression \code{u}, and therefore the scale of the
+scores shrinks during iteration. The function finds only one axis.
+
+Similar addition of one line of linear regression and renaming of
+scores \code{w} in Power algorithm of PCA
+(p. \pageref{sec:alg:PCA:power}) will give RDA.  No weights are needed
+in linear regression step in RDA.
+
 \subsubsection{Distance-based Redundancy Analysis}
 
 \index{redundancy analysis!distance based}
