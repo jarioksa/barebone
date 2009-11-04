@@ -1,6 +1,6 @@
 \name{CAwa1}
 \Rdversion{1.1}
-\alias{CAwa1}
+\alias{CCAwa1}
 
 \title{
   Correspondence Analysis.
@@ -9,7 +9,7 @@
   First axis of Constrained Correspondence Analysis using weighted averaging.
 }
 \usage{
-CAwa1(Y)
+CCAwa1(Y, X)
 }
 
 \arguments{
