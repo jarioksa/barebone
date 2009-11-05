@@ -3,7 +3,7 @@
 \alias{CCAwa1}
 
 \title{
-  Correspondence Analysis.
+  Constrained Correspondence Analysis.
 }
 \description{
   First axis of Constrained Correspondence Analysis using weighted averaging.
@@ -24,7 +24,7 @@ CCAwa1(Y, X)
 \details{ This is a poor algorithm to perform CCA, and is included
   only to show how simple it is. Constrained Correspondence Analysis
   was originally introduced in ecology as a result of this algorithm
-  (ter Braak 1986), and Palmer (1993) gives a very lucid explanation of
+  (ter Braak 1986). Palmer (1993) gives a very lucid explanation of
   the algorithm and its two kind of row scores, known as Weighted Averages
   (WA) scores and Linear Combination (LC) scores.
   The function only finds one axis.
