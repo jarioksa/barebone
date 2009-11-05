@@ -1,4 +1,4 @@
-\name{CAwa1}
+\name{CCAwa1}
 \Rdversion{1.1}
 \alias{CCAwa1}
 
