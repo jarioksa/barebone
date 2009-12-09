@@ -801,7 +801,7 @@ centred model matrix of constraints (environmental variables).  The
 constrained ordination solution is SVD of \vec{\hat Y}.  Obviously,
 (\ref{eq:RDA.Yhat}) is identical to the model of multiple linear
 regression (\ref{eq:Yhat}). We can use QR decomposition
-(p. \pageref{sec:QR}) to estimate the fitted values and residual
+(p. \pageref{sec:alg:QR}) to estimate the fitted values and residual
 values to avoid the possible loss of precision in matrix inversion.
 
 \index{redundancy analysis}
