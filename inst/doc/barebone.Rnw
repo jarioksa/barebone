@@ -165,7 +165,7 @@ eigenvectors in \texttt{vectors}.  The \texttt{values} are squares of
 to sign) to \texttt{v} of \texttt{svd}.
 
 \subsection{QR Decomposition}
-\label{sec:QR}
+\label{sec:alg:QR}
 
 \index{QR decomposition}
 QR decomposition of matrix \vec{X} is
@@ -383,6 +383,8 @@ orthogonalized axes. The method is only shown here because of its
 simplicity.
 
 \paragraph{R functions for PCA}
+\label{sec:alg:PCAinR}
+
 \index{principal component analysis}
 R functions are based either on SVD or on spectral decomposition:
 \begin{itemize}
@@ -841,6 +843,7 @@ dump("RDA", file="")
 @
 
 \subsubsection{Partial Analysis}
+\label{sec:alg:pRDA}
 
 \index{redundancy analysis!partial}
 \Citet{terB86} introduced partial RDA (pRDA) where the effects of
@@ -874,6 +877,7 @@ dump("pRDA", file="")
 @
 
 \subsubsection{Constrained Correspondence Analysis (CCA)}
+\label{sec:alg:CCA}
 
 \index{constrained correspondence analysis}
 Constrained Correspondence Analysis or Canonical Correspondence
@@ -941,6 +945,7 @@ scores \code{w} in Power algorithm of PCA
 in linear regression step in RDA.
 
 \subsubsection{Distance-based Redundancy Analysis}
+\label{sec:alg:dbRDA}
 
 \index{redundancy analysis!distance based}
 Distance-based Redundancy Analysis (dbRDA) is related to RDA like PCoA
@@ -981,13 +986,15 @@ data matrix \vec{Y} is available.
 %%% put these things here.
 
 \section{Prediction Methods for Data and Scores}
+\label{sec:alg:pred}
 
 Ordination methods were based on matrix decomposition which means that
 data can be recovered from the results. We also saw that scores can be
 recovered from each other so that we can predict scores for new
 observartions (rows) or columns (variables, species).
 
-\subsection{Data Recovery}
+\subsection{Reconstitution of Data}
+\label{sec:alg:pred:data}
 
 \index{principal component analysis}
 \index{correspondence analysis}
@@ -1063,6 +1070,7 @@ observed data. Package analogue uses WA scores \vec{W} for estimating
 estimate precisely the original data.
 
 \subsection{Reconstitution of Scores}
+\label{sec:alg:pred:scores}
 
 \index{prediction!ordination scores}
 \index{prediction!principal component analysis}
