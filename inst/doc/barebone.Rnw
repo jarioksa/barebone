@@ -857,14 +857,19 @@ sequence of models:
 \end{eqnarray}
 where \vec{Z} are the centred model matrix of conditions partialled
 out, and \vec{[X,Z]} is combined model matrix formed by adding columns
-of constraints \vec{X} and conditions \vec{Z} together. It is crucial
-to combine conditions and constraints into same model matrix. Although
-the direct effect of conditions was removed in the first step, they
-may interact with with \vec{X}. The rule is that the residual
-component should be the same when \vec{Z} are used as conditions and
-\vec{X} as constrains, and when they both together are used as
-constraints. SVD of \vec{\hat Y} gives the constrained ordination, and
-the analysis of \vec{Y_r} gives the residual ordination.
+of constraints \vec{X} and conditions \vec{Z} together. 
+
+It is necessary to combine conditions \vec{X} and constraints \vec{Z}
+into same model matrix. Although the direct effect of conditions was
+removed in the first step, they may interact with with \vec{X}.
+Alteratively, we can use  residuals of \vec{X} regressed on \vec{Z},
+but the combined matrix \vec{[X,Z]} gives the same results.  The vegan
+package uses the combined matrix, but CANOCO uses the regression
+residuals approach \citep{CANOCO}.
+
+SVD of \vec{\hat Y} gives the
+constrained ordination, and the analysis of \vec{Y_r} gives the
+residual ordination.
 
 \index{redundancy analysis!partial}
 The following implementation allows omitting either conditions or
@@ -875,6 +880,22 @@ function \icode{rda} has the same general behaviour.
 <<echo=false>>=
 dump("pRDA", file="")
 @
+The alternative approach using regression residuals of constraints can
+be achieved by making the following change in the code:
+
+\begin{Schunk}
+  \begin{Soutput}
+ @@ -10,5 +10,6 @@
+     if (!is.null(X)) {
+         X <- scale(as.matrix(X), center = TRUE, scale = FALSE)
+-        X <- cbind(X, Z)
++        if (!is.null(Z))
++            X <- qr.resid(QZ, X)
+         Q <- qr(X)
+         RDA <- svd(qr.fitted(Q, Y))
+
+  \end{Soutput}
+\end{Schunk}
 
 \subsubsection{Constrained Correspondence Analysis (CCA)}
 \label{sec:alg:CCA}
