@@ -1,10 +1,10 @@
 Package: barebone
 Type: Package
 Title: Multivariate Methods in Ecology with R: Basic Algorithms
-Version: 1.0-4
-Date: 2009-09-30
-Author: Peter Solymos, Jari Oksanen and Bela Tothmeresz
-Maintainer: Peter Solymos <solymos@ualberta.ca>
+Version: 1.1-0
+Date: 2013-02-26
+Author: Peter Solymos
+Maintainer: Jari Oksanen <jari.oksanen@oulu.fi>
 Description: An educational package to explain the basic algorithms
   of common ordination methods. The functions in this package are not
   made for production use, but only to give an insight into barebone

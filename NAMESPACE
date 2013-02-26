@@ -1,0 +1,5 @@
+## The essence of 'barebone' is to make everything visible and
+## therefore everything *must* be exported.
+
+# Export all names
+exportPattern(".")

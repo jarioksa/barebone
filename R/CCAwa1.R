@@ -10,7 +10,7 @@
     repeat {
         v <- wascores(u, Y, expand = TRUE)
         w <- wascores(v, t(Y), expand = TRUE)
-        u <- fitted(lm(w ~  X, w = wts))
+        u <- fitted(lm(w ~  X, weights = wts))
         if (abs(attr(v, "shrinkage") - eig) < EPS)
             break
         eig <- attr(v, "shrinkage")
