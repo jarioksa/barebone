@@ -1,16 +1,27 @@
 `wRDA` <-
     function(Y, X = NULL, Z = NULL, scale = FALSE, w = NULL)
 {
-    if (!is.null(w))
-        .NotYetUsed("w", error = TRUE)
-    Y <- scale(as.matrix(Y), center = TRUE, scale = scale)
+    if (is.null(w))
+        w <- rep(1/nrow(Y), nrow(Y))
+    else
+        w <- w/sum(w)
+    wscale <- function(x, scale = FALSE, w = NULL) {
+        wc <- apply(x, 2, weighted.mean, w = w)
+        x <- sweep(x, 2, wc, "-")
+        if (scale) {
+            wsd <- sqrt(colSums(w * x^2) / (nrow(Y) - 1))
+            x <- sweep(x, 2, wsd, "/")
+        }
+        sweep(x, 1, w, "*")
+    }
+    Y <- wscale(as.matrix(Y), scale = scale, w = w)
     if (!is.null(Z)) {
-        Z <- scale(as.matrix(Z), center = TRUE, scale = FALSE)
+        Z <- wscale(as.matrix(Z), scale = FALSE, w = w)
         QZ <- qr(Z)
         Y <- qr.resid(QZ, Y)
     }
     if (!is.null(X)) {
-        X <- scale(as.matrix(X), center = TRUE, scale = FALSE)
+        X <- wscale(as.matrix(X), scale = FALSE, w = w)
         X <- cbind(X, Z)
         Q <- qr(X)
         RDA <- svd(qr.fitted(Q, Y))
