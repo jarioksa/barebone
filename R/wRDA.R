@@ -12,7 +12,7 @@
             wsd <- sqrt(colSums(w * x^2) / (nrow(Y) - 1))
             x <- sweep(x, 2, wsd, "/")
         }
-        sweep(x, 1, w, "*")
+        sweep(x, 1, sqrt(w), "*")
     }
     Y <- wscale(as.matrix(Y), scale = scale, w = w)
     if (!is.null(Z)) {
@@ -25,12 +25,16 @@
         X <- cbind(X, Z)
         Q <- qr(X)
         RDA <- svd(qr.fitted(Q, Y))
+        RDA$d <- RDA$d^2
+        RDA$u <- sqrt(1/w) * RDA$u
         RDA$w <- Y %*% RDA$v %*% diag(1/RDA$d)
         Y <- qr.resid(Q, Y)
     } else {
         RDA <- NULL
     }
     RES <- svd(Y)
+    RES$d <- RES$d^2
+    RES$u <- sqrt(1/w) * RES$u
     list(RDA = RDA, RES = RES)
 }
 
