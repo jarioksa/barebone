@@ -1,5 +1,11 @@
 ## The essence of 'barebone' is to make everything visible and
 ## therefore everything *must* be exported.
 
-# Export all names
+## Export all names
 exportPattern(".")
+
+## import
+importFrom("vegan", "eigengrad", "wascores")
+importFrom("graphics", "plot", "points")
+importFrom("stats", "dist", "fitted", "isoreg", "lm", "loess", "optim",
+           "residuals", "rnorm", "runif", "weighted.mean")
