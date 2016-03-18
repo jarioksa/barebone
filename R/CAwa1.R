@@ -7,6 +7,7 @@
     eig <- 0
     repeat {
         v <- wascores(u, Y, expand = TRUE)
+        v <- sweep(v, 1, attr(v, "centre"))
         u <- wascores(v, t(Y), expand = TRUE)
         if (abs(attr(u, "shrinkage") - eig) < EPS)
             break
