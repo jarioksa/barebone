@@ -1,6 +1,32 @@
 %\VignetteIndexEntry{barebone}
 %\VignettePackage{barebone}
 %\VignetteDepends{vegan}
+\documentclass[graybox,envcountchap,sectrefs,natbib]{svmono}
+
+\usepackage{mathptmx}
+\usepackage{helvet}
+%\usepackage{courier}
+%
+\usepackage{type1cm}         
+
+\usepackage{makeidx}        % allows index generation
+\makeindex
+\usepackage{graphicx}        % standard LaTeX graphics tool
+                                            % when including figure files
+\usepackage{multicol}         % used for the two-column index
+\usepackage[bottom]{footmisc}% places footnotes at page bottom
+
+\usepackage{natbib}
+\usepackage{chapterbib}
+\usepackage{amsmath} % boldsymbol, text in math mode etc
+\usepackage{amsfonts}
+
+\usepackage{Sweave}  % Local copy
+
+\usepackage{mmecor} % private book definitions
+
+\begin{document}
+
 <<echo=false,results=hide>>=
 require(barebone)
 require(vegan)
@@ -1157,4 +1183,7 @@ unconstrained ordination. The derivation of scores is from \vec{U} to
 
 \bibliographystyle{spbasic}
 \bibliography{mmecor}
+
+\printindex
+\end{document}
 \endinput
