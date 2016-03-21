@@ -19,11 +19,14 @@
 #' @references Hill, M.O. (1973) Reciprocal averaging: an eigenvector method of
 #' ordination. \emph{J. Ecol.} 61, 237--249.
 #' @keywords multivariate
+#'
+#' @importFrom vegan wascores
+#' @importFrom stats rnorm
+#' 
 #' @export CAwa1
 `CAwa1` <-
     function(Y)
 {
-    require(vegan) || stop("requires wascores function in vegan")
     EPS <- sqrt(.Machine$double.eps)
     u <- rnorm(nrow(Y))
     eig <- 0

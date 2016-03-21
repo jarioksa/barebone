@@ -27,11 +27,14 @@
 #' eigenvector technique of multivariate direct gradient analysis.
 #' \emph{Ecology} 67, 1167--1179.
 #' @keywords multivariate
+#'
+#' @importFrom stats rnorm
+#' @importFrom vegan wascores
+#' 
 #' @export CCAwa1
 `CCAwa1` <-
     function(Y, X)
 {
-    require(vegan) || stop("requires wascores function in vegan")
     EPS <- sqrt(.Machine$double.eps)
     X <- as.matrix(X)
     wts <- rowSums(Y)

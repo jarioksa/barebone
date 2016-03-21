@@ -10,12 +10,16 @@
 #' @param Z Model matrix of constraints (can be missing).
 #' @param scale Scale dependent matrix.
 #' @param w Row weights.
+#' @param cw Column weights.
 #' @return later\dots{}
 #' @note Function \code{\link{pRDA}} is a similmar function for non-weighted
 #' [partial] RDA.
 #' @author Jari Oksanen
 #' @seealso \code{\link{pRDA}}, \code{\link{pCCA}}, \code{\link[vegan]{rda}}.
 #' @keywords multivariate
+#'
+#' @importFrom stats weighted.mean
+#' 
 #' @export wRDA
 `wRDA` <-
     function(Y, X = NULL, Z = NULL, scale = FALSE, w = NULL, cw = NULL)

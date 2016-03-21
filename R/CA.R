@@ -14,6 +14,7 @@
 #' @references Greenacre, M. J. (1984). Theory and applications of
 #' correspondence analysis. Academic Press, London.
 #' @keywords multivariate
+#'
 #' @export CA
 `CA` <-
     function(Y)

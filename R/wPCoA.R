@@ -10,6 +10,9 @@
 #' @author Jari Oksanen
 #' @seealso \code{\link{PCoA}}, \code{\link[vegan]{wcmdscale}}.
 #' @keywords multivariate
+#'
+#' @importFrom stats weighted.mean
+#' 
 #' @export wPCoA
 `wPCoA` <-
     function(D, w)

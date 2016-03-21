@@ -1,7 +1,9 @@
+#' @importFrom vegan wascores eigengrad
+#' @importFrom stats runif weighted.mean residuals loess
+
 `DCA` <-
     function(Y, pairwise = FALSE, ...)
 {
-    require(vegan) || stop("requires wascores function in vegan")
     EPS <- sqrt(.Machine$double.eps)
     CYCLES <- 200
     Y <- Y/sum(Y)

@@ -13,6 +13,9 @@
 #' @seealso \code{\link{pRDA}}, \code{\link{svd}}, \code{\link{qr}},
 #' \code{\link[vegan]{cca}}.
 #' @keywords multivariate
+#'
+#' @importFrom stats weighted.mean
+#' 
 #' @export pCCA
 `pCCA` <-
     function(Y, X = NULL, Z = NULL)

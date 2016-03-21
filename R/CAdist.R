@@ -11,6 +11,9 @@
 #' scores.} \item{v}{Weighted orthonormal column scores.}
 #' @author Jari Oksanen
 #' @keywords multivariate
+#'
+#' @importFrom stats dist
+#' 
 #' @export CAdist
 `CAdist` <-
     function(Y)

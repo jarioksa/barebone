@@ -16,6 +16,9 @@
 #' @seealso \code{\link{PCA}} and \code{\link{PCAeig}} for better algorithms.
 #' @references ?
 #' @keywords multivariate
+#'
+#' @importFrom stats runif
+#' 
 #' @export PCApot1
 `PCApot1` <- function(Y, scale = FALSE)
 {

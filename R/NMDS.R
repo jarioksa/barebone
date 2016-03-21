@@ -22,6 +22,9 @@
 #' @references Kruskal, J. B. (1964) Nonmetric multidimensional scaling: a
 #' numerical method. \emph{Psychometrika} 29, 115--129.
 #' @keywords multivariate
+#'
+#' @importFrom stats isoreg dist runif optim
+#' 
 #' @export NMDS
 NMDS <-
 function(D, k = 2, u, method = "BFGS", ...)

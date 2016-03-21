@@ -16,6 +16,8 @@ wRDA(Y, X = NULL, Z = NULL, scale = FALSE, w = NULL, cw = NULL)
 \item{scale}{Scale dependent matrix.}
 
 \item{w}{Row weights.}
+
+\item{cw}{Column weights.}
 }
 \value{
 later\dots{}
