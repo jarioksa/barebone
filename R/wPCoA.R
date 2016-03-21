@@ -1,3 +1,16 @@
+#' Weighted Principal Coordinate Analysis
+#' 
+#' Function performs Principal Coordinate Analysis with row weights.
+#' 
+#' 
+#' @param D Dissimilarity or distance structure as in \code{\link{PCoA}}.
+#' @param w Weights for observations.
+#' @return Function returns an object from \code{\link{eigen}}.
+#' \item{values}{Eigenvalues} \item{vectors}{Orthonormal row scores.}
+#' @author Jari Oksanen
+#' @seealso \code{\link{PCoA}}, \code{\link[vegan]{wcmdscale}}.
+#' @keywords multivariate
+#' @export wPCoA
 `wPCoA` <-
     function(D, w)
 {

@@ -1,3 +1,17 @@
+#' Correspondence Analysis
+#' 
+#' Correspondence analysis as a weighted Principal Coordinate Analysis of
+#' Chi-squared distances.
+#' 
+#' 
+#' @param Y Data matrix.
+#' @return The function returns an object from \code{\link{wPCoA}} which in
+#' turn returns an \code{\link{eigen}} result amended with species scores.
+#' \item{values }{Eigenvalues.} \item{vectors }{Weighted orthonormal row
+#' scores.} \item{v}{Weighted orthonormal column scores.}
+#' @author Jari Oksanen
+#' @keywords multivariate
+#' @export CAdist
 `CAdist` <-
     function(Y)
 {

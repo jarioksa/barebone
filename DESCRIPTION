@@ -6,11 +6,13 @@ Date: 2016-03-21
 Author: Jari Oksanen
 Maintainer: Jari Oksanen <jari.oksanen@oulu.fi>
 Description: An educational package to explain the basic algorithms
-  of common ordination methods. The functions in this package are not
-  made for production use, but only to give an insight into barebone
-  methods. Not for faint at heart.
-Imports: vegan
+    of common ordination methods. The functions in this package are not
+    made for production use, but only to give an insight into barebone
+    methods. Not for faint at heart.
+Imports:
+    vegan
 License: GPL-2
 URL: http://r-forge.r-project.org/projects/mmecor/
 LazyLoad: yes
 LazyData: true
+RoxygenNote: 5.0.1

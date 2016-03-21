@@ -1,3 +1,22 @@
+#' Weighted [Partial] Redundancy Analysis and Principal Components Analysis
+#' 
+#' Weighted [Partial] Redundancy Analysis via QR and singular value
+#' decomposition or Principal Components Analysis via singular value
+#' decomposition.
+#' 
+#' 
+#' @param Y Dependent Data Matrix.
+#' @param X Model matrix of constraints (can be missing).
+#' @param Z Model matrix of constraints (can be missing).
+#' @param scale Scale dependent matrix.
+#' @param w Row weights.
+#' @return later\dots{}
+#' @note Function \code{\link{pRDA}} is a similmar function for non-weighted
+#' [partial] RDA.
+#' @author Jari Oksanen
+#' @seealso \code{\link{pRDA}}, \code{\link{pCCA}}, \code{\link[vegan]{rda}}.
+#' @keywords multivariate
+#' @export wRDA
 `wRDA` <-
     function(Y, X = NULL, Z = NULL, scale = FALSE, w = NULL, cw = NULL)
 {

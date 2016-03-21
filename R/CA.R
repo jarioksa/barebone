@@ -1,3 +1,20 @@
+#' Correspondence Analysis
+#' 
+#' Correspondence Analysis via singular value decomposition.
+#' 
+#' 
+#' @param Y Data Matrix
+#' @return Function returns an object from \code{\link{svd}} with items:
+#' \item{d}{Singular values which are the square roots of eigenvalues.}
+#' \item{u}{Orthonormal row scores.} \item{v}{Orthonormal column scores.}
+#' @note Function \code{\link[vegan]{cca}} (\pkg{vegan}) package uses similar
+#' algorithm.
+#' @author Jari Oksanen
+#' @seealso \code{\link{pCCA}}, \code{\link{svd}}, \code{\link[vegan]{cca}}.
+#' @references Greenacre, M. J. (1984). Theory and applications of
+#' correspondence analysis. Academic Press, London.
+#' @keywords multivariate
+#' @export CA
 `CA` <-
     function(Y)
 {

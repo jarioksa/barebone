@@ -1,3 +1,25 @@
+#' [Partial] Redundancy Analysis and Principal Components Analysis
+#' 
+#' [Partial] Redundancy Analysis via QR and singular value decomposition or
+#' Principal Components Analysis via singular value decomposition.
+#' 
+#' 
+#' @aliases pRDA pRDAalt
+#' @param Y Dependent Data Matrix.
+#' @param X Model matrix of constraints (can be missing).
+#' @param Z Model matrix of constraints (can be missing).
+#' @param scale Scale dependent matrix.
+#' @return later\dots{}
+#' @note Function \code{\link[vegan]{rda}} is essentially similar.  Function
+#' \code{\link{RDA}} is a simpler basic function that only performs Redundancy
+#' Analysis. Function \code{pRDAalt} takes explicit residuals of \code{X}
+#' regressed on \code{Z} (similarly as CANOCO for Windows software), whereas
+#' \code{pRDA} trusts QR decomposition to handle the orthogonality.
+#' @author Jari Oksanen
+#' @seealso \code{\link{RDA}}, \code{\link{pCCA}}, \code{\link{svd}},
+#' \code{\link{qr}}, \code{\link[vegan]{rda}}.
+#' @keywords multivariate
+#' @export pRDA
 `pRDA` <-
 function(Y, X = NULL, Z = NULL, scale = FALSE)
 {

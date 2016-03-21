@@ -1,3 +1,19 @@
+#' [Partial] [Constrained] Correspondence Analysis.
+#' 
+#' [Partial] [Constrained] Correspondence Analysis via singular value and QR
+#' decomposition.
+#' 
+#' 
+#' @param Y Dependent data Matrix.
+#' @param X Model matrix of constraints (can be missing).
+#' @param Z Model matrix of conditions (can be missing).
+#' @return later\dots{}
+#' @note Function \code{\link[vegan]{cca}} (\pkg{vegan} package) is similar.
+#' @author Jari Oksanen
+#' @seealso \code{\link{pRDA}}, \code{\link{svd}}, \code{\link{qr}},
+#' \code{\link[vegan]{cca}}.
+#' @keywords multivariate
+#' @export pCCA
 `pCCA` <-
     function(Y, X = NULL, Z = NULL)
 {

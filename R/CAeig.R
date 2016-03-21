@@ -1,3 +1,19 @@
+#' Correspondence Analysis
+#' 
+#' Correspondence Analysis via eigen decomposition of symmetric crossproduct
+#' matrix.
+#' 
+#' 
+#' @param Y Data matrix.
+#' @return The function returns an object from \code{\link{eigen}} enhanced
+#' with row scores.  \item{values}{Eigenvalues.} \item{vectors}{Weighted
+#' orthonormal column scores.} \item{u}{Weighted rthonormal row scores.}
+#' @author Jari Oksanen
+#' @seealso \code{\link{CA}}, \code{\link{PCAeig}}, \code{\link{eigen}}.
+#' @references Nishisato, S. 1980. Analysis of categorical data: Dual scaling
+#' and its application. Univ Toronto Press.
+#' @keywords multivariate
+#' @export CAeig
 `CAeig` <-
 function (Y) 
 {
