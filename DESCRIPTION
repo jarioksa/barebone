@@ -1,8 +1,8 @@
 Package: barebone
 Type: Package
 Title: Multivariate Methods in Ecology with R: Basic Algorithms
-Version: 1.1-3
-Date: 2016-03-15
+Version: 1.2-0
+Date: 2016-03-21
 Author: Jari Oksanen
 Maintainer: Jari Oksanen <jari.oksanen@oulu.fi>
 Description: An educational package to explain the basic algorithms
