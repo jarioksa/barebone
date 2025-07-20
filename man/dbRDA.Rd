@@ -14,14 +14,16 @@ dbRDA(D, X = NULL, Z = NULL)
 \item{Z}{Model matrix of conditions (can be missing).}
 }
 \value{
-The function returns the same object as \code{\link{dbRDA}}.
+The function returns the same object as \code{\link{pRDA}}.
 }
 \description{
 Distance-based Redundancy Analysis is a Redundancy Analysis on the
 eigenvalue-scaled result of Principal Coordinates Analysis.
 }
-\author{
-Jari Oksanen
+\note{
+This function does not actually perform distance-based RDA,
+    but a simple variant called \code{\link[vegan]{capscale}} in
+    \pkg{vegan}. The function will be fixed ASAP.
 }
 \references{
 Legendre, P. & Anderson, M.J. (1999). Canonical analysis of
@@ -32,5 +34,7 @@ ecology. \emph{Ecology} 84, 511--525.
 \code{\link{PCoA}}, \code{\link{pRDA}},
 \code{\link[vegan]{capscale}}.
 }
+\author{
+Jari Oksanen
+}
 \keyword{multivariate}
-

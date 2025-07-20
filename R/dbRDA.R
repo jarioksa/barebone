@@ -1,14 +1,19 @@
 #' Distance-based Redundancy Analysis
-#' 
+#'
 #' Distance-based Redundancy Analysis is a Redundancy Analysis on the
 #' eigenvalue-scaled result of Principal Coordinates Analysis.
-#' 
-#' 
+#'
+#'
 #' @param D Dissimilarity structure of dependent data as in \code{\link{PCoA}}.
 #' @param X Model matrix of constraints (can be missing).
 #' @param Z Model matrix of conditions (can be missing).
-#' @return The function returns the same object as \code{\link{dbRDA}}.
+#' @return The function returns the same object as \code{\link{pRDA}}.
 #' @author Jari Oksanen
+#'
+#' @note This function does not actually perform distance-based RDA,
+#'     but a simple variant called \code{\link[vegan]{capscale}} in
+#'     \pkg{vegan}. The function will be fixed ASAP.
+#'
 #' @seealso \code{\link{PCoA}}, \code{\link{pRDA}},
 #' \code{\link[vegan]{capscale}}.
 #' @references Legendre, P. & Anderson, M.J. (1999). Canonical analysis of

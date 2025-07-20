@@ -20,12 +20,9 @@ Principal Coordinates Analysis (PCoA) is also known as metric or classic
 multidimensional scaling.
 }
 \details{
-Function does not scale the result the vectors by eigenvalues, and returns
+Function does not scale the result vectors by eigenvalues, and returns
 all non-zero eigenvalues, including negative eigenvalues, and associated
 axes.
-}
-\author{
-Jari Oksanen
 }
 \references{
 Gower, J. C. (1966) Some distance properties of latent root and
@@ -38,5 +35,7 @@ Mardia, K. V., Kent, J. T. and Bibby, J. M. (1979).  Chapter 14 of
 \seealso{
 \code{\link{cmdscale}}, \code{\link{PCAeig}}.
 }
+\author{
+Jari Oksanen
+}
 \keyword{multivariate}
-

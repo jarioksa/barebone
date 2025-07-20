@@ -9,8 +9,9 @@ DCA(Y, pairwise = FALSE, ...)
 \arguments{
 \item{Y}{Data matrix.}
 
-\item{pairwise}{Detrend axis pairwise against each previous axis,
-or against all previous axes together.}
+\item{pairwise}{Detrend axis pairwise against each previous axis
+similarly as in \code{\link[vegan]{decorana}}, or against all
+previous axes simultaneously.}
 
 \item{\dots}{Other arguments passed to \code{\link{loess}}.}
 }

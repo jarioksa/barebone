@@ -10,26 +10,30 @@ CA(Y)
 \item{Y}{Data Matrix}
 }
 \value{
-Function returns an object from \code{\link{svd}} with items:
-\item{d}{Singular values which are the square roots of eigenvalues.}
-\item{u}{Orthonormal row scores.} \item{v}{Orthonormal column scores.}
+Function returns an object from \code{\link{svd}} with
+    items:
+\item{d}{Singular values which are the square roots of
+    eigenvalues.}
+\item{u}{Orthonormal row scores.}
+\item{v}{Orthonormal column scores.}
 }
 \description{
 Correspondence Analysis via singular value decomposition.
 }
 \note{
-Function \code{\link[vegan]{cca}} (\pkg{vegan}) package uses similar
-algorithm.
+Functions \code{\link[vegan]{ca}} and
+    \code{\link[vegan]{cca}} (\pkg{vegan} package) use similar
+    algorithm.
+}
+\references{
+Greenacre, M. J. (1984). Theory and applications of
+    correspondence analysis. Academic Press, London.
+}
+\seealso{
+\code{\link{pCCA}}, \code{\link{svd}}, \code{\link[vegan]{ca}},
+    \code{\link[vegan]{cca}}.
 }
 \author{
 Jari Oksanen
 }
-\references{
-Greenacre, M. J. (1984). Theory and applications of
-correspondence analysis. Academic Press, London.
-}
-\seealso{
-\code{\link{pCCA}}, \code{\link{svd}}, \code{\link[vegan]{cca}}.
-}
 \keyword{multivariate}
-

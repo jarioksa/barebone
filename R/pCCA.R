@@ -1,13 +1,19 @@
 #' [Partial] [Constrained] Correspondence Analysis.
-#' 
+#'
 #' [Partial] [Constrained] Correspondence Analysis via singular value and QR
 #' decomposition.
-#' 
-#' 
+#'
+#'
 #' @param Y Dependent data Matrix.
 #' @param X Model matrix of constraints (can be missing).
 #' @param Z Model matrix of conditions (can be missing).
-#' @return later\dots{}
+#'
+#' @return Function returns a list with components \code{CCA} and
+#'     \code{RES} for the analysis of constrained and residual
+#'     components. These elements returned from \code{\link{svd}}, but
+#'     deweighted for correspondence analysis:
+#' \item{w, u, v}{Weighted average, linear combination and species scores}.
+#'
 #' @note Function \code{\link[vegan]{cca}} (\pkg{vegan} package) is similar.
 #' @author Jari Oksanen
 #' @seealso \code{\link{pRDA}}, \code{\link{svd}}, \code{\link{qr}},
@@ -15,7 +21,7 @@
 #' @keywords multivariate
 #'
 #' @importFrom stats weighted.mean
-#' 
+#'
 #' @export pCCA
 `pCCA` <-
     function(Y, X = NULL, Z = NULL)

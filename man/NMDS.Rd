@@ -31,9 +31,6 @@ nonmetric hypothesis (Kruskal 1964)
 Function consists of stress function, derivative function of the stress, and
 call to \code{\link{optim}}.
 }
-\author{
-Jari Oksanen
-}
 \references{
 Kruskal, J. B. (1964) Nonmetric multidimensional scaling: a
 numerical method. \emph{Psychometrika} 29, 115--129.
@@ -43,5 +40,7 @@ numerical method. \emph{Psychometrika} 29, 115--129.
 the same algorithm but written in C. See \code{\link{optim}} for the
 optimization routine and \code{\link{isoreg}} for isotonic regression.
 }
+\author{
+Jari Oksanen
+}
 \keyword{multivariate}
-

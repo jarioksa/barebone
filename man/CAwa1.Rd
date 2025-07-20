@@ -25,9 +25,6 @@ The function only finds one axis.  It would be possible to find later axes
 by orthogonalizing against previous axes, but if several axes are needed, it
 is better to use other algorithms from the beginning.
 }
-\author{
-Jari Oksanen.
-}
 \references{
 Hill, M.O. (1973) Reciprocal averaging: an eigenvector method of
 ordination. \emph{J. Ecol.} 61, 237--249.
@@ -36,5 +33,7 @@ ordination. \emph{J. Ecol.} 61, 237--249.
 \code{\link{CA}} and \code{\link{CAeig}} are better algorihtms for
 CA. \code{\link{PCApot1}} is a similar poor algorithm for PCA.
 }
+\author{
+Jari Oksanen.
+}
 \keyword{multivariate}
-

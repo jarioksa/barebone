@@ -23,4 +23,3 @@ Chi-squared distances.
 Jari Oksanen
 }
 \keyword{multivariate}
-

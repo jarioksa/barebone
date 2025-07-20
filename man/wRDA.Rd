@@ -20,7 +20,7 @@ wRDA(Y, X = NULL, Z = NULL, scale = FALSE, w = NULL, cw = NULL)
 \item{cw}{Column weights.}
 }
 \value{
-later\dots{}
+Function returns similar object as \code{\link{pRDA}}.
 }
 \description{
 Weighted [Partial] Redundancy Analysis via QR and singular value
@@ -31,11 +31,10 @@ decomposition.
 Function \code{\link{pRDA}} is a similmar function for non-weighted
 [partial] RDA.
 }
-\author{
-Jari Oksanen
-}
 \seealso{
 \code{\link{pRDA}}, \code{\link{pCCA}}, \code{\link[vegan]{rda}}.
 }
+\author{
+Jari Oksanen
+}
 \keyword{multivariate}
-

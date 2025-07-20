@@ -1,17 +1,21 @@
 #' Redundancy Analysis
-#' 
+#'
 #' Redundancy Analysis via QR and singular value decompositions.
-#' 
-#' 
+#'
+#'
 #' @param Y Dependent data matrix.
 #' @param X Model matrix of constraints.
 #' @param scale Scaling of dependent data.
-#' @return later\dots{}
-#' @note Function \code{\link{pRDA}} is a more versatile an complicated
-#' variant, that also can do partial RDA or PCA as special cases.
+#' @return Function returns a list of item \code{RDA} and \code{RES}
+#'     which are the return objects of constrained and unconstrained
+#'     residual component. \code{RDA} is amended with WA scores
+#'     \code{w}.
+#' @note Function \code{\link{pRDA}} is a more versatile an
+#'     complicated variant, that also can do partial RDA or PCA as
+#'     special cases.
 #' @author Jari Oksanen
 #' @seealso \code{\link{pRDA}}, \code{\link{svd}}, \code{\link{qr}},
-#' \code{\link[vegan]{rda}}.
+#'     \code{\link[vegan]{rda}}.
 #' @keywords multivariate
 #' @export RDA
 `RDA` <-

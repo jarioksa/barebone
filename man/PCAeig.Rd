@@ -23,11 +23,10 @@ matrix.
 \note{
 Function \code{\link{princomp}} uses a similar algorithm.
 }
-\author{
-Jari Oksanen
-}
 \seealso{
 \code{\link{PCA}}, \code{\link{eigen}}, \code{\link{princomp}}.
 }
+\author{
+Jari Oksanen
+}
 \keyword{multivariate}
-

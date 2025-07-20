@@ -14,7 +14,11 @@ pCCA(Y, X = NULL, Z = NULL)
 \item{Z}{Model matrix of conditions (can be missing).}
 }
 \value{
-later\dots{}
+Function returns a list with components \code{CCA} and
+    \code{RES} for the analysis of constrained and residual
+    components. These elements returned from \code{\link{svd}}, but
+    deweighted for correspondence analysis:
+\item{w, u, v}{Weighted average, linear combination and species scores}.
 }
 \description{
 [Partial] [Constrained] Correspondence Analysis via singular value and QR
@@ -23,12 +27,11 @@ decomposition.
 \note{
 Function \code{\link[vegan]{cca}} (\pkg{vegan} package) is similar.
 }
-\author{
-Jari Oksanen
-}
 \seealso{
 \code{\link{pRDA}}, \code{\link{svd}}, \code{\link{qr}},
 \code{\link[vegan]{cca}}.
 }
+\author{
+Jari Oksanen
+}
 \keyword{multivariate}
-

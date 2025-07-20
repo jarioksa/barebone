@@ -18,11 +18,10 @@ Function returns an object from \code{\link{eigen}}.
 \description{
 Function performs Principal Coordinate Analysis with row weights.
 }
-\author{
-Jari Oksanen
-}
 \seealso{
 \code{\link{PCoA}}, \code{\link[vegan]{wcmdscale}}.
 }
+\author{
+Jari Oksanen
+}
 \keyword{multivariate}
-

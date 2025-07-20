@@ -12,14 +12,11 @@ CAeig(Y)
 \value{
 The function returns an object from \code{\link{eigen}} enhanced
 with row scores.  \item{values}{Eigenvalues.} \item{vectors}{Weighted
-orthonormal column scores.} \item{u}{Weighted rthonormal row scores.}
+orthonormal column scores.} \item{u}{Weighted orthonormal row scores.}
 }
 \description{
 Correspondence Analysis via eigen decomposition of symmetric crossproduct
 matrix.
-}
-\author{
-Jari Oksanen
 }
 \references{
 Nishisato, S. 1980. Analysis of categorical data: Dual scaling
@@ -28,5 +25,7 @@ and its application. Univ Toronto Press.
 \seealso{
 \code{\link{CA}}, \code{\link{PCAeig}}, \code{\link{eigen}}.
 }
+\author{
+Jari Oksanen
+}
 \keyword{multivariate}
-

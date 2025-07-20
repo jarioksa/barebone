@@ -20,7 +20,7 @@ rows of the first axis.} \item{u}{LC scores for rows of the first axis.}
 First axis of Constrained Correspondence Analysis using weighted averaging.
 }
 \details{
-This is a poor algorithm to perform CCA, and is included only to show how
+This is a classic algorithm to perform CCA, and is included to show how
 simple it is. Constrained Correspondence Analysis was originally introduced
 in ecology as a result of this algorithm (ter Braak 1986). Palmer (1993)
 gives a very lucid explanation of the algorithm and its two kind of row
@@ -28,9 +28,6 @@ scores, known as Weighted Averages (WA) scores and Linear Combination (LC)
 scores.  The function only finds one axis.  It would be possible to find
 later axes by orthogonalizing against previous axes, but if several axes are
 needed, it is better to use other algorithms from the beginning.
-}
-\author{
-Jari Oksanen.
 }
 \references{
 Palmer, M. W. (1993) Putting things in even better order: The
@@ -42,8 +39,10 @@ eigenvector technique of multivariate direct gradient analysis.
 \emph{Ecology} 67, 1167--1179.
 }
 \seealso{
-\code{\link{CA}} and \code{\link{CAeig}} are better algorihtms for
-CA. \code{\link{PCApot1}} is a similar poor algorithm for PCA.
+\code{\link{pCCA}} provides a better algorithm for
+constrained correspondence analysis.
+}
+\author{
+Jari Oksanen.
 }
 \keyword{multivariate}
-

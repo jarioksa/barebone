@@ -17,11 +17,13 @@
 #' original Fortran code.
 #'
 #' @param Y Data matrix.
-#' @param pairwise Detrend axis pairwise against each previous axis,
-#'     or against all previous axes together.
+#' @param pairwise Detrend axis pairwise against each previous axis
+#'     similarly as in \code{\link[vegan]{decorana}}, or against all
+#'     previous axes simultaneously.
 #' @param \dots Other arguments passed to \code{\link{loess}}.
 #' @author Jari Oksanen
 #' @seealso \code{\link[vegan]{decorana}}.
+#'
 #' @return Function returns a list with items:
 #' \item{DCA.eig}{Eigenvalue as estimated during detrending
 #'     steps.}

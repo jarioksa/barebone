@@ -12,9 +12,9 @@ PCApot1(Y, scale = FALSE)
 \item{scale}{Scale columns to unit variance.}
 }
 \value{
-The function returns an object with items: \item{eig}{Eigenvalue of
-the first axis.} \item{ueig}{Rowscores scaled by eigenvalues.}
-\item{v}{Orthonormal column scores.}
+The function returns an object with items:
+    \item{eig}{Eigenvalue of the first axis.} \item{ueig}{Rowscores
+    scaled by eigenvalues.}  \item{v}{Orthonormal column scores.}
 }
 \description{
 First axis of Principal Component Analysis using power method.
@@ -25,14 +25,16 @@ show how simple it is. The function only finds one axis. It would be
 possible to find later axes by orthogonalizing against previous axes, but
 that is not worthwhile with an algorithm as poor as this one.
 }
+\references{
+Jongman, R.H., ter Braak, C.J.F & van Tongeren,
+    O.F.R. (1987) Data analysis in community and landscape
+    ecology. Wageningen.
+}
+\seealso{
+\code{\link{PCA}} and \code{\link{PCAeig}} for better
+    algorithms.
+}
 \author{
 Jari Oksanen.
 }
-\references{
-?
-}
-\seealso{
-\code{\link{PCA}} and \code{\link{PCAeig}} for better algorithms.
-}
 \keyword{multivariate}
-

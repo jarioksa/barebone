@@ -14,21 +14,24 @@ RDA(Y, X, scale = FALSE)
 \item{scale}{Scaling of dependent data.}
 }
 \value{
-later\dots{}
+Function returns a list of item \code{RDA} and \code{RES}
+    which are the return objects of constrained and unconstrained
+    residual component. \code{RDA} is amended with WA scores
+    \code{w}.
 }
 \description{
 Redundancy Analysis via QR and singular value decompositions.
 }
 \note{
-Function \code{\link{pRDA}} is a more versatile an complicated
-variant, that also can do partial RDA or PCA as special cases.
+Function \code{\link{pRDA}} is a more versatile an
+    complicated variant, that also can do partial RDA or PCA as
+    special cases.
+}
+\seealso{
+\code{\link{pRDA}}, \code{\link{svd}}, \code{\link{qr}},
+    \code{\link[vegan]{rda}}.
 }
 \author{
 Jari Oksanen
 }
-\seealso{
-\code{\link{pRDA}}, \code{\link{svd}}, \code{\link{qr}},
-\code{\link[vegan]{rda}}.
-}
 \keyword{multivariate}
-

@@ -20,14 +20,13 @@ Function returns an object from \code{\link{svd}} with items:
 Principal Components analysis via singular value decomposition.
 }
 \note{
-Functions \code{\link{prcomp}} and \code{\link[vegan]{rda}} (package
+Functions \code{\link{prcomp}} and  \code{\link[vegan]{pca}} (package
 \pkg{vegan}) use a similar algorithm.
-}
-\author{
-Jari Oksanen
 }
 \seealso{
 \code{\link{PCAeig}}, \code{\link{svd}}, \code{\link{prcomp}}.
 }
+\author{
+Jari Oksanen
+}
 \keyword{multivariate}
-
