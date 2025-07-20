@@ -1,7 +1,38 @@
+#' Detrended Correspondence Analysis
+#'
+#' Correspondence Analysis where axes are detrended by
+#' \code{\link{loess}}.
+#'
+#' Function performes detrended correspondence analysis but it differs
+#' essentially from the classic \code{\link[vegan]{decorana}}. Not
+#' only is the detrending method different, but \code{decorana} makes
+#' much more than detrending. Most importantly it attempts to rescale
+#' axes to constant response width (see \pkg{vegan} function
+#' \code{\link[vegan]{tolerance}}) which often has a stronger effect
+#' than detrending.
+#'
+#' If you want to inspect the steps of \code{decorana}, function
+#' \code{rdecorana} in github package \pkg{natto} implements the
+#' function in plain \R{} which is much easier to follow than the
+#' original Fortran code.
+#'
+#' @param Y Data matrix.
+#' @param pairwise Detrend axis pairwise against each previous axis,
+#'     or against all previous axes together.
+#' @param \dots Other arguments passed to \code{\link{loess}}.
+#' @author Jari Oksanen
+#' @seealso \code{\link[vegan]{decorana}}.
+#' @return Function returns a list with items:
+#' \item{DCA.eig}{Eigenvalue as estimated during detrending
+#'     steps.}
+#' \item{eig}{Eigenvalue as estimated by shrinking of
+#'     scores in final solution, similarly as in \code{\link{CA}}.}
+#' \item{u, v}{Row and column scores.}
+#' @keywords multivariate
 #' @importFrom vegan wascores eigengrad
 #' @importFrom graphics points
 #' @importFrom stats runif weighted.mean residuals loess fitted
-
+#' @export
 `DCA` <-
     function(Y, pairwise = FALSE, ...)
 {
