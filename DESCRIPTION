@@ -1,19 +1,17 @@
 Package: barebone
-Type: Package
 Title: Multivariate Methods in Ecology with R: Basic Algorithms
-Version: 1.2-0
-Date: 2016-03-21
-Author: Jari Oksanen
-Maintainer: Jari Oksanen <jari.oksanen@oulu.fi>
-Description: An educational package to explain the basic algorithms
-    of common ordination methods. The functions in this package are not
+Version: 1.99-0
+Authors@R: person(given="Jari", family="Oksanen",
+                  role = c("cre", "aut"),
+                  email = "jhoksane@gmail.com")
+Description: An educational package to explain the basic algorithms of
+    common ordination methods. The functions in this package are not
     made for production use, but only to give an insight into barebone
-    methods. Not for faint at heart.
-Imports:
-    vegan
+    methods. The vignette is the most important piece of the
+    package. Not for the faint at heart.
+Imports: vegan
 Encoding: UTF-8
 License: GPL-2
-URL: http://r-forge.r-project.org/projects/mmecor/
+URL: https://github.com/jarioksa/barebone
 LazyLoad: yes
-LazyData: true
 RoxygenNote: 7.3.2
