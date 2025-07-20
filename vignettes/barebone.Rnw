@@ -7,7 +7,7 @@
 \usepackage{helvet}
 %\usepackage{courier}
 %
-\usepackage{type1cm}         
+\usepackage{type1cm}
 
 \usepackage{makeidx}        % allows index generation
 \makeindex
@@ -245,27 +245,64 @@ function \texttt{ginv} in MASS \citep{MASS}, but there is a real
 danger of loss of numerical precision with nearly singular matrices.
 
 \index{QR decomposition}
-Enter QR decomposition: (\ref{eq:B}) can be estimated from
-\begin{equation}
-  \vec{RB} = \vec{Q'Y}\;,
-\end{equation}
-which is easy to solve because \vec{R} is upper triangular.  There is
-no loss of precision in QR decomposition, and even ill-conditioned and
-rank-deficit models can be estimated.
+QR decomposition is a useful tool to avoid matrix inversion and loss
+of numerical precision in eq. \ref{eq:Yhat}. Any real matrix can be
+decomposed as $\vec{X} = \vec{QR}$, where $\vec{R}$ is an upper (or
+right) triangular matrix, with possible extra lines filled with zeros,
+and $\vec{Q}$ is an orthogonal matrix (again last lines filled with
+zeros if number of rows is larger than number of
+columns). Orthogonality means that the transpose of $\vec{Q}$ is its
+inverse $\vec{Q'} = \vec{Q}^{-1}$ and $\vec{Q'Q} = \vec{I}$.
 
 \index{QR decomposition}
-The usage of QR decomposition is very simple in R. First we make the QR
-decomposition with function \texttt{qr}, and then we can extract fitted
-values, residuals, regression coefficients etc:
+Let us write eq. \ref{eq:Yhat} with QR decomposition of $\vec{X}$:
+\begin{eqnarray}
+ \vec{\hat Y} &=& \vec{QR}(\vec{R'Q'QR})^{-1}\vec{R'Q'Y} \\
+  \label{eq:QQtY}
+&=& \vec{QR} \vec{R'}^{-1}\vec{R}^{-1} \vec{R'Q'} \\
+&=& \vec{QQ'Y}\;.
+\end{eqnarray}
+The hat matrix is $\vec{QQ'}$ and we avoided matrix inversion. For fitted values
+$\vec{\hat Y}$ we did not need matrix \vec{R}, but we would need to see the
+regression coefficients (which we did not need).
+
+\index{QR decomposition}
+Many numerical implementations of QR decomposition pivot the columns
+of model matrix (explanatory variables and factor contrasts) to improve
+numerical stability. \index{aliased variables} The R implementation keeps the order of explanatory
+variables except when some of the columns of model matrix are completely
+redundant and can be expressed with the help of other columns. These 
+redundant columns are moved to last ones, and the rank of the model matrix
+is reduced. This is called pivoting. In Dutch Dune meadow data we have such
+redundant variables: \texttt{Management} and \texttt{Manure} are not completely
+independent because 0 \texttt{Manure} is only with Natural \texttt{Management}, and
+\textsl{vice versa}. Function \texttt{qr} for  QR decomposition pivots this variable 
+automatically
 
 <<>>=
-data(varechem)
-data(varespec)
-Q <- qr(varechem)
-Yhat <- qr.fitted(Q, as.matrix(varespec))
-Yres <- qr.resid(Q, as.matrix(varespec))
-beta <- qr.coef(Q, as.matrix(varespec))
+data(dune, dune.env)
+X <- model.matrix(~ Manure + Management, data=dune.env)
+Q <- qr(X)
+str(Q)
 @
+Model matrix has eight columns, but the \texttt{rank} is 7, and the \texttt{pivot}
+shows that column 7 was moved last beyond the first seven columns
+given by the \texttt{rank}.
+
+The use of \texttt{qr} function is very simple. After making the QR decomposition
+we can find fitted values, residuals and regression coefficients with
+<<>>=
+Yhat <- qr.fitted(Q, as.matrix(dune))
+Yres <- qr.resid(Q, as.matrix(dune))
+beta <- qr.coef(Q, as.matrix(dune))
+@
+
+\index{QR decomposition}
+QR decomposition is a tool and inspecting matrices \vec{Q} or \vec{R} gives no
+useful intuition of the data. It is best not to look at them. Actually, \texttt{qr} function
+even does not return those directly, but it only returns information that is need to find 
+fitted values \textsl{etc}. If you really want to see the component matrices, they must
+be calculated explicitly with functions \texttt{qr.Q} and \texttt{qr.R}.
 
 \section{R Programming of Ordination Methods}
 
@@ -883,7 +920,7 @@ sequence of models:
 \end{eqnarray}
 where \vec{Z} are the centred model matrix of conditions partialled
 out, and \vec{[X,Z]} is combined model matrix formed by adding columns
-of constraints \vec{X} and conditions \vec{Z} together. 
+of constraints \vec{X} and conditions \vec{Z} together.
 
 It is necessary to combine conditions \vec{X} and constraints \vec{Z}
 into same model matrix. Although the direct effect of conditions was
@@ -978,7 +1015,7 @@ dependent data as weights:
 
 <<echo=false>>=
 dump("CCAwa1", file="")
-@ 
+@
 
 Row scores \code{w} are called WA scores, and row scores \code{u} are
 called LC scores \citep{Palm93}. The current function deshrinks
