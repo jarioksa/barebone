@@ -1,5 +1,6 @@
 #' @importFrom vegan wascores eigengrad
-#' @importFrom stats runif weighted.mean residuals loess
+#' @importFrom graphics points
+#' @importFrom stats runif weighted.mean residuals loess fitted
 
 `DCA` <-
     function(Y, pairwise = FALSE, ...)

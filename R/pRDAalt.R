@@ -1,3 +1,5 @@
+#' @rdname pRDA
+#' @export
 `pRDAalt` <-
 function(Y, X = NULL, Z = NULL, scale = FALSE)
 {

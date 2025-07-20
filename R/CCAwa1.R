@@ -28,7 +28,7 @@
 #' \emph{Ecology} 67, 1167--1179.
 #' @keywords multivariate
 #'
-#' @importFrom stats rnorm
+#' @importFrom stats rnorm fitted lm
 #' @importFrom vegan wascores
 #' 
 #' @export CCAwa1
