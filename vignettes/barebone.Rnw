@@ -28,7 +28,7 @@
 \chapauthor{Jari Oksanen}
 
 \begin{document}
-
+\appendix
 <<echo=false,results=hide>>=
 require(barebone)
 require(vegan)
@@ -42,7 +42,7 @@ analysis. The standard R functions use the same algorithms, but they
 also have commands to check the input, handle common error situations
 and exceptional cases and to process the results. All these features
 make the functions usable, but they hide the plain core of the
-methods. This appendix has nothing user friendliness.  The purpose is
+methods. This appendix has no traces of user friendliness.  The purpose is
 only to show the minimal code of writing matrix algebra into R code.
 
 \section{Matrix Algebra in R}
@@ -66,10 +66,13 @@ longer notation: Matrix multiplication is given as \texttt{A \%*\% B}.  The most
   && \texttt{x\%o\%y} \\
   Cross product & \vec{A'B} & \texttt{t(A) \%*\% B} \\
   && \texttt{crossprod(A, B)}\\
-   Identity matrix $5 \times 5$ & $\vec{I}_n$ & \texttt{diag(5)} \\
+  Matrix outer product & \vec{AB'} & \texttt{A \%*\% t(B)} \\
+  && \texttt{tcrossprod(A, B)} \\
+   Identity matrix $5 \times 5$ & $\vec{I}_5$ & \texttt{diag(5)} \\
    Multiply with diagonal matrix  & &
    \texttt{diag(x) \%*\% A} \\
    && \texttt{sweep(A, 1, x, "*")}\\
+   && \texttt{x * A} \\
  Inverse & $\vec{A}^{-1}$ & \texttt{solve(A)}\\
 \noalign{\smallskip}\hline\noalign{\smallskip}
  \end{tabular}
@@ -517,7 +520,7 @@ The algorithm follows \citet{Mard79}:
     function, and the standard R implementation of the method
     (function \icode{cmdscale}) has a fast C routine \texttt{dblcen}
     which is the choice in real applications.
-  \item Matrix $-\vec{M}/2$ presents the crossproducts and sum of
+  \item Matrix $-\tfrac{1}{2} \vec{M}$ presents the crossproducts and sum of
     squares and is submitted to spectral decomposition.
 \end{enumerate}
 
@@ -577,7 +580,7 @@ Weighted PCoA has the following stages:
   where \vec{W} is a diagonal matrix of weights \vec{w}.
 \item Perform the spectral decomposition
   \begin{equation}
-    -\vec{M}/2 = \vec{\tilde U} \bLambda \vec{\tilde U'}\;,
+    -\tfrac{1}{2}\vec{M} = \vec{\tilde U} \bLambda \vec{\tilde U'}\;,
   \end{equation}
   where \vec{\tilde U} are the orthonormal row scores, and
   \vec{\bLambda} is a diagonal matrix of eigenvalues.
