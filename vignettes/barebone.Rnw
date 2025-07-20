@@ -25,6 +25,8 @@
 
 \usepackage{mmecor} % private book definitions
 
+\chapauthor{Jari Oksanen}
+
 \begin{document}
 
 <<echo=false,results=hide>>=
