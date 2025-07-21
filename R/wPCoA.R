@@ -1,8 +1,8 @@
 #' Weighted Principal Coordinate Analysis
-#' 
+#'
 #' Function performs Principal Coordinate Analysis with row weights.
-#' 
-#' 
+#'
+#'
 #' @param D Dissimilarity or distance structure as in \code{\link{PCoA}}.
 #' @param w Weights for observations.
 #' @return Function returns an object from \code{\link{eigen}}.
@@ -12,7 +12,7 @@
 #' @keywords multivariate
 #'
 #' @importFrom stats weighted.mean
-#' 
+#'
 #' @export wPCoA
 `wPCoA` <-
     function(D, w)
@@ -24,6 +24,9 @@
     M <- t(scale(t(M), center = cnt, scale = FALSE))
     M <- diag(sqrt(w)) %*% M %*% diag(sqrt(w))
     SOL <- eigen(-M/2, symmetric = TRUE)
+    nonzero <- abs(SOL$values) > sqrt(.Machine$double.eps)
+    SOL$values <- SOL$values[nonzero]
+    SOL$vectors <- SOL$vectors[, nonzero]
     SOL$vectors <- diag(1/sqrt(w)) %*% SOL$vectors
     SOL
 }
