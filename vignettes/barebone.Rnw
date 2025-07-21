@@ -84,9 +84,8 @@ longer notation: Matrix multiplication is given as \texttt{A \%*\% B}.  The most
  matrix presentations.
 
 R provides powerful high-level matrix commands
-based on LAPACK and LINPACK libraries \citep{LAPACK, LINPACK}. The
-ordination methods can be very effectively programmed with these
-high-level functions.
+based on LAPACK and BLAS libraries \citep{LAPACK}. The
+ordination methods can be very effectively programmed with these functions.
 
 The basic ordination methods are all based on
 matrix decomposition. Matrix decomposition is a powerful tool which
@@ -120,10 +119,10 @@ rank is reduced to $m$. If the data are standardized (like usually)
 the rank may be further reduced. For a centred data, the rank is
 reduced by one because the mean is fixed. If some of the variables can
 be expressed as linear combinations of other variables, the rank is
-reduced still further, and we speak of reduced or deficit rank modes.
+reduced still further, and we speak of reduced or rank-deficit modes.
 
 \index{singular value decomposition}
-The original data can be recovered from the data. The matrix equation
+The original data can be recovered from the singular value decomposition The matrix equation
 (\ref{eq:svd}) can be expressed in indexed form as:
 \begin{equation}
   \label{eq:svdopen}
@@ -132,10 +131,10 @@ The original data can be recovered from the data. The matrix equation
 The singular values are ordered $\sigma_1 \geq \sigma_2 \geq \dots
 \geq \sigma_r$ so that the first columns of \vec{U} and \vec{V} are
 most important in (\ref{eq:svdopen}). The first columns give a
-least squares of the original data.
+least squares approximation of the original data.
 
 \index{singular value decomposition}
-Function \texttt{svd} performs the singular value decomposition. In
+Function \icode{svd} performs the singular value decomposition. In
 the following example we centre the data before the decomposition:
 
 <<>>=
@@ -150,7 +149,7 @@ and column scores in matrices \texttt{v} and \texttt{u}.
 
 \index{spectral decomposition}\index{eigenvector decomposition}
 Spectral decomposition \citep{Mard79}, also known as eigenvector
-decomposition, is used for a symmetric matrix (in prinicple, spectral
+decomposition, is used for a symmetric matrix (in principle, spectral
 decomposition also applies for nonsymmetric matrices, but it is not
 used for those in ordination). Ecological data matrices are
 nonsymmetric, and spectral decomposition is performed for their
@@ -182,7 +181,7 @@ In that case the centred data will be equal to variances, and the
 eigenvalues sum up to total variance.
 
 \index{spectral decomposition}\index{eigenvector decomposition}
-Function \texttt{eigen} performs the spectral decomposition.  We can
+Function \icode{eigen} performs the spectral decomposition.  We can
 tell the function that data are symmetric so that it will not use time
 to inspect input for symmetry. In the following, we analyse a centred
 crossproduct matrix:
@@ -269,10 +268,10 @@ Let us write eq. \ref{eq:Yhat} with QR decomposition of $\vec{X}$:
 \end{eqnarray}
 The hat matrix is $\vec{QQ'}$ and we avoided matrix inversion. For fitted values
 $\vec{\hat Y}$ we did not need matrix \vec{R}, but we would need to see the
-regression coefficients (which we did not need).
+regression coefficients (which we did not need to get the fitted values).
 
 \index{QR decomposition}
-Many numerical implementations of QR decomposition pivot the columns
+Many numerical implementations of QR decomposition pivot – or reorder – the columns
 of model matrix (explanatory variables and factor contrasts) to improve
 numerical stability. \index{aliased variables} The R implementation keeps the order of explanatory
 variables except when some of the columns of model matrix are completely
@@ -296,6 +295,7 @@ given by the \texttt{rank}.
 
 The use of \texttt{qr} function is very simple. After making the QR decomposition
 we can find fitted values, residuals and regression coefficients with
+
 <<>>=
 Yhat <- qr.fitted(Q, as.matrix(dune))
 Yres <- qr.resid(Q, as.matrix(dune))
@@ -317,7 +317,8 @@ eigenvector methods which can be easily solved with R matrix library.
 
 \subsection{Unconstrained Ordination}
 
-Principal component analysis, Principal coordinate analysis and correspondence analysis are the major methods discussed in this chapter.
+Principal component analysis, Principal coordinate analysis and correspondence analysis are the major methods discussed in this chapter. These all are basically so similar that current vegan
+uses the same shared code for all this (function \icode{ordConstrained}).
 
 \subsubsection{Principal Component Analysis (PCA)}
 \label{sec:alg:PCA}
@@ -350,7 +351,7 @@ column standard deviations, all columns will have equal weight.  The
 \texttt{scale} can also be a vector of scales. Using a constant
 scale for all columns does not influence scores \vec{U} or \vec{V},
 but it will influence the absolute singular values
-\vec{\bSigma}---the proportions of individual elements $\sigma$ do
+\vec{\bSigma} -- the proportions of individual elements $\sigma$ do
 not change.  With the basic analysis, the singular values decompose
 the original observed values, so that the sum of $\vec{\bSigma}^2$
 equals the sum of $\vec{\bar Y}^2$. If we want the
@@ -421,9 +422,9 @@ correlation matrix instead of explicit scaling of response data with
 algorithm to find the first principal component and its
 eigenvalue. Power algorithm is not recommended, but it is explained
 here because it is so simple. The power algorithm is based on theorem
-that any matrix multiplied with a high power of a matrix will converge
+that a random vector multiplied with a high power of a matrix will converge
 to the first eigenvector of that matrix. The high power of matrix is
-achieved by multiplying a vector several time with a matrix. We take a
+achieved by multiplying a vector several times with the matrix. We take a
 random vector \vec{u^*} and perform cycles $\vec{v^*} = \vec{\bar Y
   u^*}$, $\vec{u^*} = \vec{\bar Y' v^*}$ so long that $\vec{u^*}$
 stabilizes and converges to an eigenvector. The matrix and vector
@@ -433,7 +434,7 @@ every multiplication, the scale (sum of squares) of the result vector
 will change. The first eigenvalue of the matrix gives the magnitude of
 this change of scale \citep[cf.][]{Stev09}. Conversely, we can use the
 change of sum of squares to estimate the eigenvalue, and stop the
-iteratios when the eigenvalue stabilized in iteration. The following
+iteratios when the eigenvalue stabilized in iterations. The following
 function implements this method:
 
 <<echo=false>>=
@@ -475,7 +476,7 @@ R functions are based either on SVD or on spectral decomposition:
   to find row scores \vec{U}. The row scores are called
   \texttt{scores} and orthonormal column scores are called
   \texttt{loadings}.
-\item \icode{rda} in vegan package uses SVD in its PCA. The function
+\item \icode{pca} and icode{rda} in vegan package uses SVD in its PCA. The function
   returns singular values divided with $\sqrt{n-1}$ consistently with
   \icode{prcomp}.  Function returns orthonormal \vec{U} and
   \vec{V}. These are accessed via \texttt{scores} function  which
@@ -539,7 +540,8 @@ warnings issued. If we wish to scale the row scores by eigenvalues, we
 must use only the positive ones.
 
 \index{principal coordinate analysis}
-This algorithm is used in standard R function \icode{cmdscale}.
+This algorithm is used in standard R function \icode{cmdscale}
+and vegan function \icode{wcmdscale}.
 Functions like \icode{adonis} and \icode{betadisper} also use
 basically the same kind of translation of dissimilarities to
 crossproducts.
@@ -718,21 +720,21 @@ dump("CAdist", file="")
 \paragraph{Reciprocal Averaging}
 \label{sec:alg:CA:RA}
 \index{reciprocal averaging} \index{correspondence analysis!reciprocal
-  averaging} \index{weighted averages} The power method
-(\pageref{sec:alg:PCA:power}) can be also used to find the first axis
-of CA. The only difference is that instead of weighted sums we use
+  averaging} \index{weighted averages} The power method of PCA
+(p.~\pageref{sec:alg:PCA:power}) can be also used to find the first axis
+of CA. The only difference is that instead of weighted sums of PCA we use
 weighted averages. The power method is historically interesting
 because CA was introduced to ecologists as a method of cyclic weighted
 averages under the name of Reciprocal Averaging \citep{Hill73}.
 Because of the simplicity of the algorithm, CA (as reciprocal
-averaging) was regarded as simpler method than mathematically more
+averaging) was regarded as a simpler method than mathematically more
 complicated PCA. Similar simple power algorithm can be used for the
-first axis of PCA (\pageref{sec:alg:PCA:power}), but even in that
+first axis of PCA (p.~\pageref{sec:alg:PCA:power}), but even in that
 time, computer programs used more effective but mathematically more
-complicated algorithms. Similary as with PCA, the eigenvalue can be
-expressed the ratio of change of scales between successive iterations,
+complicated algorithms. Similary as with PCA, the eigenvalue is he ratio
+of change of scales between successive iterations,
 and the iterations can be stopped when the ratio stabilized. In CA,
-eigenvalue is always $\lambda_1 < 1$ so that the vectors shrink during
+eigenvalue is always $\lambda_1 \le1$ so that the vectors shrink during
 iterations.
 
 \index{reciprocal averaging} \index{correspondence analysis!reciprocal
@@ -741,7 +743,7 @@ equations, the following implementation uses function \icode{wascores}
 of vegan for weighted averages. With argument \code{expand = TRUE}
 this function retains the original scaling of vectors and expands the
 scores. Moreover, it returns the rate of shrinkage as argument
-\code{shinkage} which actually is the current estimate of
+\code{shinkage} which  is the current estimate of
 eigenvalue. With this function the implementation is very simple:
 
 <<echo=false>>=
@@ -779,15 +781,17 @@ units that share no species. If we keep the fitted values tied, the
 ordination tries to put all these extreme sites at the same distance
 from each other, resulting in spherical or ring like
 configuration. \citet{Krus64, Krus64num} recommends allowing breaking
-ties.  He calls this primary tie treatment.  Function \code{NMDS}
+ties.  He calls this primary tie treatment and such breakable ties as weak. Function \code{NMDS}
 below follows this recommendation.  Function \icode{isoMDS} of the
 MASS package \citep{MASS} does not treat ties properly, but breaks
-ties in an order dependent way.
+ties in an order dependent way. Vegan function \icode{monoMDS} (used
+in \icode{metaMDS}) has alternative ways of tie treatment, but defaults to
+primary treatment (weak ties). 
 
 Only monotone regression and stress were defined, but not the way how
 to minimize the function.  NMDS is a nonlinear optimization problem
 where coordinates of points in ordination space are the
-parameters. There are $nk$ parameters for $n$ points and $k$
+parameters. There are $nk$ parameters for $n$ points on $k$
 dimensions which makes NMDS a hard problem. For effective optimization
 we need information on the directions where points should be moved to
 minimize stress. This information is provided by the derivative of
@@ -799,7 +803,7 @@ $k$ \citep{Krus64num}:
 In addition, we want to have a robust and effective optimization
 routine. \citet{Krus64num} described the method of steepest descent,
 or always moving along the gradient, but this is usually ineffective
-for difficult tasks like NMDS and better methods should be used
+for difficult tasks like NMDS and other methods could be used
 \citep{Pres92, NoceWrig99}.  R function \icode{optim} has several good
 alternatives, and \code{NMDS} below defaults to
 Broyden-Fletcher-Goldfarb-Shanno algorithm as does \icode{isoMDS}
@@ -834,9 +838,10 @@ the same method (except for handling ties), but implemented in C.
 \label{sec:alg:constrained}
 
 In constrained ordination we have constraints or environmental
-variables that restrict the ordination. The two basic methods are
-Redundancy Analysis which is generalized from PCA, and Constrained
-Correspondence Analysis which is generalized from CA.
+variables that restrict the ordination. The basic methods are
+Redundancy Analysis (RDA) which is generalized from PCA,  Constrained
+Correspondence Analysis (CCA) which is generalized from CA, and 
+distance-based RDA generalized from Principal Coordinates Ordination.
 
 \subsubsection{Redundancy Analysis}
 \label{sec:alg:RDA}
@@ -928,9 +933,9 @@ out, and \vec{[X,Z]} is combined model matrix formed by adding columns
 of constraints \vec{X} and conditions \vec{Z} together.
 
 It is necessary to combine conditions \vec{X} and constraints \vec{Z}
-into same model matrix. Although the direct effect of conditions was
-removed in the first step, they may interact with with \vec{X}.
-Alteratively, we can use  residuals of \vec{X} regressed on \vec{Z},
+into same model matrix. Although the direct effects of conditions were
+removed in the first step, they are not orthogonal to \vec{X}.
+Alternatively, we can use  residuals of \vec{X} regressed on \vec{Z},
 but the combined matrix \vec{[X,Z]} gives the same results.  The vegan
 package uses the combined matrix, but CANOCO uses the regression
 residuals approach \citep{CANOCO}.
@@ -942,8 +947,8 @@ residual ordination.
 \index{redundancy analysis!partial}
 The following implementation allows omitting either conditions or
 constraints or both so that the function can be used for pRDA, RDA,
-pPCA (= PCA after removing background variables), or usual PCA. Vegan
-function \icode{rda} has the same general behaviour.
+pPCA (= PCA after removing background variables), or PCA. Vegan
+function \icode{rda} has the same general design.
 
 <<echo=false>>=
 dump("pRDA", file="")
@@ -970,12 +975,12 @@ be achieved by making the following change in the code:
 
 \index{constrained correspondence analysis}
 Constrained Correspondence Analysis or Canonical Correspondence
-Analysis is a parallel generalization of RDA in the CA framwork.  The
+Analysis is an analogous generalization of RDA in the CA framwork.  The
 difference to RDA is that we need to perform \indexrev{Chi-square}{transformation}
 (\ref{eq:CAstand}) and juggle with weights.
 The following overview of the algorithm only discusses
 the constrained stage of CCA: partial and residual cases work
-similarly and in parallel to RDA.
+similarly as in RDA.
 
 \begin{enumerate}
 \item Let \vec{Y} be the response data matrix standardized to unit
