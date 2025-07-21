@@ -386,6 +386,13 @@ The row and column scores \vec{U} and \vec{V} are identical to those
 found in the previous methods (apart from possible sign reversals),
 and $\vec{\bLambda} = \vec{\bSigma}^2$.
 
+The spectral composition method will attempt at finding as many eigenvalues
+as there are data columns (variables). However, for $n$ observations only $n-1$
+eigenvalues can be defined, and the rest are rubbish. The following function will
+zero negative eigenvalues (similarly as \icode{princomp}), but will still return
+rubbish scores beyond the $n-1$ axes (similarly as \icode{princomp} which however
+will refuse the analysis if it knows that there are more columns than rows).
+
 <<echo=false>>=
 dump("PCAeig", file = "")
 @
@@ -675,7 +682,8 @@ The spectral decomposition of a symmetric matrix follows
   so called trivial solution of $\lambda=1$ to do the centring omitted
   earlier. We wish to discard this first trivial axis.
 \end{enumerate}
-Direct implementation in R is:
+Similarly as in PCA, this method will return rubbish for the last axes if
+the number of columns is larger than $n-1$. Direct implementation in R is:
 <<echo=false>>=
 dump("CAeig", file="")
 @

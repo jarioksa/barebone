@@ -28,6 +28,7 @@ function (Y)
     SOL$u <- SOL$u[,-1]
     SOL$vectors <- SOL$vectors[,-1]
     SOL$values <- SOL$values[-1]
+    SOL$values[SOL$values < 0] <- 0
     SOL
 }
 

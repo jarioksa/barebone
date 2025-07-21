@@ -1,9 +1,9 @@
 #' Principal Components Analysis
-#' 
+#'
 #' Principal Components Analysis via eigen decomposition of crossprodcut
 #' matrix.
-#' 
-#' 
+#'
+#'
 #' @param Y Data matrix.
 #' @param scale Scale columns to unit variance.
 #' @return The function returns an object from \code{\link{eigen}} enhanced
@@ -20,6 +20,7 @@
     Y <- scale(as.matrix(Y), center = TRUE, scale = scale)
     YY <- crossprod(Y)
     SOL <- eigen(YY, symmetric = TRUE)
+    SOL$values[SOL$values < 0] <- 0
     SOL$u <- Y %*% SOL$vectors %*% diag(1/sqrt(SOL$values))
     SOL
 }
