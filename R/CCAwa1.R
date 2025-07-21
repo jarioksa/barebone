@@ -28,7 +28,7 @@
 #' \emph{Ecology} 67, 1167--1179.
 #' @keywords multivariate
 #'
-#' @importFrom stats rnorm fitted lm
+#' @importFrom stats rnorm fitted lm.wfit
 #' @importFrom vegan wascores
 #'
 #' @export CCAwa1
@@ -37,13 +37,14 @@
 {
     EPS <- sqrt(.Machine$double.eps)
     X <- as.matrix(X)
+    Y <- as.matrix(Y)
     wts <- rowSums(Y)
     u <- rnorm(nrow(Y))
     eig <- 0
     repeat {
         v <- wascores(u, Y, expand = TRUE)
         w <- wascores(v, t(Y), expand = TRUE)
-        u <- fitted(lm(w ~  X, weights = wts))
+        u <- fitted(lm.wfit(X, w, wts))
         if (abs(attr(v, "shrinkage") - eig) < EPS)
             break
         eig <- attr(v, "shrinkage")

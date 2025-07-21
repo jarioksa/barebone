@@ -1021,7 +1021,8 @@ found as weighted averages of species scores are renamed to \code{w},
 and the site scores \code{u} are found as fitted values of weighted
 linear regression predicting scores \code{w} with model matrix of
 constraining variables as independent variables and row sums of
-dependent data as weights:
+dependent data as weights. The function uses \icode{lm.wfit} for linear
+regression instead of formula based full-blown linear regression of \texttt{lm}.
 
 <<echo=false>>=
 dump("CCAwa1", file="")
