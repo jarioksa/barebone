@@ -1,11 +1,11 @@
 #' Nonmetric Multidimensional Scaling
-#' 
+#'
 #' Nonmetric multidimensional scaling by optimizing goodness of fit to a
 #' nonmetric hypothesis (Kruskal 1964)
-#' 
+#'
 #' Function consists of stress function, derivative function of the stress, and
 #' call to \code{\link{optim}}.
-#' 
+#'
 #' @param D Dissimilarity structure.
 #' @param k Number of dimensions.
 #' @param u Optional starting configuration. A random start is used if missing.
@@ -24,10 +24,10 @@
 #' @keywords multivariate
 #'
 #' @importFrom stats isoreg dist runif optim
-#' 
+#'
 #' @export NMDS
 NMDS <-
-function(D, k = 2, u, method = "BFGS", ...)
+function(D, k = 2, u, method = "L-BFGS-B", ...)
 {
     stress <- function(u, D, k) {
         u <- matrix(u, ncol=k)
@@ -47,7 +47,7 @@ function(D, k = 2, u, method = "BFGS", ...)
         Tstar <- sum(y^2)
         S <- sqrt(Sstar/Tstar)
         dmat <- (S/Sstar*(y-yf) - S/Tstar*y)/y
-        dmat <-  as.matrix(dmat) 
+        dmat <-  as.matrix(dmat)
         for (l in 1:k)
             dx[,l] <- rowSums(dmat * outer(u[,l], u[,l], "-"))
         as.vector(dx)

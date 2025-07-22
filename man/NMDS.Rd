@@ -4,7 +4,7 @@
 \alias{NMDS}
 \title{Nonmetric Multidimensional Scaling}
 \usage{
-NMDS(D, k = 2, u, method = "BFGS", ...)
+NMDS(D, k = 2, u, method = "L-BFGS-B", ...)
 }
 \arguments{
 \item{D}{Dissimilarity structure.}
