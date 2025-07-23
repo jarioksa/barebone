@@ -4,37 +4,29 @@
 \alias{dbRDA}
 \title{Distance-based Redundancy Analysis}
 \usage{
-dbRDA(D, X = NULL, Z = NULL)
+dbRDA(D, X)
 }
 \arguments{
 \item{D}{Dissimilarity structure of dependent data as in \code{\link{PCoA}}.}
 
-\item{X}{Model matrix of constraints (can be missing).}
-
-\item{Z}{Model matrix of conditions (can be missing).}
+\item{X}{Model matrix of constraints.}
 }
 \value{
-The function returns the same object as \code{\link{pRDA}}.
+The function returns the same object as \code{\link{RDA}}.
 }
 \description{
-Distance-based Redundancy Analysis is a Redundancy Analysis on the
-eigenvalue-scaled result of Principal Coordinates Analysis.
-}
-\note{
-This function does not actually perform distance-based RDA,
-    but a simple variant called \code{\link[vegan]{capscale}} in
-    \pkg{vegan}. The function will be fixed ASAP.
+Distance-based Redundancy Analysis is a Redundancy Analysis of
+Gower-standardized dissimilarity matrix.
 }
 \references{
-Legendre, P. & Anderson, M.J. (1999). Canonical analysis of
-principal coordinates: a useful method of constrained ordination for
-ecology. \emph{Ecology} 84, 511--525.
-}
-\seealso{
-\code{\link{PCoA}}, \code{\link{pRDA}},
-\code{\link[vegan]{capscale}}.
+McArdle, B.H. & Anderson, M.J. (2001).  Fitting
+    multivariate models to community data: a comment on
+    distance-based redundancy analysis.  _Ecology_ 82, 290-297.
 }
 \author{
 Jari Oksanen
+
+#' @seealso \code{\link{PCoA}}, \code{\link{RDA}},
+\code{\link[vegan]{dbrda}}.
 }
 \keyword{multivariate}
