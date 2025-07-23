@@ -6,8 +6,7 @@
 \usepackage{mathptmx}
 \usepackage{helvet}
 %\usepackage{courier}
-%
-\usepackage{type1cm}
+%\use package{type1cm}
 
 \usepackage{makeidx}        % allows index generation
 \makeindex
@@ -28,12 +27,14 @@
 \chapauthor{Jari Oksanen}
 
 \begin{document}
+
 \appendix
 <<echo=false,results=hide>>=
 require(barebone)
 require(vegan)
 options(width=66)
 @
+
 \chapter{R Programming Interface to Multivariate Analysis}
 \label{sec:algorithms}
 
@@ -43,7 +44,7 @@ also have commands to check the input, handle common error situations
 and exceptional cases and to process the results. All these features
 make the functions usable, but they hide the plain core of the
 methods. This appendix has no traces of user friendliness.  The purpose is
-only to show the minimal code of writing matrix algebra into R code.
+only to show the minimal code of writing matrix algebra into R code. 
 
 \section{Matrix Algebra in R}
 \label{sec:alg:matrixalgebra}
@@ -107,8 +108,9 @@ Singular value decomposition of $n \times m$ matrix \vec{X} is
 where \vec{U} and \vec{V} are orthonormal matrices and \vec{\bSigma}
 is a diagonal matrix of \emph{singular values} \citep{Mard79}.
 Orthonormality means that all columns of \vec{U} and \vec{V} are
-orthogonal, and their sum of squares is 1, or $\vec{U'U} = \vec{I}$
-and $\vec{V'V} = \vec{I}$. The importance of axes is conveyed in
+orthogonal, and their sum of squares is 1 and off-diagonal crossproduct elements
+are 0, or $\vec{U'U} = \vec{I}$ and $\vec{V'V} = \vec{I}$. 
+The importance of axes is conveyed in
 singular values. The singular values are ordered by their magnitude,
 and for an $n \times m$ matrix there may be $r = \min(n, m)$ positive
 singular values. The number of the positive singular values gives the
@@ -119,7 +121,7 @@ rank is reduced to $m$. If the data are standardized (like usually)
 the rank may be further reduced. For a centred data, the rank is
 reduced by one because the mean is fixed. If some of the variables can
 be expressed as linear combinations of other variables, the rank is
-reduced still further, and we speak of reduced or rank-deficit modes.
+reduced still further, and we speak of reduced rank or rank-deficit modes.
 
 \index{singular value decomposition}
 The original data can be recovered from the singular value decomposition The matrix equation
@@ -134,7 +136,7 @@ most important in (\ref{eq:svdopen}). The first columns give a
 least squares approximation of the original data.
 
 \index{singular value decomposition}
-Function \icode{svd} performs the singular value decomposition. In
+R function \icode{svd} performs the singular value decomposition. In
 the following example we centre the data before the decomposition:
 
 <<>>=
@@ -152,7 +154,7 @@ Spectral decomposition \citep{Mard79}, also known as eigenvector
 decomposition, is used for a symmetric matrix (in principle, spectral
 decomposition also applies for nonsymmetric matrices, but it is not
 used for those in ordination). Ecological data matrices are
-nonsymmetric, and spectral decomposition is performed for their
+nonsymmetric, and spectral decomposition is performed on their
 symmetric crossproducts:
 \begin{equation}
   \label{eq:eigen}
@@ -178,7 +180,11 @@ If \vec{X} was only centred, the spectral decomposition analyses a
 matrix of crossproducts and sums of squares. However, often the
 crossproducts are expressed as $(n-1)^{-1} \vec{\bar X' \bar X}$.
 In that case the centred data will be equal to variances, and the
-eigenvalues sum up to total variance.
+eigenvalues sum up to total variance. If we use
+ \texttt{scale(..., scale = TRUE)},
+the columns will be centred and scaled by their standard deviations, and diagonal
+elements of the crossproduct matrix will be 1 and off-diagonal elements
+will be equal to  correlation coefficient \index{correlation coefficient}.  
 
 \index{spectral decomposition}\index{eigenvector decomposition}
 Function \icode{eigen} performs the spectral decomposition.  We can
@@ -194,18 +200,32 @@ eigenvectors in \texttt{vectors}.  The \texttt{values} are squares of
 \texttt{d} of \texttt{svd}, and the \texttt{vectors} are similar (up
 to sign) to \texttt{v} of \texttt{svd}.
 
+\label{par:eigen-rank}
+\index{spectral decomposition}\index{eigenvector decomposition}
+The number of eigenvalues is given by the dimension of the symmetric
+crossproduct matrix. If the number of rows was lower than then number
+of columns in the original data, the rank of the crossproduct matrix is
+lower than the number or columns and rows of the crossproducts.
+For centred data of $n$ rows and $m$ columns the rank is $\min(m-1, n)$.
+The \icode{eigen} function will still return $m$ eigenvalues and $m$ eigenvectors,
+for the $m \times m$ crossproduct matrix, but only $n-1$ (rank) first of
+these are meaningful and the rest are rubbish and should be ignored.
+
 \subsection{QR Decomposition}
 \label{sec:alg:QR}
 
 \index{QR decomposition}
-QR decomposition of matrix \vec{X} is
-\begin{equation}
-  \vec{X} = \vec{QR} \;,
-\end{equation}
-where \vec{Q} is a an orthonormal matrix and \vec{R} is an upper
-triangular matrix.  The QR decomposition is not directly used in
-ordination, but it has an important position in linear models and
-hence in constrained ordination \citep{BlueBook}.
+QR decomposition expresses any rectangular matrix \vec{X} as a product
+of orthonormal matrix \vec{Q} and upper (or right) triangular matrix \vec{R} as
+$\vec{X} = \vec{QR}$ (\vec{Q} and \vec{R} are amended with lines of
+zeros for non-square \vec{X}). \vec{Q} is an orthogonal matrix,
+which means that the transpose of $\vec{Q}$ is its
+inverse $\vec{Q'} = \vec{Q}^{-1}$ and $\vec{Q'Q} = \vec{I}$.
+
+QR decomposition is not directly used in
+ordination, but it has an important position in linear models (regression) and
+hence in constrained ordination \citep{BlueBook}. It should be seen
+as a tool that is used and left behind.
 
 \index{QR decomposition}
 The regression coefficient $\beta$ in a simple linear model $\hat y_i
@@ -222,9 +242,10 @@ Multivariate generalization of the vector form is obvious:
 The model can be generalized to several predictor variables $\vec{X}$
 and even to several dependent variables \vec{Y}.  The \emph{model matrix}
 \vec{X}  can contain a column of ones to estimate the
-intercept, and factors can be expressed as contrast variables.
+intercept, and factors can be expressed as contrast or ``dummy´´ variables.
 However, in ordination models we deal with centred data and no
-intercept is needed. The fitted values $\vec{\hat Y}$ are found with
+intercept is needed. The fitted values $\vec{\hat Y}$ are found multiplying
+predictors \vec{X} with regression coefficients \vec{B}.
 \begin{eqnarray}
  \vec{\hat Y} &=& \vec{XB} \\
   \label{eq:Yhat}
@@ -245,25 +266,17 @@ However, this is computationally problematic.  The problem is that
 (\ref{eq:Yhat}) involves matrix inversion (\texttt{solve()}), and the
 model matrix \vec{X} can be singular or nearly singular. With
 completely singular matrices, we may use generalized inverses such as
-function \texttt{ginv} in MASS \citep{MASS}, but there is a real
+function \icode{ginv} in MASS \citep{MASS}, but there is a real
 danger of loss of numerical precision with nearly singular matrices.
 
 \index{QR decomposition}
-QR decomposition is a useful tool to avoid matrix inversion and loss
-of numerical precision in eq. \ref{eq:Yhat}. Any real matrix can be
-decomposed as $\vec{X} = \vec{QR}$, where $\vec{R}$ is an upper (or
-right) triangular matrix, with possible extra lines filled with zeros,
-and $\vec{Q}$ is an orthogonal matrix (again last lines filled with
-zeros if number of rows is larger than number of
-columns). Orthogonality means that the transpose of $\vec{Q}$ is its
-inverse $\vec{Q'} = \vec{Q}^{-1}$ and $\vec{Q'Q} = \vec{I}$.
 
 \index{QR decomposition}
-Let us write eq. \ref{eq:Yhat} with QR decomposition of $\vec{X}$:
+Let us write eq. \ref{eq:Yhat} with QR decomposition of $\vec{X} = \vec{QR}$:
 \begin{eqnarray}
- \vec{\hat Y} &=& \vec{QR}(\vec{R'Q'QR})^{-1}\vec{R'Q'Y} \\
+ \vec{\hat Y} &=& \vec{QR}(\vec{R'\underbrace{Q'Q}_{\vec{I}} R})^{-1}\vec{R'Q'Y} \\
   \label{eq:QQtY}
-&=& \vec{QR} \vec{R'}^{-1}\vec{R}^{-1} \vec{R'Q'} \\
+&=& \vec{Q} \underbrace{\vec{R} \vec{R'}^{-1}}_{\vec{I}} \underbrace{\vec{R}^{-1} \vec{R'}}_{\vec{I}} \vec{Q'Y} \\
 &=& \vec{QQ'Y}\;.
 \end{eqnarray}
 The hat matrix is $\vec{QQ'}$ and we avoided matrix inversion. For fitted values
@@ -273,7 +286,8 @@ regression coefficients (which we did not need to get the fitted values).
 \index{QR decomposition}
 Many numerical implementations of QR decomposition pivot – or reorder – the columns
 of model matrix (explanatory variables and factor contrasts) to improve
-numerical stability. \index{aliased variables} The R implementation keeps the order of explanatory
+numerical stability. \index{aliased variables} The R implementation (function \icode{qr})
+keeps the order of explanatory
 variables except when some of the columns of model matrix are completely
 redundant and can be expressed with the help of other columns. These 
 redundant columns are moved to last ones, and the rank of the model matrix
@@ -293,7 +307,7 @@ Model matrix has eight columns, but the \texttt{rank} is 7, and the \texttt{pivo
 shows that column 7 was moved last beyond the first seven columns
 given by the \texttt{rank}.
 
-The use of \texttt{qr} function is very simple. After making the QR decomposition
+The use of \icode{qr} function is very simple. After making the QR decomposition
 we can find fitted values, residuals and regression coefficients with
 
 <<>>=
@@ -304,7 +318,7 @@ beta <- qr.coef(Q, as.matrix(dune))
 
 \index{QR decomposition}
 QR decomposition is a tool and inspecting matrices \vec{Q} or \vec{R} gives no
-useful intuition of the data. It is best not to look at them. Actually, \texttt{qr} function
+useful intuition of the data. It is best not to look at them. Actually, \icode{qr} function
 even does not return those directly, but it only returns information that is need to find 
 fitted values \textsl{etc}. If you really want to see the component matrices, they must
 be calculated explicitly with functions \texttt{qr.Q} and \texttt{qr.R}.
@@ -313,29 +327,31 @@ be calculated explicitly with functions \texttt{qr.Q} and \texttt{qr.R}.
 
 The unconstrained ordination methods are performed either with
 singular value or spectral decomposition. Here we describe only
-eigenvector methods which can be easily solved with R matrix library.
+eigenvector methods which can be easily solved with R matrix library and
+nonmetric multidimensional scaling.
 
 \subsection{Unconstrained Ordination}
 
-Principal component analysis, Principal coordinate analysis and correspondence analysis are the major methods discussed in this chapter. These all are basically so similar that current vegan
+Principal component analysis, Principal coordinate analysis and correspondence analysis are the major
+eigenvector methods discussed in this chapter. These all are basically so similar that current vegan
 uses the same shared code for all this (function \icode{ordConstrained}).
 
 \subsubsection{Principal Component Analysis (PCA)}
 \label{sec:alg:PCA}
 
-\index{principal component analysis}
+\index{principal component analysis} \index{singular value decomposition}
 The simplest and numerically best method for PCA is equivalent to
 singular value decomposition (SVD).  We perform SVD for centred data
 matrix $\vec{\bar Y} = \vec{U \bSigma V'}$ (see \ref{eq:svd}).  This
 gives us singular values which are square roots of eigenvalues
 $\vec{\bSigma = \bLambda}^{1/2}$, and \vec{U} and \vec{V} are
-orthonormal matrices of row and column scores.  The implementation is
-straightforward:
+orthonormal matrices of row and column scores.  This is implemented in
+function \icode{PCA} which is based on R function \icode{svd}.
 
 <<echo=false>>=
 dump("PCA", file = "")
 @
-The function returns a result of the R function \texttt{svd}. The only
+The function returns a result of the R function \icode{svd}. The only
 optional argument is \texttt{scale} which defines how data is scaled
 before the analysis. In general, the standard R function
 \texttt{scale} transforms data as:
@@ -347,7 +363,7 @@ where $z_j$ is the column centre, and $s_j$ is the column
 scale. Typically $z_j$ is the column average. With \texttt{scale =
   FALSE}, $s=1$ (or no scaling), and with \texttt{scale = TRUE}, $s_j$
 are the variable (column) standard deviations. If data are scaled by
-column standard deviations, all columns will have equal weight.  The
+column standard deviations, all columns will have equal weights.  The
 \texttt{scale} can also be a vector of scales. Using a constant
 scale for all columns does not influence scores \vec{U} or \vec{V},
 but it will influence the absolute singular values
@@ -365,11 +381,11 @@ str(PCA(dune, scale = rep(sqrt(nrow(dune)-1), ncol(dune))))
 This divides columns with $\sqrt{n-1}$ so that the sum of
 $\vec{\bSigma}^2$ equals the sum of variances of \vec{Y}, and the
 singular values are standard deviations of the axes.  Using scale
-$\sqrt{n}$ would give the same results with biased esimate of variance.
+$\sqrt{n}$ would give the same results with biased estimate of variance.
 
 \paragraph{Spectral Decomposition}
-\index{principal component analysis}
-\index{singular value decomposition}
+
+\index{principal component analysis} \index{spectral decomposition}
 SVD is the preferred method of performing PCA, but earlier PCA was
 usually performed as spectral decomposition of symmetric crossproduct
 matrix:
@@ -386,12 +402,15 @@ The row and column scores \vec{U} and \vec{V} are identical to those
 found in the previous methods (apart from possible sign reversals),
 and $\vec{\bLambda} = \vec{\bSigma}^2$.
 
+\index{principal component analysis} \index{spectral decomposition}
 The spectral composition method will attempt at finding as many eigenvalues
 as there are data columns (variables). However, for $n$ observations only $n-1$
-eigenvalues can be defined, and the rest are rubbish. The following function will
+eigenvalues can be defined, and the rest are rubbish (see p.~\pageref{par:eigen-rank}).
+The function \icode{PCAeig}  will
 zero negative eigenvalues (similarly as \icode{princomp}), but will still return
 rubbish scores beyond the $n-1$ axes (similarly as \icode{princomp} which however
 will refuse the analysis if it knows that there are more columns than rows).
+Function \icode{PCAeig} is based on R function \icode{eigen}.
 
 <<echo=false>>=
 dump("PCAeig", file = "")
@@ -414,9 +433,9 @@ orthonormal \vec{V} are called \emph{loadings} or \emph{rotation
 
 \index{principal component analysis}
 \index{spectral decomposition}
-Function \texttt{PCAeig} used crossproduct \vec{\bar Y' \bar Y} to get
+Function \icode{PCAeig} used crossproduct \vec{\bar Y' \bar Y} to get
 the symmetric matrix for spectral decomposition. Most PCA software use
-instead covariance matrix. This is equivalent of finding the
+instead covariance matrix. This is equivalent to finding the
 crossproduct of centred \vec{\bar Y} as $ (n-1)^{-1} \vec{\bar Y' \bar Y}$.
 In this way the eigenvalues sum up to total
 variance. Similarly, the scaled solution is usually found using
@@ -425,6 +444,7 @@ correlation matrix instead of explicit scaling of response data with
 
 \paragraph{Power Method}
 \label{sec:alg:PCA:power}
+\index{principal component analysis}
 \index{principal component analysis!power method} Finally, we describe power
 algorithm to find the first principal component and its
 eigenvalue. Power algorithm is not recommended, but it is explained
@@ -435,14 +455,14 @@ achieved by multiplying a vector several times with the matrix. We take a
 random vector \vec{u^*} and perform cycles $\vec{v^*} = \vec{\bar Y
   u^*}$, $\vec{u^*} = \vec{\bar Y' v^*}$ so long that $\vec{u^*}$
 stabilizes and converges to an eigenvector. The matrix and vector
-multiplication is equivalent of finding weighted sums, and therefore
+multiplication is equivalent of finding weighted sums\index{weighted sums}, and therefore
 this algorithm is also called weighted sums method \citep{Jong87}. At
 every multiplication, the scale (sum of squares) of the result vector
 will change. The first eigenvalue of the matrix gives the magnitude of
 this change of scale \citep[cf.][]{Stev09}. Conversely, we can use the
 change of sum of squares to estimate the eigenvalue, and stop the
-iteratios when the eigenvalue stabilized in iterations. The following
-function implements this method:
+iteratios when the eigenvalue stabilized in iterations.
+Function \icode{PCApot1} implements this method:
 
 <<echo=false>>=
 dump("PCApot1", file="")
@@ -470,8 +490,9 @@ R functions are based either on SVD or on spectral decomposition:
   \vec{U} that SVD returned, and instead uses (\ref{eq:PCAurot}) to
   find row scores scaled by eigenvalues (called \texttt{x}). The
   orthonormal column scores \vec{V} are called rotation.  The scaled
-  solution is found by scaling the respone matrix with
+  solution is found by scaling the response matrix with
   (\ref{eq:PCAstand}).
+\index{principal component analysis}
 \item \icode{princomp} uses eigen decomposition of covariance or
   correlation matrices. The function uses biased estimate of variance,
   so that the denominator in variance is $n$ instead of $n-1$ of
@@ -482,9 +503,14 @@ R functions are based either on SVD or on spectral decomposition:
   variance of \icode{princomp}.  The function uses (\ref{eq:PCAurot})
   to find row scores \vec{U}. The row scores are called
   \texttt{scores} and orthonormal column scores are called
-  \texttt{loadings}.
-\item \icode{pca} and icode{rda} in vegan package uses SVD in its PCA. The function
-  returns singular values divided with $\sqrt{n-1}$ consistently with
+  \texttt{loadings}. Rectangular matrices are turned to covariance matrix,
+  and if the number of rows is lower than the number of covers, \icode{prcomp} 
+  will refuse the analysis. However, if supplied a covariance or a correlation
+  matrix, it will analyse those cases, but eigenvalues and eigenvectors are
+  rubbish beyond rank.
+  \index{principal component analysis}
+\item \icode{pca} and \icode{rda} in vegan package uses SVD in its PCA. The functions
+  return singular values divided with $\sqrt{n-1}$ consistently with
   \icode{prcomp}.  Function returns orthonormal \vec{U} and
   \vec{V}. These are accessed via \texttt{scores} function  which
   scales them for
@@ -502,10 +528,10 @@ R functions are based either on SVD or on spectral decomposition:
 \index{principal coordinate analysis}
 Principal Coordinate Analysis (PCoA) is closely related to PCA, in
 particular to PCA performed through spectral decomposition (function
-\texttt{PCAeig}).  The PCA with spectral decomposition analyses matrix
+\icode{PCAeig}).  The PCA with spectral decomposition analyses matrix
 of crossproducts and sums of squares, but PCoA analyses distances.
-The only task is to convert distances into crossproducts,
-and then analyse these like in \texttt{PCAeig} \citep{Gower66,Mard79}. If
+It needs to convert distances into crossproducts,
+and then analyse these like in \icode{PCAeig} \citep{Gower66,Mard79}. If
 the distances are Euclidean, then PCoA gives the same results as PCA,
 but is less efficient.  Normally we ignore the assumption of Euclidean
 distances, and use PCoA with other distances or dissimilarities that
@@ -516,21 +542,24 @@ The algorithm follows \citet{Mard79}:
 \begin{enumerate}
   \item Centre squared distances by rows and by columns
     \begin{equation}
+      \label{eq:gower-double}
       \vec{M} = \vec{H D}^2 \vec{H}\;,
     \end{equation}
     where \vec{D} are distances, and \vec{H} is a centring matrix. The
-    centring matrix is defined as $\vec{H} = \vec{I}-n^{-1}\vec{11'}$,
+    centring matrix is defined as $\sec{H} = \vec{I}-n^{-1}\vec{11'}$,
     where $n$ in the number of rows and columns of square \vec{D},
     \vec{I} is an identity matrix, and \vec{1} is a column vector of
     ones.  The centring matrix gives a mathematically nice
-    presentation of centring, but in practice we use numerically more
-    stable procedures. The example code below uses \texttt{scale}
+    presentation of centring, but in practice we use simpler process and just
+    remove means. The example code below uses \texttt{scale}
     function, and the standard R implementation of the method
     (function \icode{cmdscale}) has a fast C routine \texttt{dblcen}
     which is the choice in real applications.
   \item Matrix $-\tfrac{1}{2} \vec{M}$ presents the crossproducts and sum of
     squares and is submitted to spectral decomposition.
 \end{enumerate}
+
+Function \icode{PCoA} makes Gower centring followed by \icode{eigen}.
 
 <<echo=false>>=
 dump("PCoA", file = "")
@@ -539,43 +568,44 @@ dump("PCoA", file = "")
 \index{principal coordinate analysis}
 The function returns all non-zero eigenvalues and orthonormal row
 scores. Due to centring, there are at most $n-1$ positive
-eigenvalues. If \vec{D} was non-Euclidean, semimetric index, there
+eigenvalues. If \vec{D} was non-Euclidean, there
 will also be negative eigenvalues, so that the number of positive
 eigenvalues is even lower than $n-1$ \citep{Gower85}. Negative
-eigenvalues are not removed in the current function, nor are any
+eigenvalues are not removed, nor are any
 warnings issued. If we wish to scale the row scores by eigenvalues, we
-must use only the positive ones.
+must use only the positive ones or absolute values.
 
 \index{principal coordinate analysis}
 This algorithm is used in standard R function \icode{cmdscale}
 and vegan function \icode{wcmdscale}.
-Functions like \icode{adonis} and \icode{betadisper} also use
+Functions like \icode{adonis2} and \icode{betadisper} in Vegan  use
 basically the same kind of translation of dissimilarities to
 crossproducts.
 
 \subsubsection{Weighted Principal Coordinate Analysis}
 \label{sec:alg:wPCoA}
 
-\index{principal coordinate analysis}
+\index{principal coordinate analysis!weighted}
 Any eigenvector method can be weighted, but here we only demonstrate
-the weigthing for PCoA.  Similar principles also hold for PCA or RDA
+weighting in PCoA.  Similar principles work with PCA or RDA
 (and CA always is inherently weighted).  Integer weights may only tell
 how many copies of a row we have in our data set: weight 1 means a
 unique row, and weight 2 indicates a duplicated row. However, the
 weights can also be non-integer.
 
-\index{principal coordinate analysis}
+\index{principal coordinate analysis!weighted}
 Weighting reduces or increases the influence of a point with respect
 to other points. The influence of the point in unweighted ordination
 is given by its distance from the centroid: far points have a higher
-moment. Weighting is moving points further from or closer to the
-centroid.  After weigthing, we perform the rotation via SVD or
+moment and they ``turn'' the ordination more strongly. 
+Weighting moves points further from or closer to the
+centroid.  After weijgting, we perform the rotation via SVD or
 spectral decomposition. After rotation we have to recover the original
 configuration and move the points back to their original positions:
-weighting influences the rotation but not the full space.  The stages
-of weighted ordinations are weigthing, rotation, and de-weigthing.
+weighting influences the rotation but not the result space.  The stages
+of weighted ordinations are weighting, rotation, and de-weighting.
 
-\index{principal coordinate analysis}
+\index{principal coordinate analysis!weighted}
 Weighted PCoA has the following stages:
 \begin{enumerate}
 \item Let \vec{D} be a $n \times n$ distance matrix, and \vec{w} a
@@ -599,8 +629,10 @@ Weighted PCoA has the following stages:
   \end{equation}
 \end{enumerate}
 
-\index{principal coordinate analysis}
-The implementation is straighforward:
+\index{principal coordinate analysis!weighted}
+Function \icode{wPCoA} performs weighted centring followed by
+\icode{eigen} and de-weighting.
+
 <<echo=false>>=
 dump("wPCoA", file = "")
 @
@@ -629,7 +661,7 @@ The SVD algorithm is based on \citet{GreeHast87}:
     \label{eq:CAstand}
     \bar{y}_{ij} = \frac{y_{ij} - r_i c_j}{\sqrt{r_i c_j}} \;.
   \end{equation}
-  This is obviously \indexrev{Chi-square}{transformation} because by usual
+  This is  \indexrev{Chi-square}{transformation} because by usual
   definition $\chi^2 = \sum \bar{y}_{ij}^2$.
 \item Perform SVD  of $\vec{\bar Y} = \vec{\tilde{U} \bSigma
     \tilde{V}'}$.
@@ -641,17 +673,19 @@ The SVD algorithm is based on \citet{GreeHast87}:
   where $\vec{R}$ and $\vec{C}$ are diagonal matrices of row and
   column weights \vec{r} and \vec{c}.
 \end{enumerate}
-Direct implementation in R is:
+
+\index{correspondence analysis} \index{singular value decomposition}
+Function \icode{CA} is based on \icode{svd} of transformed data.
+
 <<echo=false>>=
 dump("CA", file = "")
 @
-This returns a result from SVD with row and column scores (\vec{V} and
+This returns a result from \icode{svd} with row and column scores (\vec{V} and
 \vec{U}) and singular values which are square roots of eigenvalues.
 
 \paragraph{Spectral Decomposition}
 \label{sec:alg:CA:eig}
-\index{correspondence analysis}
-\index{spectral decomposition}
+\index{correspondence analysis} \index{spectral decomposition}
 The spectral decomposition of a symmetric matrix follows
 \citet{Nish80}:
 \begin{enumerate}
@@ -678,19 +712,24 @@ The spectral decomposition of a symmetric matrix follows
     \vec{U} = \vec{R}^{-1} \vec{ Y V} \vec{\bLambda}^{-1/2} \;.
   \end{equation}
 \item The original transformation (\ref{eq:CAmattrans}) was not
-  centred, and the first eigen vector of (\ref{eq:CAeigen}) will be
+  centred, and the first eigenvector of (\ref{eq:CAeigen}) will be
   so called trivial solution of $\lambda=1$ to do the centring omitted
   earlier. We wish to discard this first trivial axis.
 \end{enumerate}
 Similarly as in PCA, this method will return rubbish for the last axes if
-the number of columns is larger than $n-1$. Direct implementation in R is:
+the number of columns is larger than $n-1$. 
+
+\index{correspondence analysis} \index{spectral decomposition}
+Function \icode{CAeig} implements this using \icode{eigen}, and removing
+the trivial axis.
 <<echo=false>>=
 dump("CAeig", file="")
 @
 
 \paragraph{Weighted Principal Coordinates}
 \label{sec:alg:CA:wPCoA}
-\index{correspondence analysis}
+\index{correspondence analysis!distance-based}
+\index{principal coordinate analysis!weighted}
 Correspondence Analysis is a distance-based method, like all other
 eigenvector methods. There are two differences to PCA: Correspondence
 analysis preserves Chi-square distances while PCA preserves Euclidean
@@ -698,10 +737,10 @@ distance, and CA is weighted while PCA is unweighted.  Chi-square
 distances are Euclidean distances of Chi-square standardized data
 \citep{LegeGall01}. The following algorithm combines Chi-square
 distances with weighted Principal Coordinate Analysis
-(\texttt{wPCoA}):
+(\icode{wPCoA}):
 \begin{enumerate}
 \item Let \vec{Y} be the response matrix standardized to unit sum,
-  \vec{r} and \vec{c} its row and column sums with corresponging
+  \vec{r} and \vec{c} its row and column sums with corresponding
   diagonal matrices \vec{R} and \vec{C}. Calculate the Chi-square
   transformed data \vec{\bar Y}:
   \begin{equation}
@@ -719,7 +758,11 @@ distances with weighted Principal Coordinate Analysis
     &=& \vec{C}^{-1/2} \vec{\bar{Y}' R U} \bLambda^{-1/2}\;.
   \end{eqnarray}
 \end{enumerate}
-The code below uses the firs alternative:
+
+\index{correspondence analysis!distance-based}
+\index{principal coordinate analysis!weighted}
+Function \icode{CAdist} transforms data and performs weighted
+principal coordinate analysis with \icode{wPCoA}.
 
 <<echo=false>>=
 dump("CAdist", file="")
@@ -728,18 +771,19 @@ dump("CAdist", file="")
 \paragraph{Reciprocal Averaging}
 \label{sec:alg:CA:RA}
 \index{reciprocal averaging} \index{correspondence analysis!reciprocal
-  averaging} \index{weighted averages} The power method of PCA
+  averaging} \index{weighted averages}
+ The power method of PCA
 (p.~\pageref{sec:alg:PCA:power}) can be also used to find the first axis
 of CA. The only difference is that instead of weighted sums of PCA we use
 weighted averages. The power method is historically interesting
 because CA was introduced to ecologists as a method of cyclic weighted
 averages under the name of Reciprocal Averaging \citep{Hill73}.
 Because of the simplicity of the algorithm, CA (as reciprocal
-averaging) was regarded as a simpler method than mathematically more
+averaging) was regarded as a simpler and more intuitive method than mathematically
 complicated PCA. Similar simple power algorithm can be used for the
-first axis of PCA (p.~\pageref{sec:alg:PCA:power}), but even in that
-time, computer programs used more effective but mathematically more
-complicated algorithms. Similary as with PCA, the eigenvalue is he ratio
+first axis of PCA (p.~\pageref{sec:alg:PCA:power}), but even in those
+times, computer programs used more effective but mathematically more
+complicated algorithms for PCA. Similarly as with PCA, the eigenvalue is the ratio
 of change of scales between successive iterations,
 and the iterations can be stopped when the ratio stabilized. In CA,
 eigenvalue is always $\lambda_1 \le1$ so that the vectors shrink during
@@ -751,31 +795,38 @@ equations, the following implementation uses function \icode{wascores}
 of vegan for weighted averages. With argument \code{expand = TRUE}
 this function retains the original scaling of vectors and expands the
 scores. Moreover, it returns the rate of shrinkage as argument
-\code{shinkage} which  is the current estimate of
-eigenvalue. With this function the implementation is very simple:
+\code{shrinkage} which  is the current estimate of
+eigenvalue.
 
+\index{reciprocal averaging} \index{correspondence analysis!reciprocal
+  averaging} \index{weighted averages} 
+Function \icode{CAwa1} only calls repeatedly Vegan \icode{wascores}.
 <<echo=false>>=
 dump("CAwa1", file="")
 @
 
-\subsubsection{Nonmetric Multidimensional Scaling}
+\subsubsection{Nonmetric Multidimensional Scaling (NMDS)}
 \label{sec:alg:NMDS}
 
+\index{nonmetric multidimensional scaling}
 Nonmetric multidimensional scaling (NMDS) is defined by
 isotonic\footnote{\citet{Krus64,Krus64num} used the name monotonic
   regression, but isotonic regression is now the standard name
   \citep{BarlEtal72}.}  regression and goodness of fit measure
-\citep{Krus64, Krus64num}. The goodness of fit measure is called
+\citep{Krus64, Krus64num}. \index{nonmetric multidimensional scaling!stress}
+The goodness of fit measure is called
 stress $S$ and it is defined as
 \begin{equation}
   S = \sqrt{\frac{S^*}{T^*}} = \sqrt{\frac{\sum (d_{ij} - \hat{d}_{ij})^2}{\sum d_{ij}^2}}\;,
 \end{equation}
-where $d$ are distances between points in the final solution, and
+where $d$ are distances between points in the final ordination, and
 $\hat d$ are the fitted distances. Observed dissimilarities do not
-appear in the equation for stress.  They influence the isotonic
+appear in the equation of stress.  They influence the isotonic
 regression that states that $\hat d$ have the same rank order as
 observed dissimilarities \citep{Krus64, Krus64num, BarlEtal72}.
 
+\index{nonmetric multidimensional scaling}
+\index{nonmetric multidimensional scaling!ties}
 \citet{Krus64num} presented and algorithm for isotonic regression, but
 standard R function \icode{isoreg} implements another algorithm of the
 same method \citep{BarlEtal72}. The isotonic regression uses only rank
@@ -785,22 +836,25 @@ particular presence-absence or cover class data have several tied
 values. In addition, there may be some falsely broken ties, because of
 floating point precision issues in binary computers.  A particularly
 serious case of ties are dissimilarities of ones between sampling
-units that share no species. If we keep the fitted values tied, the
-ordination tries to put all these extreme sites at the same distance
+units that share no species or have nothing in common. If we keep the fitted values tied, the
+ordination tries to put all these extreme sites to the same distance
 from each other, resulting in spherical or ring like
 configuration. \citet{Krus64, Krus64num} recommends allowing breaking
-ties.  He calls this primary tie treatment and such breakable ties as weak. Function \code{NMDS}
+ties.  He calls this primary tie treatment and such breakable ties as weak.
+ Function \code{NMDS}
 below follows this recommendation.  Function \icode{isoMDS} of the
 MASS package \citep{MASS} does not treat ties properly, but breaks
 ties in an order dependent way. Vegan function \icode{monoMDS} (used
 in \icode{metaMDS}) has alternative ways of tie treatment, but defaults to
 primary treatment (weak ties). 
 
+\index{nonmetric multidimensional scaling}
+\index{nonmetric multidimensional scaling!stress}
 Only monotone regression and stress were defined, but not the way how
 to minimize the function.  NMDS is a nonlinear optimization problem
 where coordinates of points in ordination space are the
 parameters. There are $nk$ parameters for $n$ points on $k$
-dimensions which makes NMDS a hard problem. For effective optimization
+dimensions which makes NMDS a large problem. For effective optimization
 we need information on the directions where points should be moved to
 minimize stress. This information is provided by the derivative of
 stress with respect to coordinate $u_{ik}$ for point $i$ on dimension
@@ -810,13 +864,14 @@ $k$ \citep{Krus64num}:
 \end{equation}
 In addition, we want to have a robust and effective optimization
 routine. \citet{Krus64num} described the method of steepest descent,
-or always moving along the gradient, but this is usually ineffective
-for difficult tasks like NMDS and other methods could be used
-\citep{Pres92, NoceWrig99}.  R function \icode{optim} has several good
-alternatives, and \code{NMDS} below defaults to
-Broyden-Fletcher-Goldfarb-Shanno algorithm as does \icode{isoMDS}
-function in the MASS package \citep{MASS}.
+or always moving along the gradient, but this other methods could be used
+\citep{Pres92, NoceWrig99}.  R function \code{optim} has several good
+alternatives, and \code{NMDS} below defaults to limited-memory
+Broyden-Fletcher-Goldfarb-Shanno (BFGS) method.  \icode{isoMDS}
+function in the MASS package \citep{MASS} uses plain BFGS, and 
+\icode{monoMDS} in vegan steepest descent.
 
+\index{nonmetric multidimensional scaling}
 The following implementation has only two major steps and two internal
 functions:
 \begin{enumerate}
@@ -830,17 +885,21 @@ functions:
   selection of optimization method, and passes all extra arguments to
   \icode{optim}. Stress is defined in internal function \code{stress}
   and its gradient in \code{dstress}. The internal notation is taken
-  from \icode{isoreg}, and \code{y} refers to $d$ and \code{yf} to
-  $\hat d$.
+  from \icode{isoreg}, and \code{y} refers to ordination distances $d$
+   and \code{yf} to $\hat d$.
 \end{enumerate}
 
+Function \icode{NMDS} has functions for \texttt{stress}, its derivative
+\texttt{dstress} and a call to \icode{optim} for ordination.
 <<echo=false>>=
 dump("NMDS", file = "")
 @
+\index{nonmetric multidimensional scaling}
 The function returns the result of \icode{optim} where \code{par}
 contain the final configuration and \code{value} the final
 stress. Function \icode{isoMDS} in the MASS package \citep{MASS} uses
-the same method (except for handling ties), but implemented in C.
+a similar method (except not handling ties and using BFGS optimization),
+but implemented in C.
 
 \subsection{Constrained Ordination}
 \label{sec:alg:constrained}
@@ -850,6 +909,20 @@ variables that restrict the ordination. The basic methods are
 Redundancy Analysis (RDA) which is generalized from PCA,  Constrained
 Correspondence Analysis (CCA) which is generalized from CA, and 
 distance-based RDA generalized from Principal Coordinates Ordination.
+
+In constrained ordination independent (environmental) variables are used as
+explanatory variables in linear model, and ordination of the fitted values.
+We could do the basic analysis with R functions \icode{lm} and \icode{svd}.
+
+\begin{Schunk}
+\begin{Sinput}
+## assume to have dependent data dune and independent data dune.env
+fv <- fitted(lm(as.matrix(dune) ~ ., data=dune.env)
+svd(scale(fv, scale = FALSE))
+\end{Sinput}
+\end{Schunk}
+
+In practice, we want to do more as we see below.
 
 \subsubsection{Redundancy Analysis}
 \label{sec:alg:RDA}
@@ -869,8 +942,8 @@ lucid overview of this algorithm.
 \index{singular value decomposition}
 \index{QR decomposition}
 The algorithm of \citet{terB86} is often taken as the definition of
-the method of constrained ordination. However, we can achieve the same
-results with some other algorithms. \citet{LegeLege98} showed that a
+the method of constrained ordination. However, we get the same
+results with  other algorithms. \citet{LegeLege98} showed that a
 better way of obtaining all constrained axes simultaneously is to
 analyse fitted values \vec{\hat Y} of
 \begin{equation}
@@ -900,7 +973,7 @@ approach they must be estimated separately as
 \end{equation}
 
 \index{redundancy analysis}
-The analysis of \vec{\hat Y} gives the constrained part analysis. The
+The analysis of \vec{\hat Y} gives the constrained part of the analysis. The
 analysis of the residuals $\vec{Y} - \vec{\hat Y}$ gives the residual
 unconstrained analysis.
 
@@ -918,7 +991,9 @@ Putting this all together gives the following algorithm:
 \item Find the residual ordination of unconstrained component by
   peforming SVD of $\vec{Y} - \vec{\hat Y} = \vec{U}_r \bSigma_r \vec{V'}_r$.
 \end{enumerate}
-Direct implementation is:
+
+Function \icode{RDA} is based on R functions \icode{qr} and \icode{svd}.
+
 <<echo=false>>=
 dump("RDA", file="")
 @
@@ -929,7 +1004,7 @@ dump("RDA", file="")
 \index{redundancy analysis!partial}
 \Citet{terB86} introduced partial RDA (pRDA) where the effects of
 some background variables, called \emph{covariates} are removed before
-analysis with the interesting variables. This gives as the following
+analysis with nteresting variables. This gives as the following
 sequence of models:
 \begin{eqnarray}
   \vec{\hat Y_z} &=& \vec{Z} (\vec{Z' Z})^{-1} \vec{Z' Y} \\
@@ -942,7 +1017,8 @@ of constraints \vec{X} and conditions \vec{Z} together.
 
 It is necessary to combine conditions \vec{X} and constraints \vec{Z}
 into same model matrix. Although the direct effects of conditions were
-removed in the first step, they are not orthogonal to \vec{X}.
+removed in the first step, they are not orthogonal to \vec{X} and will
+have interactions.
 Alternatively, we can use  residuals of \vec{X} regressed on \vec{Z},
 but the combined matrix \vec{[X,Z]} gives the same results.  The vegan
 package uses the combined matrix, but CANOCO uses the regression
@@ -953,10 +1029,11 @@ constrained ordination, and the analysis of \vec{Y_r} gives the
 residual ordination.
 
 \index{redundancy analysis!partial}
-The following implementation allows omitting either conditions or
+Function \icode{pRDA}  allows omitting either conditions or
 constraints or both so that the function can be used for pRDA, RDA,
 pPCA (= PCA after removing background variables), or PCA. Vegan
-function \icode{rda} has the same general design.
+function \icode{rda} has the same general design. \icode{pRDA} is based
+on R functions \icode{qr} and \icode{svd}.
 
 <<echo=false>>=
 dump("pRDA", file="")
@@ -983,8 +1060,8 @@ be achieved by making the following change in the code:
 
 \index{constrained correspondence analysis}
 Constrained Correspondence Analysis or Canonical Correspondence
-Analysis is an analogous generalization of RDA in the CA framwork.  The
-difference to RDA is that we need to perform \indexrev{Chi-square}{transformation}
+Analysis is an analogous generalization of RDA in the CA framework.  The
+difference to RDA is that we need to perform Chi-square transformation
 (\ref{eq:CAstand}) and juggle with weights.
 The following overview of the algorithm only discusses
 the constrained stage of CCA: partial and residual cases work
@@ -993,7 +1070,7 @@ similarly as in RDA.
 \begin{enumerate}
 \item Let \vec{Y} be the response data matrix standardized to unit
   sum, \vec{r} and \vec{c} its row and column sums.
-\item Perform the Chi-square standardization of \vec{Y} matrix with
+\item Perform Chi-square standardization of \vec{Y} matrix with
   (\ref{eq:CAstand}).
 \item Centre model matrix \vec{X} using row weights \vec{r}, and then
   weight the centred \vec{X} as $\vec{R}^{1/2} \vec{X}$, where \vec{R}
@@ -1007,6 +1084,11 @@ similarly as in RDA.
   $\vec{C}^{-1/2} \vec{V}$, where \vec{C} is a diagonal matrix of
   \vec{c}.
 \end{enumerate}
+
+Function \icode{pCCA} is similar to \icode{pRDA}, but adds handling weights
+and Chi-square standardization. Similarly as \texttt{pRDA}, it allows omitting
+conditions \vec{Z} and constraints \vec{X}. Function is based on \icode{qr} and
+\icode{svd}.
 
 <<echo=false>>=
 dump("pCCA", file="")
@@ -1029,7 +1111,7 @@ found as weighted averages of species scores are renamed to \code{w},
 and the site scores \code{u} are found as fitted values of weighted
 linear regression predicting scores \code{w} with model matrix of
 constraining variables as independent variables and row sums of
-dependent data as weights. The function uses \icode{lm.wfit} for linear
+dependent data as weights. Function \icode{CCAwa1} uses \icode{lm.wfit} for linear
 regression instead of formula based full-blown linear regression of \texttt{lm}.
 
 <<echo=false>>=
@@ -1043,47 +1125,58 @@ values of linear regression \code{u}, and therefore the scale of the
 scores shrinks during iteration. The function finds only one axis.
 
 Similar addition of one line of linear regression and renaming of
-scores \code{w} in Power algorithm of PCA
+scores \code{w} in Power algorithm in function \icode{PCApot1} for PCA
 (p. \pageref{sec:alg:PCA:power}) will give RDA.  No weights are needed
 in linear regression step in RDA.
 
 \subsubsection{Distance-based Redundancy Analysis}
 \label{sec:alg:dbRDA}
 
-\index{redundancy analysis!distance based}
+\index{redundancy analysis!distance-based}
 Distance-based Redundancy Analysis (dbRDA) is related to RDA like PCoA
-is related to PCA \citep{LegeAnde99}.
-The dependent data will be a matrix of distances or
-dissimilarities, but we find the row scores with PCoA and use them as
-a dependent data in the ordinary RDA.  The row scores must be scaled
-by the square roots of the eigenvalues so that they correctly reflect
-the importance of each dimension, and the scores correctly estimate
-the variance of the data. Therefore we take only the positive
-eigenvalues. In non-Euclidean, semimetric indices this means that
-there are typically fewer than $n-1$ principal coordinate vectors for
-$n$ rows.
+is related to PCA \citep{LegeAnde99, dbrda}. We need to make the following
+changes to RDA (cf. function \icode{RDA} against \icode{PCoA}):
 
-\index{redundancy analysis!distance based}
-The implementation calls \texttt{PCoA} and \texttt{dbRDA} so that this
-allows partial analysis:
+\begin{enumerate}
+\item	The dependent data will be Gower double-centred matrix $-\tfrac{1}{2} \vec{M}$ of
+  eq. \ref{eq:gower-double} (p.~\pageref{eq:gower-double}).
+\item Since dependent matrix is symmetric, functions \texttt{qr.fitted} and \texttt{qr.resid}
+must be applied to both sides of matrix.
+\item Spectral decomposition (\icode{eigen}) is used instead of \texttt{svd}.
+\end{enumerate}
+
+\index{redundancy analysis!distance-based}
+Similarly as with PCoA, analysis will be identical to RDA if input distances are
+Euclidean, but with non-Euclidean distances there may be negative eigenvalues.
+They are rare in the constrained component, but they are regular in residual
+components.
+
+\index{redundancy analysis!distance-based}
+Function \icode{dbRDA} performs first Gower-centring and the transformed matrix
+and then its transposed is processed with \icode{qr} decomposition. The ordination step
+is based on \icode{eigen}.
 
 <<echo=false>>=
 dump("dbRDA", file = "")
 @
 
-\index{redundancy analysis!distance based}
-The function returns the \texttt{RDA} result object. However, the
-scores do not have quite their usual meaning: columns are not species,
-but they are scaled eigenvectors. There is no way of getting species
+\index{redundancy analysis!distance-based}
+There is no way of getting species
 scores without original data matrix, because distance matrix has no
-memory of species that were used in its calculation.  If Euclidean
-distances were used, the results are similar to RDA (apart from
-possible sign reversals) except for scores \vec{V} in constrained and
-residual unconstrained components.
+memory of species that were used in its calculation.
 
-Function \icode{capscale} in vegan follows this algorithm. It also
-adds species scores similarly as in PCA (\ref{eq:PCAu}) if original
-data matrix \vec{Y} is available.
+Function \icode{dbrda} in vegan follows this algorithm. Function \icode{adonis2}
+is a short-cut to the same method but skips the ordination (spectral decomposition).
+
+\index{redundancy analysis!distance-based}
+There is an alternative simplified tool that is often confused with distance-based
+RDA: the distance matrix is analysed with PCoA, and the vectors scaled by
+eigenvalues are used as input in RDA. With non-Euclidean distances having
+negative eigenvalues, only eigenvectors with above-zero eigenvalues will be
+used. This discards the imaginary component of dissimilarities and analyses only
+the Euclidified real component.
+Function \icode{capscale} in vegan uses this algorithm.
+
 
 %%% The following chapter may be removed later, but for time being I
 %%% put these things here.
@@ -1109,36 +1202,38 @@ same way in both:
   \label{eq:databack}
   \vec{\bar Y} = \vec{U} \bLambda^{1/2} \vec{V'}\;,
 \end{equation}
-which uses eigenvalues \vec{\bLambda} and orthonormal row and column
+which uses diagonal matrix of eigenvalues \vec{\bLambda} and orthonormal row and column
 scores.  The methods differ only in the way they undo the
 standardizations to find the original data. In PCA we must undo the
-standardization of (\ref{eq:PCAstand}):
+standardization of (\ref{eq:PCAstand}, p.~\pageref{eq:PCAstand}):
 \begin{equation}
   y_{ij} = s_j \bar{y}_{ij} + z_j\;,
 \end{equation}
-and in CA we must undo (\ref{eq:CAstand}):
+and in CA we must undo (\ref{eq:CAstand}, p.~\pageref{eq:CAstand}):
 \begin{equation}
   y_{ij} = (\bar{y}_{ij} + 1) r_i c_j G\;,
 \end{equation}
 where $G$ is the grand total of $\vec{Y}$.
 
 There is no way of estimating original observations \vec{Y} in PCoA
-using arbitrary dissimilarities, but we can only recover the
-\citet{Gower66} matrix $\vec{M}$ derived from the original
-dissimilarities $\vec{D}$. If $\vec{D}$ was based on non-Euclidean
+using arbitrary dissimilarities, but we can  recover the
+\citet{Gower66} matrix $-\tfrac{1}{2} \vec{M}$ derived from the original
+dissimilarities, and from this we can recover the dissimilarities \vec{D}.
+If $\vec{D}$ was based on non-Euclidean
 dissimilarities, some of the eigenvalues are negative and the
 corresponding scaled eigenvectors are imaginary \citep{Gower85}. To
-estimate the transformed data $\vec{M}$ the distances estimated from
+estimate he distances estimated from
 imaginary axes must be subtracted from the distances estimated from
 the real axes. For $r$ positive eigenvalues and real axes, and $s$
 negative eigenvalues and imaginary eigenvalues (with $r+s = n-1$) this
 gives us \citep{Gower85}:
-\begin{equation}
-  \bar{d}_{ii} + \bar{d}_{jj} - 2 \bar{d}_{ij} = m_{ij}^2 = \\
+\begin{eqnarray}
+  m_{ij}^2 &=&
   \sum_{k=1}^r \lambda_k (u_{ik} - u_{jk})^2 - \sum_{k=r+1}^{r+s} |
-  \lambda_k |  (u_{ik} - u_{jk})^2 \;,
-\end{equation}
-where $\bar{d}$ are double-centred dissimilarities
+  \lambda_k |  (u_{ik} - u_{jk})^2 \\
+   d_{ij} &=& \sqrt{m^2_{ii} + m^2_{jj} - 2 m^2_{ij}}\;,
+\end{eqnarray}
+where $d$ are original dissimilarities
 \citep{Gower66,Mard79}.
 
 In constrained ordination we can recover the fitted values of the
@@ -1161,7 +1256,7 @@ rda(residuals(mod))
 @
 
 To recover the original data, we must add constrained and residual
-components:
+components (however, this does not work in distance-based RDA):
 \begin{equation}
   \vec{Y} = \vec{U} \bLambda^{1/2} \vec{V'} + \vec{U}_r \vec{\bLambda}_r^{1/2} \vec{V'}_r\;,
 \end{equation}
@@ -1181,8 +1276,8 @@ Species scores \vec{V} and site scores \vec{U} are directly related to
 each other in unconstrained ordination. In PCA the mutual translation
 functions are:
 \begin{eqnarray}
- \vec{V} &=& \vec{\bar Y'} \vec{U} \bLambda^{-1/2}\\
- \vec{U} &= & \vec{\bar Y} \vec{V} \bLambda^{-1/2}
+ \vec{V} &= \vec{\bar Y'} \vec{U} \bLambda^{-1/2}\\
+ \vec{U} &=  \vec{\bar Y} \vec{V} \bLambda^{-1/2}
 \end{eqnarray}
 The division by the squareroots of eigenvalue takes care of retaining
 the original scaling of orthonormal scores. The equations include
@@ -1224,18 +1319,6 @@ Scores \vec{U} are called linear combination or LC scores, and scores
 solution, you must submit new environmental data \vec{X} for LC scores
 \vec{U}, and new dependent data \vec{Y} for WA scores \vec{W} or
 species scores \vec{V}.
-
-In unconstrained analysis (PCA and CA), scores \vec{U} and \vec{V} are
-symmetric so that you can derive \vec{U} from \vec{V} or \vec{V} from
-\vec{U}, and you can repeat this cyclically. However, the scores of
-constrained ordination (RDA and CCA) are nonsymmetric: you can only
-derive \vec{V} from \vec{U}, but not vice versa. If you use the
-symmetric formulae of unconstrained ordination for \vec{V}, you will
-get WA scores \vec{W} which are not identical (or even similar) to LC
-scores \vec{U}. Further, you cannot derive species scores \vec{V} from
-WA scores \vec{W}, and there is no similar dual relationship as in
-unconstrained ordination. The derivation of scores is from \vec{U} to
-\vec{V} to \vec{W} but this route cannot be reversed.
 
 \bibliographystyle{spbasic}
 \bibliography{mmecor}
